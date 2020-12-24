@@ -91,6 +91,7 @@ fn test_error() {
         .html_colors(&["#777", "bloodred", "#bbb", "#zzz"])
         .build();
     assert!(g.is_err());
+    //assert_eq!(g.unwrap_err().to_string(), "Invalid html color");
 
     // Wrong domain #1
     let g = CustomGradient::new()
@@ -98,6 +99,7 @@ fn test_error() {
         .domain(&[0., 0.75, 1.])
         .build();
     assert!(g.is_err());
+    //assert_eq!(g.unwrap_err().to_string(), "Wrong domain count");
 
     // Wrong domain #2
     let g = CustomGradient::new()
@@ -105,6 +107,7 @@ fn test_error() {
         .domain(&[0., 0.71, 0.7, 1.])
         .build();
     assert!(g.is_err());
+    //assert_eq!(g.unwrap_err().to_string(), "Wrong domain");
 }
 
 #[test]
@@ -121,6 +124,7 @@ fn test_domain() {
 
     assert_eq!(g.at(-10.).to_hex_string(), "#ffff00");
     assert_eq!(g.at(110.).to_hex_string(), "#00ff00");
+    assert_eq!(g.at(f64::NAN).to_hex_string(), "#00ff00");
 
     // Custom domain #2
     let g = CustomGradient::new()
@@ -182,6 +186,7 @@ fn test_sharp() {
 
     assert_eq!(g.at(-0.5).rgba_u8(), (255, 0, 0, 255));
     assert_eq!(g.at(1.5).rgba_u8(), (0, 0, 255, 255));
+    assert_eq!(g.at(f64::NAN).rgba_u8(), (0, 0, 255, 255));
 }
 
 #[test]
@@ -195,6 +200,33 @@ fn test_get_colors() {
     assert_eq!(colors[0].to_hex_string(), "#ffff00");
     assert_eq!(colors[2].to_hex_string(), "#0000ff");
     assert_eq!(colors[4].to_hex_string(), "#00ff00");
+}
+
+#[test]
+fn test_preset() {
+    let g = colorgrad::greys();
+    assert_eq!(g.at(0.).to_hex_string(), "#ffffff");
+    assert_eq!(g.at(1.).to_hex_string(), "#000000");
+
+    let g = colorgrad::turbo();
+    assert_eq!(g.at(0.).to_hex_string(), "#23171b");
+    assert_eq!(g.at(1.).to_hex_string(), "#900c00");
+
+    let g = colorgrad::cividis();
+    assert_eq!(g.at(0.).to_hex_string(), "#002051");
+    assert_eq!(g.at(1.).to_hex_string(), "#fdea45");
+
+    let g = colorgrad::cubehelix_default();
+    assert_eq!(g.at(0.).to_hex_string(), "#000000");
+    assert_eq!(g.at(1.).to_hex_string(), "#ffffff");
+
+    let g = colorgrad::warm();
+    assert_eq!(g.at(0.).to_hex_string(), "#6d3fa9");
+    assert_eq!(g.at(1.).to_hex_string(), "#afef5a");
+
+    let g = colorgrad::cool();
+    assert_eq!(g.at(0.).to_hex_string(), "#6d3fa9");
+    assert_eq!(g.at(1.).to_hex_string(), "#afef5a");
 }
 
 #[test]

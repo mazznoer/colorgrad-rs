@@ -234,6 +234,42 @@ All preset gradients are in the domain 0..1.
 `colorgrad::cubehelix_default()`
 ![img](docs/images/preset/cubehelix_default.png)
 
+`colorgrad::bugn()`
+![img](docs/images/preset/bugn.png)
+
+`colorgrad::bupu()`
+![img](docs/images/preset/bupu.png)
+
+`colorgrad::gnbu()`
+![img](docs/images/preset/gnbu.png)
+
+`colorgrad::orrd()`
+![img](docs/images/preset/orrd.png)
+
+`colorgrad::pubugn()`
+![img](docs/images/preset/pubugn.png)
+
+`colorgrad::pubu()`
+![img](docs/images/preset/pubu.png)
+
+`colorgrad::purd()`
+![img](docs/images/preset/purd.png)
+
+`colorgrad::rdpu()`
+![img](docs/images/preset/rdpu.png)
+
+`colorgrad::ylgnbu()`
+![img](docs/images/preset/ylgnbu.png)
+
+`colorgrad::ylgn()`
+![img](docs/images/preset/ylgn.png)
+
+`colorgrad::ylorbr()`
+![img](docs/images/preset/ylorbr.png)
+
+`colorgrad::ylorrd()`
+![img](docs/images/preset/ylorrd.png)
+
 ### Cyclical
 
 `colorgrad::rainbow()`

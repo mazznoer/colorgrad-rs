@@ -35,6 +35,8 @@ let g = colorgrad::CustomGradient::new().build().unwrap();
 ### Custom Colors
 
 ```rust
+use colorgrad::Color;
+
 let g = colorgrad::CustomGradient::new()
     .colors(&[
         Color::from_rgb_u8(0, 206, 209),
@@ -364,4 +366,8 @@ fn remap(value: f64, a: f64, b: f64, c: f64, d: f64) -> f64 {
 
 * [chroma.js](https://github.com/gka/chroma.js)
 * [d3-scale-chromatic](https://github.com/d3/d3-scale-chromatic/)
+
+## Links
+
+* [colorgrad](https://github.com/mazznoer/colorgrad) - Go version of this library
 

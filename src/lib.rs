@@ -93,6 +93,15 @@ pub struct Gradient {
     dmax: f64,
 }
 
+impl fmt::Debug for Gradient {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("Gradient")
+            .field("dmin", &self.dmin)
+            .field("dmax", &self.dmax)
+            .finish()
+    }
+}
+
 impl Gradient {
     /// Get color at certain position
     pub fn at(&self, t: f64) -> Color {

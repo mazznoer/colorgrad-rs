@@ -90,24 +90,21 @@ fn test_error() {
     let g = CustomGradient::new()
         .html_colors(&["#777", "bloodred", "#bbb", "#zzz"])
         .build();
-    assert!(g.is_err());
-    //assert_eq!(g.unwrap_err().to_string(), "Invalid html color");
+    assert_eq!(g.unwrap_err().to_string(), "Invalid html color");
 
     // Wrong domain #1
     let g = CustomGradient::new()
         .html_colors(&["#777", "gold", "#bbb", "#f0f"])
         .domain(&[0., 0.75, 1.])
         .build();
-    assert!(g.is_err());
-    //assert_eq!(g.unwrap_err().to_string(), "Wrong domain count");
+    assert_eq!(g.unwrap_err().to_string(), "Wrong domain count");
 
     // Wrong domain #2
     let g = CustomGradient::new()
         .html_colors(&["#777", "gold", "#bbb", "#f0f"])
         .domain(&[0., 0.71, 0.7, 1.])
         .build();
-    assert!(g.is_err());
-    //assert_eq!(g.unwrap_err().to_string(), "Wrong domain");
+    assert_eq!(g.unwrap_err().to_string(), "Wrong domain");
 }
 
 #[test]

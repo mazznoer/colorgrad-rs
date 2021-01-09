@@ -80,15 +80,7 @@ impl fmt::Display for CustomGradientError {
     }
 }
 
-impl StdError for CustomGradientError {
-    fn description(&self) -> &str {
-        match *self {
-            CustomGradientError::InvalidHtmlColor => "Invalid html color",
-            CustomGradientError::WrongDomainCount => "Wrong domain count",
-            CustomGradientError::WrongDomain => "Wrong domain",
-        }
-    }
-}
+impl StdError for CustomGradientError {}
 
 trait GradientBase {
     fn at(&self, t: f64) -> Color;

@@ -9,6 +9,7 @@ fn test_basic() {
     assert_eq!(g.domain(), (0., 1.));
     assert_eq!(g.at(0.).to_hex_string(), "#000000");
     assert_eq!(g.at(1.).to_hex_string(), "#ffffff");
+    assert_eq!(format!("{:?}", g), "Gradient { dmin: 0.0, dmax: 1.0 }");
 
     // Custom colors
     let g = CustomGradient::new()

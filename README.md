@@ -154,6 +154,15 @@ let g = colorgrad::CustomGradient::new()
 ```
 ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/blend-mode-lrgb.png)
 
+```rust
+let g = colorgrad::CustomGradient::new()
+    .html_colors(&["#ff0", "#008ae5"])
+    .mode(colorgrad::BlendMode::Hsv)
+    .build()
+    .unwrap();
+```
+![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/blend-mode-hsv.png)
+
 ## Preset Gradients
 
 All preset gradients are in the domain 0..1.

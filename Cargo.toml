@@ -1,6 +1,6 @@
 [package]
 name = "colorgrad"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Nor Khasyatillah <mazznoer@ymail.com>"]
 edition = "2018"
 description = "Rust color scales library for charts, maps, data visualization and creative coding."
@@ -14,10 +14,9 @@ exclude = [
 	".github/*",
 	".travis.yml",
 	"docs/*",
-	"examples/*",
 	"tests/*",
 ]
 
 [dependencies]
-csscolorparser = "0.2.0"
+csscolorparser = "0.3.0"
 

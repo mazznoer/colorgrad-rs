@@ -35,7 +35,7 @@ fn test_basic() {
     let colors = g.colors(4);
     assert_eq!(colors[0].rgba_u8(), (0, 0, 255, 255));
     assert_eq!(colors[1].rgba_u8(), (0, 255, 255, 255));
-    assert_eq!(colors[2].rgba_u8(), (255, 255, 0, 127));
+    assert_eq!(colors[2].rgba_u8(), (255, 255, 0, 128));
     assert_eq!(colors[3].rgba_u8(), (0, 255, 0, 255));
 
     // Single color
@@ -219,12 +219,12 @@ fn test_preset() {
     assert_eq!(g.at(1.).to_hex_string(), "#ffffff");
 
     let g = colorgrad::warm();
-    assert_eq!(g.at(0.).to_hex_string(), "#6d3fa9");
-    assert_eq!(g.at(1.).to_hex_string(), "#afef5a");
+    assert_eq!(g.at(0.).to_hex_string(), "#6e40aa");
+    assert_eq!(g.at(1.).to_hex_string(), "#aff05b");
 
     let g = colorgrad::cool();
-    assert_eq!(g.at(0.).to_hex_string(), "#6d3fa9");
-    assert_eq!(g.at(1.).to_hex_string(), "#afef5a");
+    assert_eq!(g.at(0.).to_hex_string(), "#6e40aa");
+    assert_eq!(g.at(1.).to_hex_string(), "#aff05b");
 }
 
 #[test]

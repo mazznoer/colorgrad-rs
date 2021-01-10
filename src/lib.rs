@@ -8,8 +8,8 @@
 //! ```
 //! let g = colorgrad::rainbow();
 //! assert_eq!(g.domain(), (0., 1.)); // all preset gradients are in the domain 0..1
-//! assert_eq!(g.at(0.5).rgba_u8(), (175, 239, 90, 255));
-//! assert_eq!(g.at(0.5).to_hex_string(), "#afef5a");
+//! assert_eq!(g.at(0.5).rgba_u8(), (175, 240, 91, 255));
+//! assert_eq!(g.at(0.5).to_hex_string(), "#aff05b");
 //! ```
 //!
 //! Custom gradient:

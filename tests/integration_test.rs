@@ -1,5 +1,3 @@
-extern crate colorgrad;
-
 use colorgrad::{BlendMode, Color, CustomGradient};
 
 #[test]
@@ -78,6 +76,16 @@ fn test_blend_mode() {
     let g = CustomGradient::new()
         .html_colors(&["#f00", "#ff0", "#00f"])
         .mode(BlendMode::Lrgb)
+        .build()
+        .unwrap();
+    assert_eq!(g.at(0.0).rgba_u8(), (255, 0, 0, 255));
+    assert_eq!(g.at(0.5).rgba_u8(), (255, 255, 0, 255));
+    assert_eq!(g.at(1.0).rgba_u8(), (0, 0, 255, 255));
+
+    // Blend mode HSV
+    let g = CustomGradient::new()
+        .html_colors(&["#f00", "#ff0", "#00f"])
+        .mode(BlendMode::Hsv)
         .build()
         .unwrap();
     assert_eq!(g.at(0.0).rgba_u8(), (255, 0, 0, 255));

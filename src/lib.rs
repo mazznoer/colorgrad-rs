@@ -2,7 +2,8 @@
 //!
 //! Rust color-scales library for maps, charts, data-visualization & creative coding.
 //!
-//! # Examples
+//! ## Usage
+//!
 //! Using preset gradient:
 //! ```
 //! let g = colorgrad::rainbow();
@@ -27,6 +28,71 @@
 //! assert_eq!(g.at(0.0).to_hex_string(), "#ff0000");
 //! assert_eq!(g.at(1.0).to_hex_string(), "#00ff00");
 //! ```
+//!
+//! ## Examples
+//!
+//! ### Gradient Image
+//!
+//! ```rust,ignore
+//! extern crate colorgrad;
+//! extern crate image;
+//!
+//! fn main() {
+//!     let grad = colorgrad::CustomGradient::new()
+//!         .html_colors(&["deeppink", "gold", "seagreen"])
+//!         .build()
+//!         .unwrap();
+//!
+//!     let w = 1500;
+//!     let h = 70;
+//!     let fw = w as f64;
+//!
+//!     let mut imgbuf = image::ImageBuffer::new(w, h);
+//!
+//!     for (x, _y, pixel) in imgbuf.enumerate_pixels_mut() {
+//!         let (r, g, b, _) = grad.at(x as f64 / fw).rgba_u8();
+//!         *pixel = image::Rgb([r, g, b]);
+//!     }
+//!
+//!     imgbuf.save("gradient.png").unwrap();
+//! }
+//! ```
+//! ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/example-gradient.png)
+//!
+//! ### Colored Noise
+//!
+//! ```rust,ignore
+//! extern crate colorgrad;
+//! extern crate image;
+//! extern crate noise;
+//!
+//! use noise::NoiseFn;
+//!
+//! fn main() {
+//!     let w = 600;
+//!     let h = 350;
+//!     let scale = 0.015;
+//!
+//!     let grad = colorgrad::spectral();
+//!     let ns = noise::OpenSimplex::new();
+//!     let mut imgbuf = image::ImageBuffer::new(w, h);
+//!
+//!     for (x, y, pixel) in imgbuf.enumerate_pixels_mut() {
+//!         let t = ns.get([x as f64 * scale, y as f64 * scale]);
+//!         let (r, g, b, _) = grad.at(remap(t, -0.5, 0.5, 0.0, 1.0)).rgba_u8();
+//!         *pixel = image::Rgb([r, g, b]);
+//!     }
+//!     imgbuf.save("noise.png").unwrap();
+//! }
+//!
+//! // Map value which is in range [a, b] to range [c, d]
+//! fn remap(value: f64, a: f64, b: f64, c: f64, d: f64) -> f64 {
+//!     (value - a) * ((d - c) / (b - a)) + c
+//! }
+//! ```
+//! ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/example-noise.png)
+//!
+//! ## Preset Gradients
 //!
 //! [colorgrad::rainbow()](fn.rainbow.html)
 //! ![img](https://raw.githubusercontent.com/mazznoer/colorgrad/master/doc/images/preset/Rainbow.png)
@@ -217,6 +283,7 @@ impl GradientBase for GradientSharp {
 /// Create custom gradient
 ///
 /// # Examples
+///
 /// ```
 /// use colorgrad::Color;
 ///
@@ -231,9 +298,11 @@ impl GradientBase for GradientSharp {
 /// assert_eq!(grad.domain(), (0., 1.)); // default domain
 /// assert_eq!(grad.at(0.).rgba_u8(), (255, 0, 0, 255));
 /// assert_eq!(grad.at(1.).rgba_u8(), (0, 0, 255, 255));
+/// ```
 ///
-/// // Using web color format string
+/// ## Using web color format string
 ///
+/// ```
 /// let grad = colorgrad::CustomGradient::new()
 ///     .html_colors(&["deeppink", "gold", "seagreen"])
 ///     .domain(&[0., 100.])
@@ -271,9 +340,20 @@ impl CustomGradient {
         self
     }
 
-    /// Set gradient color using HTML/ CSS color format.
-    /// It support named colors, hexadecimal (`#rgb`, `#rgba`, `#rrggbb`, `#rrggbbaa`), `rgb()`,
-    /// `rgba()`, `hsl()`, `hsla()`, `hwb()`, and `hsv()`.
+    /// Set gradient color using web / CSS color format.
+    ///
+    /// ## Supported Color Format
+    ///
+    /// * [Named colors](https://www.w3.org/TR/css-color-4/#named-colors)
+    /// * RGB hexadecimal
+    ///      + Short format `#rgb`
+    ///      + Short format with alpha `#rgba`
+    ///      + Long format `#rrggbb`
+    ///      + Long format with alpha `#rrggbbaa`
+    /// * `rgb()` and `rgba()`
+    /// * `hsl()` and `hsla()`
+    /// * `hwb()`
+    /// * `hsv()` - not in CSS standard.
     pub fn html_colors<'a>(&'a mut self, html_colors: &[&str]) -> &'a mut CustomGradient {
         for s in html_colors {
             if let Ok(c) = csscolorparser::parse(s) {

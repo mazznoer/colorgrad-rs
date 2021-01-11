@@ -110,8 +110,6 @@
 
 #![allow(clippy::many_single_char_names)]
 
-extern crate csscolorparser;
-
 pub use csscolorparser::Color;
 
 use std::error::Error as StdError;
@@ -394,17 +392,15 @@ impl CustomGradient {
             colors.push(colors[0].clone());
         }
 
-        let pos;
-
-        if self.pos.is_empty() {
-            pos = linspace(0., 1., colors.len());
+        let pos = if self.pos.is_empty() {
+            linspace(0., 1., colors.len())
         } else if self.pos.len() == colors.len() {
-            pos = self.pos.to_vec();
+            self.pos.to_vec()
         } else if self.pos.len() == 2 {
-            pos = linspace(self.pos[0], self.pos[1], colors.len());
+            linspace(self.pos[0], self.pos[1], colors.len())
         } else {
             return Err(CustomGradientError::WrongDomainCount);
-        }
+        };
 
         for i in 0..(pos.len() - 1) {
             if pos[i] >= pos[i + 1] {

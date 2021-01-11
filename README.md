@@ -20,7 +20,7 @@ Rust color scales library for charts, maps, data-visualization and creative codi
 Add `colorgrad` to your `Cargo.toml`
 ```
 [dependencies]
-colorgrad = "0.1.0"
+colorgrad = "0.2.0"
 ```
 
 ## Custom Gradient

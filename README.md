@@ -12,7 +12,7 @@ Rust color scales library for charts, maps, data-visualization and creative codi
 
 + [Custom Gradient](#custom-gradient)
 + [Preset Gradients](#preset-gradients)
-+ [Hard-Edged Gradient](#hard-edged-gradient)
++ [Using the Gradient](#using-the-gradient)
 + [Examples](#examples)
 
 ## Usage
@@ -165,7 +165,7 @@ let g = colorgrad::CustomGradient::new()
 
 ## Preset Gradients
 
-All preset gradients are in the domain 0..1.
+All preset gradients are in the domain [0..1].
 
 ### Diverging
 
@@ -289,7 +289,52 @@ All preset gradients are in the domain 0..1.
 `colorgrad::sinebow()`
 ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/sinebow.png)
 
-## Hard-Edged Gradient
+## Using the Gradient
+
+Get the gradient domain's min and max.
+
+```rust
+let grad = colorgrad::rainbow();
+
+assert_eq!(grad.domain(), (0., 1.));
+```
+
+Get color at certain position.
+
+```rust
+let grad = colorgrad::rainbow();
+
+assert_eq!(grad.at(0.0).rgba_u8(), (110, 64, 170, 255));
+assert_eq!(grad.at(0.5).rgba_u8(), (175, 240, 91, 255));
+assert_eq!(grad.at(1.0).rgba_u8(), (110, 64, 170, 255));
+```
+
+Get colors evenly spaced across gradient.
+
+```rust
+let grad = colorgrad::rainbow();
+
+for c in grad.colors(10) {
+    println!("{}", c.to_hex_string());
+}
+```
+
+Output:
+
+```console
+#6e40aa
+#c83dac
+#ff5375
+#ff8c38
+#c9d33a
+#7cf659
+#5dea8d
+#48b8d0
+#4775de
+#6e40aa
+```
+
+### Hard-Edged Gradient
 
 ```rust
 let g1 = colorgrad::CustomGradient::new()
@@ -336,6 +381,9 @@ fn main() {
     imgbuf.save("gradient.png").unwrap();
 }
 ```
+
+Example output:
+
 ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/example-gradient.png)
 
 ### Colored Noise
@@ -369,14 +417,18 @@ fn remap(value: f64, a: f64, b: f64, c: f64, d: f64) -> f64 {
     (value - a) * ((d - c) / (b - a)) + c
 }
 ```
+
+Example output:
+
 ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/example-noise.png)
 
 ## Inspirations
 
-* [chroma.js](https://github.com/gka/chroma.js)
+* [chroma.js](https://gka.github.io/chroma.js/#color-scales)
 * [d3-scale-chromatic](https://github.com/d3/d3-scale-chromatic/)
 
 ## Links
 
 * [colorgrad](https://github.com/mazznoer/colorgrad) - Go version of this library
-
+* [https://www.color-blindness.com/coblis-color-blindness-simulator/](https://www.color-blindness.com/coblis-color-blindness-simulator/)
+* [https://github.com/UniStuttgart-VISUS/visual-system-simulator](https://github.com/UniStuttgart-VISUS/visual-system-simulator)

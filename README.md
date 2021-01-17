@@ -76,6 +76,8 @@ let g = colorgrad::CustomGradient::new()
 
 ### Domain & Color Position
 
+Default domain is [0..1].
+
 ```rust
 let g = colorgrad::CustomGradient::new()
     .html_colors(&["deeppink", "gold", "seagreen"])
@@ -84,6 +86,8 @@ let g = colorgrad::CustomGradient::new()
 assert_eq!(g.domain(), (0., 1.));
 ```
 ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/domain-default.png)
+
+Set the domain to [0..100].
 
 ```rust
 let g = colorgrad::CustomGradient::new()
@@ -95,6 +99,8 @@ assert_eq!(g.domain(), (0., 100.));
 ```
 ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/domain-100.png)
 
+Set the domain to [-1..1].
+
 ```rust
 let g = colorgrad::CustomGradient::new()
     .html_colors(&["deeppink", "gold", "seagreen"])
@@ -105,6 +111,8 @@ assert_eq!(g.domain(), (-1., 1.));
 ```
 ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/domain-neg1-1.png)
 
+Set exact position for each color. The domain is [0..1].
+
 ```rust
 let g = colorgrad::CustomGradient::new()
     .html_colors(&["deeppink", "gold", "seagreen"])
@@ -114,6 +122,8 @@ let g = colorgrad::CustomGradient::new()
 assert_eq!(g.domain(), (0., 1.));
 ```
 ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/color-position-1.png)
+
+Set exact position for each color. The domain is [15..80].
 
 ```rust
 let g = colorgrad::CustomGradient::new()
@@ -279,7 +289,7 @@ All preset gradients are in the domain [0..1].
 
 ## Using the Gradient
 
-Get the gradient domain's min and max.
+### Get the domain
 
 ```rust
 let grad = colorgrad::rainbow();
@@ -287,7 +297,7 @@ let grad = colorgrad::rainbow();
 assert_eq!(grad.domain(), (0., 1.));
 ```
 
-Get color at certain position.
+### Get single color at certain position
 
 ```rust
 let grad = colorgrad::rainbow();
@@ -297,7 +307,7 @@ assert_eq!(grad.at(0.5).rgba_u8(), (175, 240, 91, 255));
 assert_eq!(grad.at(1.0).rgba_u8(), (110, 64, 170, 255));
 ```
 
-Get colors evenly spaced across gradient.
+### Get n colors evenly spaced across gradient
 
 ```rust
 let grad = colorgrad::rainbow();

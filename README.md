@@ -18,7 +18,7 @@ Rust color scales library for charts, maps, data-visualization and creative codi
 ## Usage
 
 Add `colorgrad` to your `Cargo.toml`
-```
+```toml
 [dependencies]
 colorgrad = "0.2.0"
 ```

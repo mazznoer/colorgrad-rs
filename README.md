@@ -28,7 +28,7 @@ colorgrad = "0.2.0"
 ### Basic
 
 ```rust
-let g = colorgrad::CustomGradient::new().build().unwrap();
+let g = colorgrad::CustomGradient::new().build()?;
 ```
 ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/custom-default.png)
 
@@ -45,36 +45,32 @@ let g = colorgrad::CustomGradient::new()
         Color::from_hsv(50., 1., 1.),
         Color::from_hsv(348., 0.9, 0.8),
     ])
-    .build()
-    .unwrap();
+    .build()?;
 ```
 ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/custom-colors.png)
 
 ### Using Web Color Format
 
-`.html_colors()` method accepts named colors, hexadecimal (`#rgb`, `#rgba`, `#rrggbb`, `#rrggbbaa`), `rgb()`, `rgba()`, `hsl()`, `hsla()`, `hwb()`, and `hsv()`.
+`.html_colors()` method accepts [named colors](https://www.w3.org/TR/css-color-4/#named-colors), hexadecimal (`#rgb`, `#rgba`, `#rrggbb`, `#rrggbbaa`), `rgb()`, `rgba()`, `hsl()`, `hsla()`, `hwb()`, and `hsv()`.
 
 ```rust
 let g = colorgrad::CustomGradient::new()
     .html_colors(&["#c41189", "#00BFFF", "#FFD700"])
-    .build()
-    .unwrap();
+    .build()?;
 ```
 ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/custom-hex-colors.png)
 
 ```rust
 let g = colorgrad::CustomGradient::new()
     .html_colors(&["gold", "hotpink", "darkturquoise"])
-    .build()
-    .unwrap();
+    .build()?;
 ```
 ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/custom-named-colors.png)
 
 ```rust
 let g = colorgrad::CustomGradient::new()
     .html_colors(&["rgb(125,110,221)", "rgb(90%,45%,97%)", "hsl(229,79%,85%)"])
-    .build()
-    .unwrap();
+    .build()?;
 ```
 ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/custom-css-colors.png)
 
@@ -83,8 +79,7 @@ let g = colorgrad::CustomGradient::new()
 ```rust
 let g = colorgrad::CustomGradient::new()
     .html_colors(&["deeppink", "gold", "seagreen"])
-    .build()
-    .unwrap();
+    .build()?;
 
 assert_eq!(g.domain(), (0., 1.));
 ```
@@ -94,8 +89,7 @@ assert_eq!(g.domain(), (0., 1.));
 let g = colorgrad::CustomGradient::new()
     .html_colors(&["deeppink", "gold", "seagreen"])
     .domain(&[0., 100.])
-    .build()
-    .unwrap();
+    .build()?;
 
 assert_eq!(g.domain(), (0., 100.));
 ```
@@ -105,8 +99,7 @@ assert_eq!(g.domain(), (0., 100.));
 let g = colorgrad::CustomGradient::new()
     .html_colors(&["deeppink", "gold", "seagreen"])
     .domain(&[-1., 1.])
-    .build()
-    .unwrap();
+    .build()?;
 
 assert_eq!(g.domain(), (-1., 1.));
 ```
@@ -116,8 +109,7 @@ assert_eq!(g.domain(), (-1., 1.));
 let g = colorgrad::CustomGradient::new()
     .html_colors(&["deeppink", "gold", "seagreen"])
     .domain(&[0., 0.7, 1.])
-    .build()
-    .unwrap();
+    .build()?;
 
 assert_eq!(g.domain(), (0., 1.));
 ```
@@ -127,8 +119,7 @@ assert_eq!(g.domain(), (0., 1.));
 let g = colorgrad::CustomGradient::new()
     .html_colors(&["deeppink", "gold", "seagreen"])
     .domain(&[15., 30., 80.])
-    .build()
-    .unwrap();
+    .build()?;
 
 assert_eq!(g.domain(), (15., 80.));
 ```
@@ -140,8 +131,7 @@ assert_eq!(g.domain(), (15., 80.));
 let g = colorgrad::CustomGradient::new()
     .html_colors(&["#ff0", "#008ae5"])
     .mode(colorgrad::BlendMode::Rgb)
-    .build()
-    .unwrap();
+    .build()?;
 ```
 ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/blend-mode-rgb.png)
 
@@ -149,8 +139,7 @@ let g = colorgrad::CustomGradient::new()
 let g = colorgrad::CustomGradient::new()
     .html_colors(&["#ff0", "#008ae5"])
     .mode(colorgrad::BlendMode::Lrgb)
-    .build()
-    .unwrap();
+    .build()?;
 ```
 ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/blend-mode-lrgb.png)
 
@@ -158,8 +147,7 @@ let g = colorgrad::CustomGradient::new()
 let g = colorgrad::CustomGradient::new()
     .html_colors(&["#ff0", "#008ae5"])
     .mode(colorgrad::BlendMode::Hsv)
-    .build()
-    .unwrap();
+    .build()?;
 ```
 ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/blend-mode-hsv.png)
 
@@ -339,8 +327,7 @@ Output:
 ```rust
 let g1 = colorgrad::CustomGradient::new()
     .html_colors(&["#18dbf4", "#f6ff56"])
-    .build()
-    .unwrap();
+    .build()?;
 
 let g2 = g1.sharp(7);
 ```
@@ -358,14 +345,15 @@ let g = colorgrad::spectral().sharp(19);
 ### Gradient Image
 
 ```rust
-extern crate colorgrad;
-extern crate image;
+//extern crate colorgrad;
+//extern crate image;
 
-fn main() {
+use std::error::Error;
+
+fn main() -> Result<(), Box<dyn Error>> {
     let grad = colorgrad::CustomGradient::new()
         .html_colors(&["deeppink", "gold", "seagreen"])
-        .build()
-        .unwrap();
+        .build()?;
 
     let w = 1500;
     let h = 70;
@@ -374,11 +362,12 @@ fn main() {
     let mut imgbuf = image::ImageBuffer::new(w, h);
 
     for (x, _y, pixel) in imgbuf.enumerate_pixels_mut() {
-        let (r, g, b, _) = grad.at(x as f64 / fw).rgba_u8();
+        let (r, g, b, _a) = grad.at(x as f64 / fw).rgba_u8();
         *pixel = image::Rgb([r, g, b]);
     }
 
-    imgbuf.save("gradient.png").unwrap();
+    imgbuf.save("gradient.png")?;
+    Ok(())
 }
 ```
 
@@ -389,9 +378,9 @@ Example output:
 ### Colored Noise
 
 ```rust
-extern crate colorgrad;
-extern crate image;
-extern crate noise;
+//extern crate colorgrad;
+//extern crate image;
+//extern crate noise;
 
 use noise::NoiseFn;
 
@@ -406,7 +395,7 @@ fn main() {
 
     for (x, y, pixel) in imgbuf.enumerate_pixels_mut() {
         let t = ns.get([x as f64 * scale, y as f64 * scale]);
-        let (r, g, b, _) = grad.at(remap(t, -0.5, 0.5, 0.0, 1.0)).rgba_u8();
+        let (r, g, b, _a) = grad.at(remap(t, -0.5, 0.5, 0.0, 1.0)).rgba_u8();
         *pixel = image::Rgb([r, g, b]);
     }
     imgbuf.save("noise.png").unwrap();

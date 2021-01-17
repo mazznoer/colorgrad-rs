@@ -7,6 +7,7 @@
 //! Using preset gradient:
 //! ```
 //! let g = colorgrad::rainbow();
+//!
 //! assert_eq!(g.domain(), (0., 1.)); // all preset gradients are in the domain 0..1
 //! assert_eq!(g.at(0.5).rgba_u8(), (175, 240, 91, 255));
 //! assert_eq!(g.at(0.5).to_hex_string(), "#aff05b");
@@ -14,19 +15,22 @@
 //!
 //! Custom gradient:
 //! ```
+//! # use std::error::Error;
 //! use colorgrad::Color;
 //!
+//! # fn main() -> Result<(), Box<dyn Error>> {
 //! let g = colorgrad::CustomGradient::new()
 //!     .colors(&[
 //!         Color::from_rgb_u8(255, 0, 0),
 //!         Color::from_rgb_u8(0, 255, 0),
 //!     ])
-//!     .build()
-//!     .unwrap();
+//!     .build()?;
 //!
 //! assert_eq!(g.at(0.0).rgba_u8(), (255, 0, 0, 255));
 //! assert_eq!(g.at(0.0).to_hex_string(), "#ff0000");
 //! assert_eq!(g.at(1.0).to_hex_string(), "#00ff00");
+//! # Ok(())
+//! # }
 //! ```
 //!
 //! ## Examples
@@ -34,14 +38,15 @@
 //! ### Gradient Image
 //!
 //! ```rust,ignore
-//! extern crate colorgrad;
-//! extern crate image;
+//! //extern crate colorgrad;
+//! //extern crate image;
 //!
-//! fn main() {
+//! use std::error::Error;
+//!
+//! fn main() -> Result<(), Box<dyn Error>> {
 //!     let grad = colorgrad::CustomGradient::new()
 //!         .html_colors(&["deeppink", "gold", "seagreen"])
-//!         .build()
-//!         .unwrap();
+//!         .build()?;
 //!
 //!     let w = 1500;
 //!     let h = 70;
@@ -50,11 +55,12 @@
 //!     let mut imgbuf = image::ImageBuffer::new(w, h);
 //!
 //!     for (x, _y, pixel) in imgbuf.enumerate_pixels_mut() {
-//!         let (r, g, b, _) = grad.at(x as f64 / fw).rgba_u8();
+//!         let (r, g, b, _a) = grad.at(x as f64 / fw).rgba_u8();
 //!         *pixel = image::Rgb([r, g, b]);
 //!     }
 //!
-//!     imgbuf.save("gradient.png").unwrap();
+//!     imgbuf.save("gradient.png")?;
+//!     Ok(())
 //! }
 //! ```
 //! ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/example-gradient.png)
@@ -62,9 +68,9 @@
 //! ### Colored Noise
 //!
 //! ```rust,ignore
-//! extern crate colorgrad;
-//! extern crate image;
-//! extern crate noise;
+//! //extern crate colorgrad;
+//! //extern crate image;
+//! //extern crate noise;
 //!
 //! use noise::NoiseFn;
 //!
@@ -79,7 +85,7 @@
 //!
 //!     for (x, y, pixel) in imgbuf.enumerate_pixels_mut() {
 //!         let t = ns.get([x as f64 * scale, y as f64 * scale]);
-//!         let (r, g, b, _) = grad.at(remap(t, -0.5, 0.5, 0.0, 1.0)).rgba_u8();
+//!         let (r, g, b, _a) = grad.at(remap(t, -0.5, 0.5, 0.0, 1.0)).rgba_u8();
 //!         *pixel = image::Rgb([r, g, b]);
 //!     }
 //!     imgbuf.save("noise.png").unwrap();
@@ -285,33 +291,39 @@ impl GradientBase for GradientSharp {
 /// # Examples
 ///
 /// ```
+/// # use std::error::Error;
 /// use colorgrad::Color;
 ///
+/// # fn main() -> Result<(), Box<dyn Error>> {
 /// let grad = colorgrad::CustomGradient::new()
 ///     .colors(&[
 ///         Color::from_rgb_u8(255, 0, 0),
 ///         Color::from_rgb(0., 0., 1.),
 ///     ])
-///     .build()
-///     .unwrap();
+///     .build()?;
 ///
 /// assert_eq!(grad.domain(), (0., 1.)); // default domain
 /// assert_eq!(grad.at(0.).rgba_u8(), (255, 0, 0, 255));
 /// assert_eq!(grad.at(1.).rgba_u8(), (0, 0, 255, 255));
+/// # Ok(())
+/// # }
 /// ```
 ///
 /// ## Using web color format string
 ///
 /// ```
+/// # use std::error::Error;
+/// # fn main() -> Result<(), Box<dyn Error>> {
 /// let grad = colorgrad::CustomGradient::new()
 ///     .html_colors(&["deeppink", "gold", "seagreen"])
 ///     .domain(&[0., 100.])
 ///     .mode(colorgrad::BlendMode::Rgb)
-///     .build()
-///     .unwrap();
+///     .build()?;
 ///
 /// assert_eq!(grad.at(0.).rgba_u8(), (255, 20, 147, 255));
 /// assert_eq!(grad.at(100.).rgba_u8(), (46, 139, 87, 255));
+/// # Ok(())
+/// # }
 /// ```
 #[derive(Debug)]
 pub struct CustomGradient {

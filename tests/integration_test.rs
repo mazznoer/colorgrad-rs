@@ -130,7 +130,7 @@ fn test_domain() {
 
     assert_eq!(g.at(-10.).to_hex_string(), "#ffff00");
     assert_eq!(g.at(110.).to_hex_string(), "#00ff00");
-    assert_eq!(g.at(f64::NAN).to_hex_string(), "#00ff00");
+    assert_eq!(g.at(f64::NAN).to_hex_string(), "#ffff00");
 
     // Custom domain #2
     let g = CustomGradient::new()
@@ -175,24 +175,50 @@ fn test_domain() {
 
 #[test]
 fn test_sharp() {
-    let g = CustomGradient::new()
+    let grad = CustomGradient::new()
         .html_colors(&["red", "lime", "blue"])
         .build()
         .unwrap();
-    let g = g.sharp(5);
-    assert_eq!(g.at(0.0).rgba_u8(), (255, 0, 0, 255));
-    assert_eq!(g.at(0.1).rgba_u8(), (255, 0, 0, 255));
 
-    assert_eq!(g.at(0.45).rgba_u8(), (0, 255, 0, 255));
-    assert_eq!(g.at(0.50).rgba_u8(), (0, 255, 0, 255));
-    assert_eq!(g.at(0.55).rgba_u8(), (0, 255, 0, 255));
+    let g0 = grad.sharp(0);
+    assert_eq!(g0.at(0.0).rgba_u8(), (255, 0, 0, 255));
+    assert_eq!(g0.at(0.5).rgba_u8(), (255, 0, 0, 255));
+    assert_eq!(g0.at(0.1).rgba_u8(), (255, 0, 0, 255));
 
-    assert_eq!(g.at(0.9).rgba_u8(), (0, 0, 255, 255));
-    assert_eq!(g.at(1.0).rgba_u8(), (0, 0, 255, 255));
+    let g1 = grad.sharp(1);
+    assert_eq!(g1.at(0.0).rgba_u8(), (255, 0, 0, 255));
+    assert_eq!(g1.at(0.5).rgba_u8(), (255, 0, 0, 255));
+    assert_eq!(g1.at(0.1).rgba_u8(), (255, 0, 0, 255));
 
-    assert_eq!(g.at(-0.5).rgba_u8(), (255, 0, 0, 255));
-    assert_eq!(g.at(1.5).rgba_u8(), (0, 0, 255, 255));
-    assert_eq!(g.at(f64::NAN).rgba_u8(), (0, 0, 255, 255));
+    let g3 = grad.sharp(3);
+    assert_eq!(g3.at(0.0).rgba_u8(), (255, 0, 0, 255));
+    assert_eq!(g3.at(0.1).rgba_u8(), (255, 0, 0, 255));
+
+    assert_eq!(g3.at(0.4).rgba_u8(), (0, 255, 0, 255));
+    assert_eq!(g3.at(0.5).rgba_u8(), (0, 255, 0, 255));
+    assert_eq!(g3.at(0.6).rgba_u8(), (0, 255, 0, 255));
+
+    assert_eq!(g3.at(0.9).rgba_u8(), (0, 0, 255, 255));
+    assert_eq!(g3.at(1.0).rgba_u8(), (0, 0, 255, 255));
+
+    assert_eq!(g3.at(-0.1).rgba_u8(), (255, 0, 0, 255));
+    assert_eq!(g3.at(1.1).rgba_u8(), (0, 0, 255, 255));
+    assert_eq!(g3.at(f64::NAN).rgba_u8(), (255, 0, 0, 255));
+
+    let grad = CustomGradient::new()
+        .html_colors(&["red", "lime", "blue"])
+        .domain(&[-1., 1.])
+        .build()
+        .unwrap();
+
+    let g2 = grad.sharp(2);
+    assert_eq!(g2.at(-1.0).rgba_u8(), (255, 0, 0, 255));
+    assert_eq!(g2.at(-0.5).rgba_u8(), (255, 0, 0, 255));
+    assert_eq!(g2.at(-0.1).rgba_u8(), (255, 0, 0, 255));
+
+    assert_eq!(g2.at(0.1).rgba_u8(), (0, 0, 255, 255));
+    assert_eq!(g2.at(0.5).rgba_u8(), (0, 0, 255, 255));
+    assert_eq!(g2.at(1.0).rgba_u8(), (0, 0, 255, 255));
 }
 
 #[test]

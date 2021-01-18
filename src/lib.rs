@@ -207,12 +207,22 @@ impl Gradient {
     /// ```
     /// ![img](https://raw.githubusercontent.com/mazznoer/colorgrad/master/doc/images/spectral-sharp.png)
     pub fn sharp(&self, n: usize) -> Gradient {
-        let gradbase = GradientSharp {
-            colors: self.colors(n),
-            pos: linspace(self.dmin, self.dmax, n + 1),
-            n,
-            dmin: self.dmin,
-            dmax: self.dmax,
+        let gradbase = if n < 2 {
+            GradientSharp {
+                colors: vec![self.at(self.dmin)],
+                pos: vec![self.dmin, self.dmax],
+                n: 1,
+                dmin: self.dmin,
+                dmax: self.dmax,
+            }
+        } else {
+            GradientSharp {
+                colors: self.colors(n),
+                pos: linspace(self.dmin, self.dmax, n + 1),
+                n,
+                dmin: self.dmin,
+                dmax: self.dmax,
+            }
         };
         Gradient {
             gradient: Box::new(gradbase),
@@ -238,9 +248,9 @@ impl GradientBase for GradientX {
             return self.colors[0].clone();
         }
         if t > self.dmax {
-            return self.colors[self.count - 1].clone();
+            return self.colors[self.count].clone();
         }
-        for i in 0..(self.count - 1) {
+        for i in 0..self.count {
             let p1 = self.pos[i];
             let p2 = self.pos[i + 1];
 
@@ -256,7 +266,7 @@ impl GradientBase for GradientX {
                 }
             }
         }
-        self.colors[self.count - 1].clone()
+        self.colors[0].clone()
     }
 }
 
@@ -282,7 +292,7 @@ impl GradientBase for GradientSharp {
                 return self.colors[i].clone();
             }
         }
-        self.colors[self.n - 1].clone()
+        self.colors[0].clone()
     }
 }
 
@@ -423,7 +433,7 @@ impl CustomGradient {
         let gradbase = GradientX {
             colors: colors.to_vec(),
             pos: pos.to_vec(),
-            count: colors.len(),
+            count: colors.len() - 1,
             dmin: pos[0],
             dmax: pos[pos.len() - 1],
             mode: self.mode,

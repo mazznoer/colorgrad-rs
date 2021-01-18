@@ -224,14 +224,41 @@ fn test_sharp() {
 #[test]
 fn test_get_colors() {
     let g = CustomGradient::new()
-        .html_colors(&["yellow", "blue", "lime"])
+        .html_colors(&["#f00", "#0f0", "#00f"])
         .build()
         .unwrap();
-    let colors = g.colors(5);
-    assert_eq!(colors.len(), 5);
-    assert_eq!(colors[0].to_hex_string(), "#ffff00");
-    assert_eq!(colors[2].to_hex_string(), "#0000ff");
-    assert_eq!(colors[4].to_hex_string(), "#00ff00");
+
+    let colors0 = g.colors(0);
+    assert_eq!(colors0.len(), 0);
+
+    let colors1 = g.colors(1);
+    assert_eq!(colors1.len(), 1);
+    assert_eq!(colors1[0].to_hex_string(), "#ff0000");
+
+    let colors2 = g.colors(2);
+    assert_eq!(colors2.len(), 2);
+    assert_eq!(colors2[0].to_hex_string(), "#ff0000");
+    assert_eq!(colors2[1].to_hex_string(), "#0000ff");
+
+    let colors3 = g.colors(3);
+    assert_eq!(colors3.len(), 3);
+    assert_eq!(colors3[0].to_hex_string(), "#ff0000");
+    assert_eq!(colors3[1].to_hex_string(), "#00ff00");
+    assert_eq!(colors3[2].to_hex_string(), "#0000ff");
+
+    let g = CustomGradient::new()
+        .html_colors(&["#f00", "#0f0", "#00f"])
+        .domain(&[-1., 1.])
+        .build()
+        .unwrap();
+
+    let colors5 = g.colors(5);
+    assert_eq!(colors5.len(), 5);
+    assert_eq!(colors5[0].to_hex_string(), "#ff0000");
+    assert_eq!(colors5[1].to_hex_string(), "#808000");
+    assert_eq!(colors5[2].to_hex_string(), "#00ff00");
+    assert_eq!(colors5[3].to_hex_string(), "#008080");
+    assert_eq!(colors5[4].to_hex_string(), "#0000ff");
 }
 
 #[test]

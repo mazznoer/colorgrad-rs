@@ -183,7 +183,7 @@ impl Gradient {
     pub fn colors(&self, n: usize) -> Vec<Color> {
         let mut colors = Vec::with_capacity(n);
         let d = self.dmax - self.dmin;
-        let l = (n - 1) as f64;
+        let l = n as f64 - 1.;
         for i in 0..n {
             colors.push(self.at(self.dmin + (i as f64 * d) / l));
         }

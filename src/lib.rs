@@ -675,8 +675,11 @@ preset_fn!(rainbow; RainbowGradient{});
 // ---
 
 fn linspace(min: f64, max: f64, n: usize) -> Vec<f64> {
+    if n == 1 {
+        return vec![min];
+    }
     let d = max - min;
-    let l = (n - 1) as f64;
+    let l = n as f64 - 1.;
     let mut res = Vec::with_capacity(n);
     for i in 0..n {
         res.push(min + (i as f64 * d) / l);
@@ -700,6 +703,8 @@ mod tests {
 
     #[test]
     fn test_linspace() {
+        assert_eq!(linspace(0., 1., 0), vec![]);
+        assert_eq!(linspace(0., 1., 1), vec![0.]);
         assert_eq!(linspace(0., 1., 2), vec![0., 1.]);
         assert_eq!(linspace(0., 1., 3), vec![0., 0.5, 1.]);
         assert_eq!(linspace(-1., 1., 5), vec![-1., -0.5, 0., 0.5, 1.]);

@@ -203,32 +203,14 @@ impl Gradient {
     /// ![img](https://raw.githubusercontent.com/mazznoer/colorgrad/master/doc/images/preset/Spectral.png)
     ///
     /// ```
-    /// let g = colorgrad::spectral().sharp(19);
+    /// let g = colorgrad::spectral().sharp(19, 0.);
     /// ```
     /// ![img](https://raw.githubusercontent.com/mazznoer/colorgrad/master/doc/images/spectral-sharp.png)
-    pub fn sharp(&self, n: usize) -> Gradient {
-        let gradbase = if n < 2 {
-            GradientSharp {
-                colors: vec![self.at(self.dmin)],
-                pos: vec![self.dmin, self.dmax],
-                n: 1,
-                dmin: self.dmin,
-                dmax: self.dmax,
-            }
-        } else {
-            GradientSharp {
-                colors: self.colors(n),
-                pos: linspace(self.dmin, self.dmax, n + 1),
-                n,
-                dmin: self.dmin,
-                dmax: self.dmax,
-            }
-        };
-        Gradient {
-            gradient: Box::new(gradbase),
-            dmin: self.dmin,
-            dmax: self.dmax,
+    pub fn sharp(&self, n: usize, t: f64) -> Gradient {
+        if t > 0. {
+            return sharp_gradient_x(self, n, t);
         }
+        sharp_gradient(self, n)
     }
 }
 
@@ -271,7 +253,7 @@ impl GradientBase for GradientX {
 }
 
 #[derive(Debug)]
-struct GradientSharp {
+struct SharpGradient {
     colors: Vec<Color>,
     pos: Vec<f64>,
     n: usize,
@@ -279,7 +261,7 @@ struct GradientSharp {
     dmax: f64,
 }
 
-impl GradientBase for GradientSharp {
+impl GradientBase for SharpGradient {
     fn at(&self, t: f64) -> Color {
         if t < self.dmin {
             return self.colors[0].clone();
@@ -293,6 +275,103 @@ impl GradientBase for GradientSharp {
             }
         }
         self.colors[0].clone()
+    }
+}
+
+fn sharp_gradient(grad: &Gradient, n: usize) -> Gradient {
+    let (dmin, dmax) = grad.domain();
+    let gradbase = if n < 2 {
+        SharpGradient {
+            colors: vec![grad.at(dmin)],
+            pos: vec![dmin, dmax],
+            n: 1,
+            dmin,
+            dmax,
+        }
+    } else {
+        SharpGradient {
+            colors: grad.colors(n),
+            pos: linspace(dmin, dmax, n + 1),
+            n,
+            dmin,
+            dmax,
+        }
+    };
+    Gradient {
+        gradient: Box::new(gradbase),
+        dmin,
+        dmax,
+    }
+}
+
+#[derive(Debug)]
+struct SharpGradientX {
+    colors: Vec<Color>,
+    pos: Vec<f64>,
+    dmin: f64,
+    dmax: f64,
+    last_idx: usize,
+}
+
+impl GradientBase for SharpGradientX {
+    fn at(&self, t: f64) -> Color {
+        if t < self.dmin {
+            return self.colors[0].clone();
+        }
+        if t > self.dmax {
+            return self.colors[self.last_idx].clone();
+        }
+        for i in 0..self.last_idx {
+            let p1 = self.pos[i];
+            let p2 = self.pos[i + 1];
+            if (p1 <= t) && (t <= p2) {
+                if i % 2 == 0 {
+                    return self.colors[i].clone();
+                }
+                let t = (t - p1) / (p2 - p1);
+                let a = &self.colors[i];
+                let b = &self.colors[i + 1];
+                return a.interpolate_rgb(b, t);
+            }
+        }
+        self.colors[0].clone()
+    }
+}
+
+fn sharp_gradient_x(grad: &Gradient, n: usize, t: f64) -> Gradient {
+    let mut colors = Vec::with_capacity(n * 2);
+    for c in grad.colors(n) {
+        colors.push(c.clone());
+        colors.push(c.clone());
+    }
+    let (dmin, dmax) = grad.domain();
+    let t = clamp0_1(t) * (dmax - dmin) / n as f64 / 4.;
+    let p = linspace(dmin, dmax, n + 1);
+    let mut pos = Vec::with_capacity(n * 2);
+    let mut j = 0;
+    for i in 0..n {
+        pos.push(p[i]);
+        if j > 0 {
+            pos[j] += t;
+        }
+        j += 1;
+        pos.push(p[i + 1]);
+        if j < colors.len() - 1 {
+            pos[j] -= t;
+        }
+        j += 1;
+    }
+    let gradbase = SharpGradientX {
+        colors,
+        pos,
+        last_idx: n * 2 - 1,
+        dmin,
+        dmax,
+    };
+    Gradient {
+        gradient: Box::new(gradbase),
+        dmin,
+        dmax,
     }
 }
 

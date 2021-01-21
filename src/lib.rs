@@ -232,19 +232,13 @@ impl GradientBase for GradientX {
         if t > self.dmax {
             return self.colors[self.count].clone();
         }
-        for i in 0..self.count {
-            let p1 = self.pos[i];
-            let p2 = self.pos[i + 1];
-
-            if (p1 <= t) && (t <= p2) {
-                let t = (t - p1) / (p2 - p1);
-                let a = &self.colors[i];
-                let b = &self.colors[i + 1];
-
+        for (pos, col) in self.pos.windows(2).zip(self.colors.windows(2)) {
+            if (pos[0] <= t) && (t <= pos[1]) {
+                let t = (t - pos[0]) / (pos[1] - pos[0]);
                 match self.mode {
-                    BlendMode::Rgb => return a.interpolate_rgb(b, t),
-                    BlendMode::Lrgb => return a.interpolate_lrgb(b, t),
-                    BlendMode::Hsv => return a.interpolate_hsv(b, t),
+                    BlendMode::Rgb => return col[0].interpolate_rgb(&col[1], t),
+                    BlendMode::Lrgb => return col[0].interpolate_lrgb(&col[1], t),
+                    BlendMode::Hsv => return col[0].interpolate_hsv(&col[1], t),
                 }
             }
         }
@@ -267,11 +261,11 @@ impl GradientBase for SharpGradient {
             return self.colors[0].clone();
         }
         if t > self.dmax {
-            return self.colors[self.n - 1].clone();
+            return self.colors[self.n].clone();
         }
-        for i in 0..self.n {
-            if (self.pos[i] <= t) && (t <= self.pos[i + 1]) {
-                return self.colors[i].clone();
+        for (pos, col) in self.pos.windows(2).zip(self.colors.iter()) {
+            if (pos[0] <= t) && (t <= pos[1]) {
+                return col.clone();
             }
         }
         self.colors[0].clone()
@@ -284,7 +278,7 @@ fn sharp_gradient(grad: &Gradient, n: usize) -> Gradient {
         SharpGradient {
             colors: vec![grad.at(dmin)],
             pos: vec![dmin, dmax],
-            n: 1,
+            n: 0,
             dmin,
             dmax,
         }
@@ -292,7 +286,7 @@ fn sharp_gradient(grad: &Gradient, n: usize) -> Gradient {
         SharpGradient {
             colors: grad.colors(n),
             pos: linspace(dmin, dmax, n + 1),
-            n,
+            n: n - 1,
             dmin,
             dmax,
         }
@@ -321,17 +315,13 @@ impl GradientBase for SharpGradientX {
         if t > self.dmax {
             return self.colors[self.last_idx].clone();
         }
-        for i in 0..self.last_idx {
-            let p1 = self.pos[i];
-            let p2 = self.pos[i + 1];
-            if (p1 <= t) && (t <= p2) {
+        for ((pos, col), i) in self.pos.windows(2).zip(self.colors.windows(2)).zip(0..) {
+            if (pos[0] <= t) && (t <= pos[1]) {
                 if i % 2 == 0 {
-                    return self.colors[i].clone();
+                    return col[0].clone();
                 }
-                let t = (t - p1) / (p2 - p1);
-                let a = &self.colors[i];
-                let b = &self.colors[i + 1];
-                return a.interpolate_rgb(b, t);
+                let t = (t - pos[0]) / (pos[1] - pos[0]);
+                return col[0].interpolate_rgb(&col[1], t);
             }
         }
         self.colors[0].clone()
@@ -485,13 +475,13 @@ impl CustomGradient {
             return Err(CustomGradientError::InvalidHtmlColor);
         }
 
-        let mut colors = self.colors.to_vec();
-
-        if colors.is_empty() {
-            colors = vec![Color::from_rgb(0., 0., 0.), Color::from_rgb(1., 1., 1.)];
-        } else if colors.len() == 1 {
-            colors.push(colors[0].clone());
-        }
+        let colors = if self.colors.is_empty() {
+            vec![Color::from_rgb(0., 0., 0.), Color::from_rgb(1., 1., 1.)]
+        } else if self.colors.len() == 1 {
+            vec![self.colors[0].clone(), self.colors[0].clone()]
+        } else {
+            self.colors.to_vec()
+        };
 
         let pos = if self.pos.is_empty() {
             linspace(0., 1., colors.len())
@@ -503,8 +493,8 @@ impl CustomGradient {
             return Err(CustomGradientError::WrongDomainCount);
         };
 
-        for i in 0..(pos.len() - 1) {
-            if pos[i] >= pos[i + 1] {
+        for p in pos.windows(2) {
+            if p[0] >= p[1] {
                 return Err(CustomGradientError::WrongDomain);
             }
         }

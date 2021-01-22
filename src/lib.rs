@@ -181,13 +181,10 @@ impl Gradient {
 
     /// Get n colors evenly spaced across gradient
     pub fn colors(&self, n: usize) -> Vec<Color> {
-        let mut colors = Vec::with_capacity(n);
-        let d = self.dmax - self.dmin;
-        let l = n as f64 - 1.;
-        for i in 0..n {
-            colors.push(self.at(self.dmin + (i as f64 * d) / l));
-        }
-        colors
+        linspace(self.dmin, self.dmax, n)
+            .iter()
+            .map(|&t| self.at(t))
+            .collect()
     }
 
     /// Get the gradient's domain min and max
@@ -315,7 +312,7 @@ impl GradientBase for SharpGradientX {
         if t > self.dmax {
             return self.colors[self.last_idx].clone();
         }
-        for ((pos, col), i) in self.pos.windows(2).zip(self.colors.windows(2)).zip(0..) {
+        for (i, (pos, col)) in self.pos.windows(2).zip(self.colors.windows(2)).enumerate() {
             if (pos[0] <= t) && (t <= pos[1]) {
                 if i % 2 == 0 {
                     return col[0].clone();
@@ -749,11 +746,7 @@ fn linspace(min: f64, max: f64, n: usize) -> Vec<f64> {
     }
     let d = max - min;
     let l = n as f64 - 1.;
-    let mut res = Vec::with_capacity(n);
-    for i in 0..n {
-        res.push(min + (i as f64 * d) / l);
-    }
-    res
+    (0..n).map(|i| min + (i as f64 * d) / l).collect()
 }
 
 fn clamp0_1(t: f64) -> f64 {

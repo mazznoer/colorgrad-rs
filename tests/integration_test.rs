@@ -228,17 +228,27 @@ fn sharp_gradient_x() {
         .build()
         .unwrap();
 
+    let g0 = g.sharp(0, 0.1);
+    assert_eq!(g0.at(0.0).rgba_u8(), (255, 0, 0, 255));
+    assert_eq!(g0.at(0.5).rgba_u8(), (255, 0, 0, 255));
+    assert_eq!(g0.at(1.0).rgba_u8(), (255, 0, 0, 255));
+
+    let g1 = g.sharp(1, 0.1);
+    assert_eq!(g1.at(0.0).rgba_u8(), (255, 0, 0, 255));
+    assert_eq!(g1.at(0.5).rgba_u8(), (255, 0, 0, 255));
+    assert_eq!(g1.at(1.0).rgba_u8(), (255, 0, 0, 255));
+
     let g = g.sharp(3, 0.1);
     assert_eq!(g.at(0.0).rgba_u8(), (255, 0, 0, 255));
     assert_eq!(g.at(0.1).rgba_u8(), (255, 0, 0, 255));
 
-    assert_eq!(g.at(1./3.).rgba_u8(), (128, 128, 0, 255));
+    assert_eq!(g.at(1. / 3.).rgba_u8(), (128, 128, 0, 255));
 
     assert_eq!(g.at(0.45).rgba_u8(), (0, 255, 0, 255));
     assert_eq!(g.at(0.50).rgba_u8(), (0, 255, 0, 255));
     assert_eq!(g.at(0.55).rgba_u8(), (0, 255, 0, 255));
 
-    assert_eq!(g.at(1./3.*2.).rgba_u8(), (0, 128, 128, 255));
+    assert_eq!(g.at(1. / 3. * 2.).rgba_u8(), (0, 128, 128, 255));
 
     assert_eq!(g.at(0.9).rgba_u8(), (0, 0, 255, 255));
     assert_eq!(g.at(1.0).rgba_u8(), (0, 0, 255, 255));

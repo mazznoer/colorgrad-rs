@@ -204,6 +204,20 @@ impl Gradient {
     /// ```
     /// ![img](https://raw.githubusercontent.com/mazznoer/colorgrad/master/doc/images/spectral-sharp.png)
     pub fn sharp(&self, n: usize, t: f64) -> Gradient {
+        if n < 2 {
+            let gradbase = SharpGradient {
+                colors: vec![self.at(self.dmin)],
+                pos: vec![self.dmin, self.dmax],
+                n: 0,
+                dmin: self.dmin,
+                dmax: self.dmax,
+            };
+            return Gradient {
+                gradient: Box::new(gradbase),
+                dmin: self.dmin,
+                dmax: self.dmax,
+            };
+        }
         if t > 0. {
             return sharp_gradient_x(self, n, t);
         }
@@ -271,22 +285,12 @@ impl GradientBase for SharpGradient {
 
 fn sharp_gradient(grad: &Gradient, n: usize) -> Gradient {
     let (dmin, dmax) = grad.domain();
-    let gradbase = if n < 2 {
-        SharpGradient {
-            colors: vec![grad.at(dmin)],
-            pos: vec![dmin, dmax],
-            n: 0,
-            dmin,
-            dmax,
-        }
-    } else {
-        SharpGradient {
-            colors: grad.colors(n),
-            pos: linspace(dmin, dmax, n + 1),
-            n: n - 1,
-            dmin,
-            dmax,
-        }
+    let gradbase = SharpGradient {
+        colors: grad.colors(n),
+        pos: linspace(dmin, dmax, n + 1),
+        n: n - 1,
+        dmin,
+        dmax,
     };
     Gradient {
         gradient: Box::new(gradbase),

@@ -1,7 +1,7 @@
 use colorgrad::{BlendMode, Color, CustomGradient};
 
 #[test]
-fn test_basic() {
+fn custom_gradient() {
     // Custom gradient default
     let g = CustomGradient::new().build().unwrap();
     assert_eq!(g.domain(), (0., 1.));
@@ -61,7 +61,7 @@ fn test_basic() {
 }
 
 #[test]
-fn test_blend_mode() {
+fn custom_gradient_blend_mode() {
     // Blend mode RGB
     let g = CustomGradient::new()
         .html_colors(&["#f00", "#ff0", "#00f"])
@@ -94,7 +94,7 @@ fn test_blend_mode() {
 }
 
 #[test]
-fn test_error() {
+fn custom_gradient_error() {
     // Invalid HTML colors
     let g = CustomGradient::new()
         .html_colors(&["#777", "bloodred", "#bbb", "#zzz"])
@@ -117,7 +117,7 @@ fn test_error() {
 }
 
 #[test]
-fn test_domain() {
+fn custom_gradient_domain() {
     // Custom domain #1
     let g = CustomGradient::new()
         .html_colors(&["yellow", "blue", "lime"])
@@ -259,7 +259,7 @@ fn sharp_gradient_x() {
 }
 
 #[test]
-fn test_get_colors() {
+fn colors() {
     let g = CustomGradient::new()
         .html_colors(&["#f00", "#0f0", "#00f"])
         .build()
@@ -299,7 +299,7 @@ fn test_get_colors() {
 }
 
 #[test]
-fn test_preset() {
+fn preset() {
     let g = colorgrad::greys();
     assert_eq!(g.at(0.).to_hex_string(), "#ffffff");
     assert_eq!(g.at(1.).to_hex_string(), "#000000");
@@ -326,7 +326,7 @@ fn test_preset() {
 }
 
 #[test]
-fn test_cyclic() {
+fn cyclic() {
     let g = colorgrad::rainbow();
     assert_eq!(g.at(0.).rgba_u8(), g.at(1.).rgba_u8());
 

@@ -168,28 +168,28 @@ All preset gradients are in the domain [0..1].
 ### Diverging
 
 `colorgrad::br_bg()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/brbg.png)
+![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/br_bg.png)
 
 `colorgrad::pr_gn()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/prgn.png)
+![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/pr_gn.png)
 
 `colorgrad::pi_yg()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/piyg.png)
+![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/pi_yg.png)
 
 `colorgrad::pu_or()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/puor.png)
+![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/pu_or.png)
 
 `colorgrad::rd_bu()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/rdbu.png)
+![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/rd_bu.png)
 
 `colorgrad::rd_gy()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/rdgy.png)
+![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/rd_gy.png)
 
 `colorgrad::rd_yl_bu()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/rdylbu.png)
+![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/rd_yl_bu.png)
 
 `colorgrad::rd_yl_gn()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/rdylgn.png)
+![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/rd_yl_gn.png)
 
 `colorgrad::spectral()`
 ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/spectral.png)
@@ -244,40 +244,40 @@ All preset gradients are in the domain [0..1].
 ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/cubehelix_default.png)
 
 `colorgrad::bu_gn()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/bugn.png)
+![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/bu_gn.png)
 
 `colorgrad::bu_pu()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/bupu.png)
+![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/bu_pu.png)
 
 `colorgrad::gn_bu()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/gnbu.png)
+![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/gn_bu.png)
 
 `colorgrad::or_rd()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/orrd.png)
+![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/or_rd.png)
 
 `colorgrad::pu_bu_gn()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/pubugn.png)
+![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/pu_bu_gn.png)
 
 `colorgrad::pu_bu()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/pubu.png)
+![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/pu_bu.png)
 
 `colorgrad::pu_rd()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/purd.png)
+![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/pu_rd.png)
 
 `colorgrad::rd_pu()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/rdpu.png)
+![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/rd_pu.png)
 
 `colorgrad::yl_gn_bu()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/ylgnbu.png)
+![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/yl_gn_bu.png)
 
 `colorgrad::yl_gn()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/ylgn.png)
+![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/yl_gn.png)
 
 `colorgrad::yl_or_br()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/ylorbr.png)
+![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/yl_or_br.png)
 
 `colorgrad::yl_or_rd()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/ylorrd.png)
+![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/yl_or_rd.png)
 
 ### Cyclical
 

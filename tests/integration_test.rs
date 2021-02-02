@@ -114,6 +114,13 @@ fn custom_gradient_error() {
         .domain(&[0., 0.71, 0.7, 1.])
         .build();
     assert_eq!(g.unwrap_err().to_string(), "Wrong domain");
+
+    // Wrong domain #3
+    let g = CustomGradient::new()
+        .html_colors(&["#777", "gold", "#bbb", "#f0f"])
+        .domain(&[1., 0.])
+        .build();
+    assert_eq!(g.unwrap_err().to_string(), "Wrong domain");
 }
 
 #[test]

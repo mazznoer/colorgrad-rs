@@ -79,7 +79,7 @@
 //!     let h = 350;
 //!     let scale = 0.015;
 //!
-//!     let grad = colorgrad::spectral();
+//!     let grad = colorgrad::rainbow().sharp(5, 0.15);
 //!     let ns = noise::OpenSimplex::new();
 //!     let mut imgbuf = image::ImageBuffer::new(w, h);
 //!
@@ -101,16 +101,16 @@
 //! ## Preset Gradients
 //!
 //! [colorgrad::rainbow()](fn.rainbow.html)
-//! ![img](https://raw.githubusercontent.com/mazznoer/colorgrad/master/doc/images/preset/Rainbow.png)
+//! ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/doc/images/preset/rainbow.png)
 //!
 //! [colorgrad::sinebow()](fn.sinebow.html)
-//! ![img](https://raw.githubusercontent.com/mazznoer/colorgrad/master/doc/images/preset/Sinebow.png)
+//! ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/doc/images/preset/sinebow.png)
 //!
 //! [colorgrad::turbo()](fn.turbo.html)
-//! ![img](https://raw.githubusercontent.com/mazznoer/colorgrad/master/doc/images/preset/Turbo.png)
+//! ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/doc/images/preset/turbo.png)
 //!
 //! [colorgrad::spectral()](fn.spectral.html)
-//! ![img](https://raw.githubusercontent.com/mazznoer/colorgrad/master/doc/images/preset/Spectral.png)
+//! ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/doc/images/preset/spectral.png)
 //!
 //! See more complete gradient preview and examples at [Github](https://github.com/mazznoer/colorgrad-rs).
 
@@ -195,16 +195,16 @@ impl Gradient {
     /// Get new hard-edge gradient
     ///
     /// ```
-    /// let g = colorgrad::spectral();
+    /// let g = colorgrad::rainbow();
     /// ```
-    /// ![img](https://raw.githubusercontent.com/mazznoer/colorgrad/master/doc/images/preset/Spectral.png)
+    /// ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/doc/images/preset/rainbow.png)
     ///
     /// ```
-    /// let g = colorgrad::spectral().sharp(19, 0.);
+    /// let g = colorgrad::rainbow().sharp(11, 0.);
     /// ```
-    /// ![img](https://raw.githubusercontent.com/mazznoer/colorgrad/master/doc/images/spectral-sharp.png)
-    pub fn sharp(&self, n: usize, t: f64) -> Gradient {
-        if n < 2 {
+    /// ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/doc/images/rainbow-sharp.png)
+    pub fn sharp(&self, segment: usize, smoothness: f64) -> Gradient {
+        if segment < 2 {
             let gradbase = SharpGradient {
                 colors: vec![self.at(self.dmin)],
                 pos: vec![self.dmin, self.dmax],
@@ -218,10 +218,10 @@ impl Gradient {
                 dmax: self.dmax,
             };
         }
-        if t > 0. {
-            return sharp_gradient_x(self, n, t);
+        if smoothness > 0. {
+            return sharp_gradient_x(self, segment, smoothness);
         }
-        sharp_gradient(self, n)
+        sharp_gradient(self, segment)
     }
 }
 

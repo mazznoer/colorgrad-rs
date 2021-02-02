@@ -334,21 +334,16 @@ Output:
 
 ### Hard-Edged Gradient
 
-```rust
-let g1 = colorgrad::CustomGradient::new()
-    .html_colors(&["#18dbf4", "#f6ff56"])
-    .build()?;
-
-let g2 = g1.sharp(7);
-```
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/gradient-normal.png)
-
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/gradient-sharp.png)
+Converting gradient to hard-edged gradient with 11 segments and 0 smoothness.
 
 ```rust
-let g = colorgrad::spectral().sharp(19);
+let g = colorgrad::rainbow().sharp(11, 0.);
 ```
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/spectral-sharp.png)
+![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/rainbow-sharp.png)
+
+This is the effect of different smoothness.
+
+![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/sharp-gradients.png)
 
 ## Examples
 
@@ -399,7 +394,7 @@ fn main() {
     let h = 350;
     let scale = 0.015;
 
-    let grad = colorgrad::spectral();
+    let grad = colorgrad::rainbow().sharp(5, 0.15);
     let ns = noise::OpenSimplex::new();
     let mut imgbuf = image::ImageBuffer::new(w, h);
 

@@ -130,7 +130,7 @@ const PI2_3: f64 = PI * 2. / 3.;
 #[derive(Debug, Copy, Clone)]
 pub enum BlendMode {
     Rgb,
-    Lrgb,
+    LinearRgb,
     Hsv,
 }
 
@@ -248,7 +248,7 @@ impl GradientBase for GradientX {
                 let t = (t - pos[0]) / (pos[1] - pos[0]);
                 match self.mode {
                     BlendMode::Rgb => return col[0].interpolate_rgb(&col[1], t),
-                    BlendMode::Lrgb => return col[0].interpolate_lrgb(&col[1], t),
+                    BlendMode::LinearRgb => return col[0].interpolate_lrgb(&col[1], t),
                     BlendMode::Hsv => return col[0].interpolate_hsv(&col[1], t),
                 }
             }

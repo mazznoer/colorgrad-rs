@@ -75,7 +75,7 @@ fn custom_gradient_blend_mode() {
     // Blend mode LRGB
     let g = CustomGradient::new()
         .html_colors(&["#f00", "#ff0", "#00f"])
-        .mode(BlendMode::Lrgb)
+        .mode(BlendMode::LinearRgb)
         .build()
         .unwrap();
     assert_eq!(g.at(0.0).rgba_u8(), (255, 0, 0, 255));

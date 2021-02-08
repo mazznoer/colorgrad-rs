@@ -30,7 +30,7 @@ colorgrad = "0.2.0"
 ```rust
 let g = colorgrad::CustomGradient::new().build()?;
 ```
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/custom-default.png)
+![img](docs/images/custom-default.png)
 
 ### Custom Colors
 
@@ -47,7 +47,7 @@ let g = colorgrad::CustomGradient::new()
     ])
     .build()?;
 ```
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/custom-colors.png)
+![img](docs/images/custom-colors.png)
 
 ### Using Web Color Format
 
@@ -58,21 +58,21 @@ let g = colorgrad::CustomGradient::new()
     .html_colors(&["#c41189", "#00BFFF", "#FFD700"])
     .build()?;
 ```
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/custom-hex-colors.png)
+![img](docs/images/custom-hex-colors.png)
 
 ```rust
 let g = colorgrad::CustomGradient::new()
     .html_colors(&["gold", "hotpink", "darkturquoise"])
     .build()?;
 ```
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/custom-named-colors.png)
+![img](docs/images/custom-named-colors.png)
 
 ```rust
 let g = colorgrad::CustomGradient::new()
     .html_colors(&["rgb(125,110,221)", "rgb(90%,45%,97%)", "hsl(229,79%,85%)"])
     .build()?;
 ```
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/custom-css-colors.png)
+![img](docs/images/custom-css-colors.png)
 
 ### Domain & Color Position
 
@@ -85,7 +85,7 @@ let g = colorgrad::CustomGradient::new()
 
 assert_eq!(g.domain(), (0., 1.));
 ```
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/domain-default.png)
+![img](docs/images/domain-default.png)
 
 Set the domain to [0..100].
 
@@ -97,7 +97,7 @@ let g = colorgrad::CustomGradient::new()
 
 assert_eq!(g.domain(), (0., 100.));
 ```
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/domain-100.png)
+![img](docs/images/domain-100.png)
 
 Set the domain to [-1..1].
 
@@ -109,7 +109,7 @@ let g = colorgrad::CustomGradient::new()
 
 assert_eq!(g.domain(), (-1., 1.));
 ```
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/domain-neg1-1.png)
+![img](docs/images/domain-neg1-1.png)
 
 Set exact position for each color. The domain is [0..1].
 
@@ -121,7 +121,7 @@ let g = colorgrad::CustomGradient::new()
 
 assert_eq!(g.domain(), (0., 1.));
 ```
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/color-position-1.png)
+![img](docs/images/color-position-1.png)
 
 Set exact position for each color. The domain is [15..80].
 
@@ -133,33 +133,18 @@ let g = colorgrad::CustomGradient::new()
 
 assert_eq!(g.domain(), (15., 80.));
 ```
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/color-position-2.png)
+![img](docs/images/color-position-2.png)
 
 ### Blending Mode
 
 ```rust
 let g = colorgrad::CustomGradient::new()
-    .html_colors(&["#ff0", "#008ae5"])
+    .html_colors(&["#FFF", "#00F"])
     .mode(colorgrad::BlendMode::Rgb)
     .build()?;
 ```
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/blend-mode-rgb.png)
 
-```rust
-let g = colorgrad::CustomGradient::new()
-    .html_colors(&["#ff0", "#008ae5"])
-    .mode(colorgrad::BlendMode::Lrgb)
-    .build()?;
-```
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/blend-mode-lrgb.png)
-
-```rust
-let g = colorgrad::CustomGradient::new()
-    .html_colors(&["#ff0", "#008ae5"])
-    .mode(colorgrad::BlendMode::Hsv)
-    .build()?;
-```
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/blend-mode-hsv.png)
+![img](docs/images/blend-modes.png)
 
 ## Preset Gradients
 
@@ -168,124 +153,124 @@ All preset gradients are in the domain [0..1].
 ### Diverging
 
 `colorgrad::br_bg()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/br_bg.png)
+![img](docs/images/preset/br_bg.png)
 
 `colorgrad::pr_gn()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/pr_gn.png)
+![img](docs/images/preset/pr_gn.png)
 
 `colorgrad::pi_yg()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/pi_yg.png)
+![img](docs/images/preset/pi_yg.png)
 
 `colorgrad::pu_or()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/pu_or.png)
+![img](docs/images/preset/pu_or.png)
 
 `colorgrad::rd_bu()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/rd_bu.png)
+![img](docs/images/preset/rd_bu.png)
 
 `colorgrad::rd_gy()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/rd_gy.png)
+![img](docs/images/preset/rd_gy.png)
 
 `colorgrad::rd_yl_bu()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/rd_yl_bu.png)
+![img](docs/images/preset/rd_yl_bu.png)
 
 `colorgrad::rd_yl_gn()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/rd_yl_gn.png)
+![img](docs/images/preset/rd_yl_gn.png)
 
 `colorgrad::spectral()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/spectral.png)
+![img](docs/images/preset/spectral.png)
 
 ### Sequential (Single Hue)
 
 `colorgrad::blues()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/blues.png)
+![img](docs/images/preset/blues.png)
 
 `colorgrad::greens()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/greens.png)
+![img](docs/images/preset/greens.png)
 
 `colorgrad::greys()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/greys.png)
+![img](docs/images/preset/greys.png)
 
 `colorgrad::oranges()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/oranges.png)
+![img](docs/images/preset/oranges.png)
 
 `colorgrad::purples()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/purples.png)
+![img](docs/images/preset/purples.png)
 
 `colorgrad::reds()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/reds.png)
+![img](docs/images/preset/reds.png)
 
 ### Sequential (Multi-Hue)
 
 `colorgrad::turbo()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/turbo.png)
+![img](docs/images/preset/turbo.png)
 
 `colorgrad::viridis()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/viridis.png)
+![img](docs/images/preset/viridis.png)
 
 `colorgrad::inferno()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/inferno.png)
+![img](docs/images/preset/inferno.png)
 
 `colorgrad::magma()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/magma.png)
+![img](docs/images/preset/magma.png)
 
 `colorgrad::plasma()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/plasma.png)
+![img](docs/images/preset/plasma.png)
 
 `colorgrad::cividis()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/cividis.png)
+![img](docs/images/preset/cividis.png)
 
 `colorgrad::warm()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/warm.png)
+![img](docs/images/preset/warm.png)
 
 `colorgrad::cool()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/cool.png)
+![img](docs/images/preset/cool.png)
 
 `colorgrad::cubehelix_default()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/cubehelix_default.png)
+![img](docs/images/preset/cubehelix_default.png)
 
 `colorgrad::bu_gn()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/bu_gn.png)
+![img](docs/images/preset/bu_gn.png)
 
 `colorgrad::bu_pu()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/bu_pu.png)
+![img](docs/images/preset/bu_pu.png)
 
 `colorgrad::gn_bu()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/gn_bu.png)
+![img](docs/images/preset/gn_bu.png)
 
 `colorgrad::or_rd()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/or_rd.png)
+![img](docs/images/preset/or_rd.png)
 
 `colorgrad::pu_bu_gn()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/pu_bu_gn.png)
+![img](docs/images/preset/pu_bu_gn.png)
 
 `colorgrad::pu_bu()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/pu_bu.png)
+![img](docs/images/preset/pu_bu.png)
 
 `colorgrad::pu_rd()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/pu_rd.png)
+![img](docs/images/preset/pu_rd.png)
 
 `colorgrad::rd_pu()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/rd_pu.png)
+![img](docs/images/preset/rd_pu.png)
 
 `colorgrad::yl_gn_bu()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/yl_gn_bu.png)
+![img](docs/images/preset/yl_gn_bu.png)
 
 `colorgrad::yl_gn()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/yl_gn.png)
+![img](docs/images/preset/yl_gn.png)
 
 `colorgrad::yl_or_br()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/yl_or_br.png)
+![img](docs/images/preset/yl_or_br.png)
 
 `colorgrad::yl_or_rd()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/yl_or_rd.png)
+![img](docs/images/preset/yl_or_rd.png)
 
 ### Cyclical
 
 `colorgrad::rainbow()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/rainbow.png)
+![img](docs/images/preset/rainbow.png)
 
 `colorgrad::sinebow()`
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/sinebow.png)
+![img](docs/images/preset/sinebow.png)
 
 ## Using the Gradient
 
@@ -334,16 +319,16 @@ Output:
 
 ### Hard-Edged Gradient
 
-Converting gradient to hard-edged gradient with 11 segments and 0 smoothness.
+Convert gradient to hard-edged gradient with 11 segments and 0 smoothness.
 
 ```rust
 let g = colorgrad::rainbow().sharp(11, 0.);
 ```
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/rainbow-sharp.png)
+![img](docs/images/rainbow-sharp.png)
 
 This is the effect of different smoothness.
 
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/sharp-gradients.png)
+![img](docs/images/sharp-gradients.png)
 
 ## Examples
 
@@ -378,7 +363,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
 Example output:
 
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/example-gradient.png)
+![img](docs/images/example-gradient.png)
 
 ### Colored Noise
 
@@ -414,7 +399,7 @@ fn remap(value: f64, a: f64, b: f64, c: f64, d: f64) -> f64 {
 
 Example output:
 
-![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/example-noise.png)
+![img](docs/images/example-noise.png)
 
 ## Inspirations
 
@@ -424,5 +409,5 @@ Example output:
 ## Links
 
 * [colorgrad](https://github.com/mazznoer/colorgrad) - Go version of this library
-* [https://www.color-blindness.com/coblis-color-blindness-simulator/](https://www.color-blindness.com/coblis-color-blindness-simulator/)
-* [https://github.com/UniStuttgart-VISUS/visual-system-simulator](https://github.com/UniStuttgart-VISUS/visual-system-simulator)
+* [Color Blindness Simulator](https://www.color-blindness.com/coblis-color-blindness-simulator/)
+* [Visual System Simulator](https://github.com/UniStuttgart-VISUS/visual-system-simulator)

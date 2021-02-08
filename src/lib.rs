@@ -132,6 +132,7 @@ pub enum BlendMode {
     Rgb,
     LinearRgb,
     Hsv,
+    Oklab,
 }
 
 #[derive(Debug)]
@@ -250,6 +251,7 @@ impl GradientBase for GradientX {
                     BlendMode::Rgb => return col[0].interpolate_rgb(&col[1], t),
                     BlendMode::LinearRgb => return col[0].interpolate_lrgb(&col[1], t),
                     BlendMode::Hsv => return col[0].interpolate_hsv(&col[1], t),
+                    BlendMode::Oklab => return col[0].interpolate_oklab(&col[1], t),
                 }
             }
         }

@@ -72,7 +72,7 @@ fn custom_gradient_blend_mode() {
     assert_eq!(g.at(0.5).rgba_u8(), (255, 255, 0, 255));
     assert_eq!(g.at(1.0).rgba_u8(), (0, 0, 255, 255));
 
-    // Blend mode LRGB
+    // Blend mode Linear RGB
     let g = CustomGradient::new()
         .html_colors(&["#f00", "#ff0", "#00f"])
         .mode(BlendMode::LinearRgb)
@@ -86,6 +86,16 @@ fn custom_gradient_blend_mode() {
     let g = CustomGradient::new()
         .html_colors(&["#f00", "#ff0", "#00f"])
         .mode(BlendMode::Hsv)
+        .build()
+        .unwrap();
+    assert_eq!(g.at(0.0).rgba_u8(), (255, 0, 0, 255));
+    assert_eq!(g.at(0.5).rgba_u8(), (255, 255, 0, 255));
+    assert_eq!(g.at(1.0).rgba_u8(), (0, 0, 255, 255));
+
+    // Blend mode Oklab
+    let g = CustomGradient::new()
+        .html_colors(&["#f00", "#ff0", "#00f"])
+        .mode(BlendMode::Oklab)
         .build()
         .unwrap();
     assert_eq!(g.at(0.0).rgba_u8(), (255, 0, 0, 255));

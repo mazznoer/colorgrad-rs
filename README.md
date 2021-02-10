@@ -20,7 +20,7 @@ Rust color scales library for charts, maps, data-visualization and creative codi
 Add `colorgrad` to your `Cargo.toml`
 ```toml
 [dependencies]
-colorgrad = "0.2.0"
+colorgrad = "0.3.0"
 ```
 
 ## Custom Gradient
@@ -55,7 +55,7 @@ let g = colorgrad::CustomGradient::new()
 
 ```rust
 let g = colorgrad::CustomGradient::new()
-    .html_colors(&["#c41189", "#00BFFF", "#FFD700"])
+    .html_colors(&["#C41189", "#00BFFF", "#FFD700"])
     .build()?;
 ```
 ![img](docs/images/custom-hex-colors.png)

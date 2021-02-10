@@ -122,6 +122,9 @@ use std::error::Error as StdError;
 use std::f64::consts::PI;
 use std::fmt;
 
+mod spline;
+use spline::preset_spline;
+
 const DEG2RAD: f64 = PI / 180.;
 const PI1_3: f64 = PI / 3.;
 const PI2_3: f64 = PI * 2. / 3.;
@@ -526,7 +529,7 @@ impl CustomGradient {
 macro_rules! preset {
     ($colors:expr; $name:ident) => {
         pub fn $name() -> Gradient {
-            CustomGradient::new().html_colors($colors).build().unwrap()
+            preset_spline($colors)
         }
     };
 }

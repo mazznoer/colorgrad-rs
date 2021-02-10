@@ -317,6 +317,12 @@ fn colors() {
 
 #[test]
 fn preset() {
+    let g = colorgrad::viridis();
+    assert_eq!(g.at(0.0).to_hex_string(), "#440154");
+    assert_eq!(g.at(0.5).to_hex_string(), "#27838e");
+    assert_eq!(g.at(1.0).to_hex_string(), "#fee825");
+    assert_eq!(g.at(f64::NAN).to_hex_string(), "#000000");
+
     let g = colorgrad::greys();
     assert_eq!(g.at(0.).to_hex_string(), "#ffffff");
     assert_eq!(g.at(1.).to_hex_string(), "#000000");

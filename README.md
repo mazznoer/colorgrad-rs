@@ -148,7 +148,9 @@ let g = colorgrad::CustomGradient::new()
 
 ## Preset Gradients
 
-All preset gradients are in the domain [0..1].
+All preset gradients are in the domain [0..1]. Uniform B-splines is used to interpolate the colors.
+
+![img](docs/images/rgb-plot.png)
 
 ### Diverging
 

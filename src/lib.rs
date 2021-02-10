@@ -100,17 +100,26 @@
 //!
 //! ## Preset Gradients
 //!
-//! [colorgrad::rainbow()](fn.rainbow.html)
-//! ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/doc/images/preset/rainbow.png)
-//!
-//! [colorgrad::sinebow()](fn.sinebow.html)
-//! ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/doc/images/preset/sinebow.png)
+//! [colorgrad::cubehelix_default()](fn.cubehelix_default.html)
+//! ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/cubehelix_default.png)
 //!
 //! [colorgrad::turbo()](fn.turbo.html)
-//! ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/doc/images/preset/turbo.png)
+//! ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/turbo.png)
 //!
 //! [colorgrad::spectral()](fn.spectral.html)
-//! ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/doc/images/preset/spectral.png)
+//! ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/spectral.png)
+//!
+//! [colorgrad::viridis()](fn.viridis.html)
+//! ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/viridis.png)
+//!
+//! [colorgrad::magma()](fn.magma.html)
+//! ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/magma.png)
+//!
+//! [colorgrad::rainbow()](fn.rainbow.html)
+//! ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/rainbow.png)
+//!
+//! [colorgrad::sinebow()](fn.sinebow.html)
+//! ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/sinebow.png)
 //!
 //! See more complete gradient preview and examples at [Github](https://github.com/mazznoer/colorgrad-rs).
 
@@ -201,12 +210,12 @@ impl Gradient {
     /// ```
     /// let g = colorgrad::rainbow();
     /// ```
-    /// ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/doc/images/preset/rainbow.png)
+    /// ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/rainbow.png)
     ///
     /// ```
     /// let g = colorgrad::rainbow().sharp(11, 0.);
     /// ```
-    /// ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/doc/images/rainbow-sharp.png)
+    /// ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/rainbow-sharp.png)
     pub fn sharp(&self, segment: usize, smoothness: f64) -> Gradient {
         if segment < 2 {
             let gradbase = SharpGradient {

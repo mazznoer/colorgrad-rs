@@ -132,7 +132,7 @@ use std::f64::consts::PI;
 use std::fmt;
 
 mod spline;
-use spline::preset_spline;
+use spline::{preset_spline, spline_gradient};
 
 const DEG2RAD: f64 = PI / 180.;
 const PI1_3: f64 = PI / 3.;
@@ -145,6 +145,14 @@ pub enum BlendMode {
     LinearRgb,
     Hsv,
     Oklab,
+}
+
+/// Interpolation mode
+#[derive(Debug, Copy, Clone)]
+pub enum Interpolation {
+    Linear,
+    Basis,
+    CatmullRom,
 }
 
 #[derive(Debug)]
@@ -434,6 +442,7 @@ pub struct CustomGradient {
     colors: Vec<Color>,
     pos: Vec<f64>,
     mode: BlendMode,
+    interpolation: Interpolation,
     invalid_html_colors: Vec<String>,
 }
 
@@ -444,6 +453,7 @@ impl CustomGradient {
             colors: Vec::new(),
             pos: Vec::new(),
             mode: BlendMode::Rgb,
+            interpolation: Interpolation::Linear,
             invalid_html_colors: Vec::new(),
         }
     }
@@ -494,6 +504,13 @@ impl CustomGradient {
         self
     }
 
+    /// Set the interpolation mode
+    #[allow(clippy::needless_lifetimes)]
+    pub fn interpolation<'a>(&'a mut self, mode: Interpolation) -> &'a mut CustomGradient {
+        self.interpolation = mode;
+        self
+    }
+
     /// Build the gradient
     pub fn build(&self) -> Result<Gradient, CustomGradientError> {
         if !self.invalid_html_colors.is_empty() {
@@ -528,20 +545,28 @@ impl CustomGradient {
             return Err(CustomGradientError::WrongDomainCount);
         };
 
-        let gradbase = GradientX {
-            colors: colors.to_vec(),
-            pos: pos.to_vec(),
-            count: colors.len() - 1,
-            dmin: pos[0],
-            dmax: pos[pos.len() - 1],
-            mode: self.mode,
-        };
+        if let Interpolation::Linear = self.interpolation {
+            let gradbase = GradientX {
+                colors: colors.to_vec(),
+                pos: pos.to_vec(),
+                count: colors.len() - 1,
+                dmin: pos[0],
+                dmax: pos[pos.len() - 1],
+                mode: self.mode,
+            };
+            return Ok(Gradient {
+                gradient: Box::new(gradbase),
+                dmin: pos[0],
+                dmax: pos[pos.len() - 1],
+            });
+        }
 
-        Ok(Gradient {
-            gradient: Box::new(gradbase),
-            dmin: pos[0],
-            dmax: pos[pos.len() - 1],
-        })
+        Ok(spline_gradient(
+            &colors,
+            &pos,
+            self.mode,
+            self.interpolation,
+        ))
     }
 }
 

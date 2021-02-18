@@ -149,7 +149,7 @@ pub enum BlendMode {
 
 #[derive(Debug)]
 pub enum CustomGradientError {
-    InvalidHtmlColor,
+    InvalidHtmlColor(Vec<String>),
     WrongDomainCount,
     WrongDomain,
 }
@@ -157,7 +157,17 @@ pub enum CustomGradientError {
 impl fmt::Display for CustomGradientError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            CustomGradientError::InvalidHtmlColor => f.write_str("Invalid html color"),
+            CustomGradientError::InvalidHtmlColor(ref colors) => {
+                write!(
+                    f,
+                    "Invalid html colors:{}",
+                    colors
+                        .iter()
+                        .map(|x| format!("'{}'", x))
+                        .collect::<Vec<String>>()
+                        .join(", ")
+                )
+            }
             CustomGradientError::WrongDomainCount => f.write_str("Wrong domain count"),
             CustomGradientError::WrongDomain => f.write_str("Wrong domain"),
         }
@@ -464,9 +474,9 @@ impl CustomGradient {
         for s in html_colors {
             if let Ok(c) = csscolorparser::parse(s) {
                 self.colors.push(c);
-                continue;
+            } else {
+                self.invalid_html_colors.push(s.to_string());
             }
-            self.invalid_html_colors.push(s.to_string());
         }
         self
     }
@@ -487,7 +497,9 @@ impl CustomGradient {
     /// Build the gradient
     pub fn build(&self) -> Result<Gradient, CustomGradientError> {
         if !self.invalid_html_colors.is_empty() {
-            return Err(CustomGradientError::InvalidHtmlColor);
+            return Err(CustomGradientError::InvalidHtmlColor(
+                self.invalid_html_colors.clone(),
+            ));
         }
 
         let colors = if self.colors.is_empty() {

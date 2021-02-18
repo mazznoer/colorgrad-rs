@@ -109,7 +109,10 @@ fn custom_gradient_error() {
     let g = CustomGradient::new()
         .html_colors(&["#777", "bloodred", "#bbb", "#zzz"])
         .build();
-    assert_eq!(g.unwrap_err().to_string(), "Invalid html color");
+    assert_eq!(
+        g.unwrap_err().to_string(),
+        "Invalid html colors:'bloodred', '#zzz'"
+    );
 
     // Wrong domain #1
     let g = CustomGradient::new()

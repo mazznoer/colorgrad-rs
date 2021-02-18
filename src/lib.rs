@@ -257,7 +257,7 @@ impl Gradient {
 }
 
 #[derive(Debug)]
-struct GradientX {
+struct LinearGradient {
     colors: Vec<Color>,
     pos: Vec<f64>,
     count: usize,
@@ -266,7 +266,7 @@ struct GradientX {
     mode: BlendMode,
 }
 
-impl GradientBase for GradientX {
+impl GradientBase for LinearGradient {
     fn at(&self, t: f64) -> Color {
         if t < self.dmin {
             return self.colors[0].clone();
@@ -546,7 +546,7 @@ impl CustomGradient {
         };
 
         if let Interpolation::Linear = self.interpolation {
-            let gradbase = GradientX {
+            let gradbase = LinearGradient {
                 colors: colors.to_vec(),
                 pos: pos.to_vec(),
                 count: colors.len() - 1,

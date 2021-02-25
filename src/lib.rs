@@ -1,6 +1,6 @@
 //! # Overview
 //!
-//! Rust color-scales library for maps, charts, data-visualization & creative coding.
+//! Rust color scales library for data visualization, charts, games, maps, generative art and others.
 //!
 //! ## Usage
 //!
@@ -8,7 +8,7 @@
 //! ```
 //! let g = colorgrad::rainbow();
 //!
-//! assert_eq!(g.domain(), (0., 1.)); // all preset gradients are in the domain 0..1
+//! assert_eq!(g.domain(), (0., 1.)); // all preset gradients are in the domain [0..1]
 //! assert_eq!(g.at(0.5).rgba_u8(), (175, 240, 91, 255));
 //! assert_eq!(g.at(0.5).to_hex_string(), "#aff05b");
 //! ```
@@ -38,9 +38,6 @@
 //! ### Gradient Image
 //!
 //! ```rust,ignore
-//! //extern crate colorgrad;
-//! //extern crate image;
-//!
 //! use std::error::Error;
 //!
 //! fn main() -> Result<(), Box<dyn Error>> {
@@ -54,8 +51,8 @@
 //!
 //!     let mut imgbuf = image::ImageBuffer::new(w, h);
 //!
-//!     for (x, _y, pixel) in imgbuf.enumerate_pixels_mut() {
-//!         let (r, g, b, _a) = grad.at(x as f64 / fw).rgba_u8();
+//!     for (x, _, pixel) in imgbuf.enumerate_pixels_mut() {
+//!         let (r, g, b, _) = grad.at(x as f64 / fw).rgba_u8();
 //!         *pixel = image::Rgb([r, g, b]);
 //!     }
 //!
@@ -63,15 +60,14 @@
 //!     Ok(())
 //! }
 //! ```
+//!
+//! Example output:
+//!
 //! ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/example-gradient.png)
 //!
 //! ### Colored Noise
 //!
 //! ```rust,ignore
-//! //extern crate colorgrad;
-//! //extern crate image;
-//! //extern crate noise;
-//!
 //! use noise::NoiseFn;
 //!
 //! fn main() {
@@ -85,17 +81,20 @@
 //!
 //!     for (x, y, pixel) in imgbuf.enumerate_pixels_mut() {
 //!         let t = ns.get([x as f64 * scale, y as f64 * scale]);
-//!         let (r, g, b, _a) = grad.at(remap(t, -0.5, 0.5, 0.0, 1.0)).rgba_u8();
+//!         let (r, g, b, _) = grad.at(remap(t, -0.5, 0.5, 0.0, 1.0)).rgba_u8();
 //!         *pixel = image::Rgb([r, g, b]);
 //!     }
 //!     imgbuf.save("noise.png").unwrap();
 //! }
 //!
-//! // Map value which is in range [a, b] to range [c, d]
-//! fn remap(value: f64, a: f64, b: f64, c: f64, d: f64) -> f64 {
-//!     (value - a) * ((d - c) / (b - a)) + c
+//! // Map t which is in range [a, b] to range [c, d]
+//! fn remap(t: f64, a: f64, b: f64, c: f64, d: f64) -> f64 {
+//!     (t - a) * ((d - c) / (b - a)) + c
 //! }
 //! ```
+//!
+//! Example output:
+//!
 //! ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/example-noise.png)
 //!
 //! ## Preset Gradients
@@ -214,7 +213,7 @@ impl Gradient {
     pub fn colors(&self, n: usize) -> Vec<Color> {
         linspace(self.dmin, self.dmax, n)
             .iter()
-            .map(|&t| self.at(t))
+            .map(|&t| self.gradient.at(t))
             .collect()
     }
 
@@ -237,7 +236,7 @@ impl Gradient {
     pub fn sharp(&self, segment: usize, smoothness: f64) -> Gradient {
         if segment < 2 {
             let gradbase = SharpGradient {
-                colors: vec![self.at(self.dmin)],
+                colors: vec![self.gradient.at(self.dmin)],
                 pos: vec![self.dmin, self.dmax],
                 n: 0,
                 dmin: self.dmin,
@@ -531,7 +530,7 @@ impl CustomGradient {
             linspace(0., 1., colors.len())
         } else if self.pos.len() == colors.len() {
             for p in self.pos.windows(2) {
-                if p[0] >= p[1] {
+                if p[0] > p[1] {
                     return Err(CustomGradientError::WrongDomain);
                 }
             }

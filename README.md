@@ -6,7 +6,7 @@
 [![Build Status](https://travis-ci.org/mazznoer/colorgrad-rs.svg?branch=master)](https://travis-ci.org/mazznoer/colorgrad-rs)
 [![codecov](https://codecov.io/gh/mazznoer/colorgrad-rs/branch/master/graph/badge.svg)](https://codecov.io/gh/mazznoer/colorgrad-rs)
 
-Rust color scales library for charts, maps, data-visualization and creative coding.
+Rust color scales library for data visualization, charts, games, maps, generative art and others.
 
 ## Index
 
@@ -17,9 +17,8 @@ Rust color scales library for charts, maps, data-visualization and creative codi
 
 ## Usage
 
-Add `colorgrad` to your `Cargo.toml`
+Add this to your `Cargo.toml`
 ```toml
-[dependencies]
 colorgrad = "0.3.0"
 ```
 
@@ -337,9 +336,6 @@ This is the effect of different smoothness.
 ### Gradient Image
 
 ```rust
-//extern crate colorgrad;
-//extern crate image;
-
 use std::error::Error;
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -353,8 +349,8 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let mut imgbuf = image::ImageBuffer::new(w, h);
 
-    for (x, _y, pixel) in imgbuf.enumerate_pixels_mut() {
-        let (r, g, b, _a) = grad.at(x as f64 / fw).rgba_u8();
+    for (x, _, pixel) in imgbuf.enumerate_pixels_mut() {
+        let (r, g, b, _) = grad.at(x as f64 / fw).rgba_u8();
         *pixel = image::Rgb([r, g, b]);
     }
 
@@ -370,10 +366,6 @@ Example output:
 ### Colored Noise
 
 ```rust
-//extern crate colorgrad;
-//extern crate image;
-//extern crate noise;
-
 use noise::NoiseFn;
 
 fn main() {
@@ -387,15 +379,15 @@ fn main() {
 
     for (x, y, pixel) in imgbuf.enumerate_pixels_mut() {
         let t = ns.get([x as f64 * scale, y as f64 * scale]);
-        let (r, g, b, _a) = grad.at(remap(t, -0.5, 0.5, 0.0, 1.0)).rgba_u8();
+        let (r, g, b, _) = grad.at(remap(t, -0.5, 0.5, 0.0, 1.0)).rgba_u8();
         *pixel = image::Rgb([r, g, b]);
     }
     imgbuf.save("noise.png").unwrap();
 }
 
-// Map value which is in range [a, b] to range [c, d]
-fn remap(value: f64, a: f64, b: f64, c: f64, d: f64) -> f64 {
-    (value - a) * ((d - c) / (b - a)) + c
+// Map t which is in range [a, b] to range [c, d]
+fn remap(t: f64, a: f64, b: f64, c: f64, d: f64) -> f64 {
+    (t - a) * ((d - c) / (b - a)) + c
 }
 ```
 

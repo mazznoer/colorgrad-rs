@@ -8,6 +8,10 @@
 
 Rust color scales library for data visualization, charts, games, maps, generative art and others.
 
+## Support This Project
+
+[![Donate](https://liberapay.com/assets/widgets/donate.svg)](https://liberapay.com/mazznoer/donate)
+
 ## Index
 
 + [Custom Gradient](#custom-gradient)

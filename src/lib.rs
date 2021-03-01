@@ -746,7 +746,7 @@ struct CubehelixGradient {
 
 impl GradientBase for CubehelixGradient {
     fn at(&self, t: f64) -> Color {
-        self.start.interpolate(&self.end, t).to_color()
+        self.start.interpolate(&self.end, clamp0_1(t)).to_color()
     }
 }
 

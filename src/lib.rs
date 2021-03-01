@@ -209,6 +209,20 @@ impl Gradient {
         self.gradient.at(t)
     }
 
+    /// Get color at certain position
+    pub fn repeat_at(&self, t: f64) -> Color {
+        let t = norm(t, self.dmin, self.dmax);
+        self.gradient
+            .at(self.dmin + modulo(t, 1.) * (self.dmax - self.dmin))
+    }
+
+    /// Get color at certain position
+    pub fn reflect_at(&self, t: f64) -> Color {
+        let t = norm(t, self.dmin, self.dmax);
+        self.gradient
+            .at(self.dmin + (modulo(1. + t, 2.) - 1.).abs() * (self.dmax - self.dmin))
+    }
+
     /// Get n colors evenly spaced across gradient
     pub fn colors(&self, n: usize) -> Vec<Color> {
         linspace(self.dmin, self.dmax, n)
@@ -813,6 +827,15 @@ fn clamp0_1(t: f64) -> f64 {
         return 1.;
     }
     t
+}
+
+fn modulo(x: f64, y: f64) -> f64 {
+    (x % y + y) % y
+}
+
+// Map t from range [a, b] to range [0, 1]
+fn norm(t: f64, a: f64, b: f64) -> f64 {
+    (t - a) * (1. / (b - a))
 }
 
 #[cfg(test)]

@@ -189,7 +189,7 @@ trait GradientBase {
 
 /// The gradient
 pub struct Gradient {
-    gradient: Box<dyn GradientBase>,
+    gradient: Box<dyn GradientBase + Send + Sync>,
     dmin: f64,
     dmax: f64,
 }

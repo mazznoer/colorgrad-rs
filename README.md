@@ -147,7 +147,18 @@ let g = colorgrad::CustomGradient::new()
     .build()?;
 ```
 
-![img](docs/images/blend-modes.png)
+![Blending Modes](docs/images/blend-modes.png)
+
+### Interpolation Mode
+
+```rust
+let g = colorgrad::CustomGradient::new()
+    .html_colors(&["#C41189", "#00BFFF", "#FFD700"])
+    .interpolation(colorgrad::Interpolation::Linear)
+    .build()?;
+```
+
+![Interpolation Modes](docs/images/interpolation-modes.png)
 
 ## Preset Gradients
 
@@ -290,12 +301,22 @@ assert_eq!(grad.domain(), (0., 1.));
 ### Get single color at certain position
 
 ```rust
-let grad = colorgrad::rainbow();
+let grad = colorgrad::blues();
 
-assert_eq!(grad.at(0.0).rgba_u8(), (110, 64, 170, 255));
-assert_eq!(grad.at(0.5).rgba_u8(), (175, 240, 91, 255));
-assert_eq!(grad.at(1.0).rgba_u8(), (110, 64, 170, 255));
+assert_eq!(grad.at(0.0).rgba_u8(), (247, 251, 255, 255));
+assert_eq!(grad.at(0.5).rgba_u8(), (109, 174, 213, 255));
+assert_eq!(grad.at(1.0).rgba_u8(), (8,   48,  107, 255));
+
+assert_eq!(grad.at(0.3).rgba_u8(), grad.repeat_at(0.3).rgba_u8());
+assert_eq!(grad.at(0.3).rgba_u8(), grad.reflect_at(0.3).rgba_u8());
+
+assert_eq!(grad.at(0.7).rgba_u8(), grad.repeat_at(0.7).rgba_u8());
+assert_eq!(grad.at(0.7).rgba_u8(), grad.reflect_at(0.7).rgba_u8());
 ```
+
+The difference of `at()`, `repeat_at()` and `reflect_at()`.
+
+![Spread Modes](docs/images/spread-modes.png)
 
 ### Get n colors evenly spaced across gradient
 

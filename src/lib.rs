@@ -133,7 +133,6 @@ use std::fmt;
 mod spline;
 use spline::{preset_spline, spline_gradient};
 
-const DEG2RAD: f64 = PI / 180.;
 const PI1_3: f64 = PI / 3.;
 const PI2_3: f64 = PI * 2. / 3.;
 
@@ -716,7 +715,7 @@ struct Cubehelix {
 
 impl Cubehelix {
     fn to_color(&self) -> Color {
-        let h = (self.h + 120.) * DEG2RAD;
+        let h = (self.h + 120.).to_radians();
         let l = self.l;
         let a = self.s * l * (1. - l);
         let cosh = h.cos();
@@ -820,13 +819,7 @@ fn linspace(min: f64, max: f64, n: usize) -> Vec<f64> {
 }
 
 fn clamp0_1(t: f64) -> f64 {
-    if t < 0. {
-        return 0.;
-    }
-    if t > 1. {
-        return 1.;
-    }
-    t
+    t.clamp(0., 1.)
 }
 
 fn modulo(x: f64, y: f64) -> f64 {

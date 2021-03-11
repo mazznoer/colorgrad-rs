@@ -137,7 +137,7 @@ impl<T: Interpolator> GradientBase for SplineGradient<T> {
         if t.is_nan() {
             return Color::from_rgb(0., 0., 0.);
         }
-        let t = clamp(t, self.dmin, self.dmax);
+        let t = t.clamp(self.dmin, self.dmax);
         match self.mode {
             BlendMode::Rgb => {
                 Color::from_rgba(self.a.at(t), self.b.at(t), self.c.at(t), self.d.at(t))
@@ -227,14 +227,4 @@ pub(crate) fn preset_spline(html_colors: &[&str]) -> Gradient {
     }
     let pos = linspace(0., 1., colors.len());
     spline_gradient(&colors, &pos, BlendMode::Rgb, Interpolation::Basis)
-}
-
-fn clamp(t: f64, min: f64, max: f64) -> f64 {
-    if t < min {
-        return min;
-    }
-    if t > max {
-        return max;
-    }
-    t
 }

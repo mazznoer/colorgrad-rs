@@ -15,9 +15,14 @@ exclude = [
 	".gitignore",
 	".travis.yml",
 	"docs/*",
+	"examples/*",
+	"example_output/*",
 	"tests/*",
 ]
 
 [dependencies]
 csscolorparser = "0.4.0"
+
+[dev-dependencies]
+image = "0.23.14"
 

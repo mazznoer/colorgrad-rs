@@ -23,7 +23,7 @@ Rust color scales library for data visualization, charts, games, maps, generativ
 
 Add this to your `Cargo.toml`
 ```toml
-colorgrad = "0.3.0"
+colorgrad = "0.4.0"
 ```
 
 ## Custom Gradient

@@ -5,8 +5,10 @@
 [![Build Status](https://github.com/mazznoer/colorgrad-rs/workflows/Rust/badge.svg)](https://github.com/mazznoer/colorgrad-rs/actions)
 [![Build Status](https://travis-ci.org/mazznoer/colorgrad-rs.svg?branch=master)](https://travis-ci.org/mazznoer/colorgrad-rs)
 [![codecov](https://codecov.io/gh/mazznoer/colorgrad-rs/branch/master/graph/badge.svg)](https://codecov.io/gh/mazznoer/colorgrad-rs)
+[![Total Downloads](https://img.shields.io/crates/d/colorgrad.svg)](https://crates.io/crates/colorgrad)
+[![Lines of Code](https://tokei.rs/b1/github/mazznoer/colorgrad-rs?category=code)](https://github.com/mazznoer/colorgrad-rs)
 
-Rust color scales library for data visualization, charts, games, maps, generative art and others.
+[Rust](https://www.rust-lang.org/) color scales library for data visualization, charts, games, maps, generative art and others.
 
 ## Support This Project
 

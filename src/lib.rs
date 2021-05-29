@@ -124,20 +124,19 @@
 
 #![allow(clippy::many_single_char_names)]
 
-pub use csscolorparser::Color;
+pub use csscolorparser::{Color, ParseError};
 
-use std::error::Error as StdError;
-use std::f64::consts::PI;
+use std::error;
+use std::f64::consts::{FRAC_PI_3, PI};
 use std::fmt;
 
 mod spline;
 use spline::{preset_spline, spline_gradient};
 
-const PI1_3: f64 = PI / 3.0;
 const PI2_3: f64 = PI * 2.0 / 3.0;
 
 /// Color blending mode
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum BlendMode {
     Rgb,
     LinearRgb,
@@ -146,14 +145,14 @@ pub enum BlendMode {
 }
 
 /// Interpolation mode
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum Interpolation {
     Linear,
     Basis,
     CatmullRom,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum CustomGradientError {
     InvalidHtmlColor(Vec<String>),
     WrongDomainCount,
@@ -180,7 +179,7 @@ impl fmt::Display for CustomGradientError {
     }
 }
 
-impl StdError for CustomGradientError {}
+impl error::Error for CustomGradientError {}
 
 trait GradientBase {
     fn at(&self, t: f64) -> Color;
@@ -255,15 +254,18 @@ impl Gradient {
                 dmin: self.dmin,
                 dmax: self.dmax,
             };
+
             return Gradient {
                 gradient: Box::new(gradbase),
                 dmin: self.dmin,
                 dmax: self.dmax,
             };
         }
+
         if smoothness > 0.0 {
             return sharp_gradient_x(self, segment, smoothness);
         }
+
         sharp_gradient(self, segment)
     }
 }
@@ -283,12 +285,15 @@ impl GradientBase for LinearGradient {
         if t < self.dmin {
             return self.colors[0].clone();
         }
+
         if t > self.dmax {
             return self.colors[self.count].clone();
         }
+
         for (pos, col) in self.pos.windows(2).zip(self.colors.windows(2)) {
             if (pos[0] <= t) && (t <= pos[1]) {
                 let t = (t - pos[0]) / (pos[1] - pos[0]);
+
                 match self.mode {
                     BlendMode::Rgb => return col[0].interpolate_rgb(&col[1], t),
                     BlendMode::LinearRgb => return col[0].interpolate_lrgb(&col[1], t),
@@ -297,6 +302,7 @@ impl GradientBase for LinearGradient {
                 }
             }
         }
+
         self.colors[0].clone()
     }
 }
@@ -315,20 +321,24 @@ impl GradientBase for SharpGradient {
         if t < self.dmin {
             return self.colors[0].clone();
         }
+
         if t > self.dmax {
             return self.colors[self.n].clone();
         }
+
         for (pos, col) in self.pos.windows(2).zip(self.colors.iter()) {
             if (pos[0] <= t) && (t <= pos[1]) {
                 return col.clone();
             }
         }
+
         self.colors[0].clone()
     }
 }
 
 fn sharp_gradient(grad: &Gradient, n: usize) -> Gradient {
     let (dmin, dmax) = grad.domain();
+
     let gradbase = SharpGradient {
         colors: grad.colors(n),
         pos: linspace(dmin, dmax, n + 1),
@@ -336,6 +346,7 @@ fn sharp_gradient(grad: &Gradient, n: usize) -> Gradient {
         dmin,
         dmax,
     };
+
     Gradient {
         gradient: Box::new(gradbase),
         dmin,
@@ -357,45 +368,57 @@ impl GradientBase for SharpGradientX {
         if t < self.dmin {
             return self.colors[0].clone();
         }
+
         if t > self.dmax {
             return self.colors[self.last_idx].clone();
         }
+
         for (i, (pos, col)) in self.pos.windows(2).zip(self.colors.windows(2)).enumerate() {
             if (pos[0] <= t) && (t <= pos[1]) {
-                if i % 2 == 0 {
+                if i & 1 == 0 {
                     return col[0].clone();
                 }
+
                 let t = (t - pos[0]) / (pos[1] - pos[0]);
                 return col[0].interpolate_rgb(&col[1], t);
             }
         }
+
         self.colors[0].clone()
     }
 }
 
 fn sharp_gradient_x(grad: &Gradient, n: usize, t: f64) -> Gradient {
     let mut colors = Vec::with_capacity(n * 2);
+
     for c in grad.colors(n) {
         colors.push(c.clone());
         colors.push(c.clone());
     }
+
     let (dmin, dmax) = grad.domain();
-    let t = clamp0_1(t) * (dmax - dmin) / n as f64 / 4.0;
+    let t = t.clamp(0.0, 1.0) * (dmax - dmin) / n as f64 / 4.0;
     let p = linspace(dmin, dmax, n + 1);
     let mut pos = Vec::with_capacity(n * 2);
     let mut j = 0;
+
     for i in 0..n {
         pos.push(p[i]);
+
         if j > 0 {
             pos[j] += t;
         }
+
         j += 1;
         pos.push(p[i + 1]);
+
         if j < colors.len() - 1 {
             pos[j] -= t;
         }
+
         j += 1;
     }
+
     let gradbase = SharpGradientX {
         colors,
         pos,
@@ -403,6 +426,7 @@ fn sharp_gradient_x(grad: &Gradient, n: usize, t: f64) -> Gradient {
         dmin,
         dmax,
     };
+
     Gradient {
         gradient: Box::new(gradbase),
         dmin,
@@ -532,7 +556,10 @@ impl CustomGradient {
         }
 
         let colors = if self.colors.is_empty() {
-            vec![Color::from_rgb(0.0, 0.0, 0.0), Color::from_rgb(1.0, 1.0, 1.0)]
+            vec![
+                Color::from_rgb(0.0, 0.0, 0.0),
+                Color::from_rgb(1.0, 1.0, 1.0),
+            ]
         } else if self.colors.len() == 1 {
             vec![self.colors[0].clone(), self.colors[0].clone()]
         } else {
@@ -566,6 +593,7 @@ impl CustomGradient {
                 dmax: pos[pos.len() - 1],
                 mode: self.mode,
             };
+
             return Ok(Gradient {
                 gradient: Box::new(gradbase),
                 dmin: pos[0],
@@ -654,9 +682,9 @@ impl GradientBase for SinebowGradient {
     fn at(&self, t: f64) -> Color {
         let t = (0.5 - t) * PI;
         Color::from_rgb(
-            clamp0_1(t.sin().powi(2)),
-            clamp0_1((t + PI1_3).sin().powi(2)),
-            clamp0_1((t + PI2_3).sin().powi(2)),
+            t.sin().powi(2).clamp(0.0, 1.0),
+            (t + FRAC_PI_3).sin().powi(2).clamp(0.0, 1.0),
+            (t + PI2_3).sin().powi(2).clamp(0.0, 1.0),
         )
     }
 }
@@ -669,7 +697,7 @@ struct TurboGradient {}
 
 impl GradientBase for TurboGradient {
     fn at(&self, t: f64) -> Color {
-        let t = clamp0_1(t);
+        let t = t.clamp(0.0, 1.0);
         let r = (34.61
             + t * (1172.33 - t * (10793.56 - t * (33300.12 - t * (38394.49 - t * 14825.05)))))
             .round();
@@ -678,7 +706,11 @@ impl GradientBase for TurboGradient {
         let b = (27.2
             + t * (3211.1 - t * (15327.97 - t * (27814.0 - t * (22569.18 - t * 6838.66)))))
             .round();
-        Color::from_rgb(clamp0_1(r / 255.0), clamp0_1(g / 255.0), clamp0_1(b / 255.0))
+        Color::from_rgb(
+            (r / 255.0).clamp(0.0, 1.0),
+            (g / 255.0).clamp(0.0, 1.0),
+            (b / 255.0).clamp(0.0, 1.0),
+        )
     }
 }
 
@@ -690,7 +722,7 @@ struct CividisGradient {}
 
 impl GradientBase for CividisGradient {
     fn at(&self, t: f64) -> Color {
-        let t = clamp0_1(t);
+        let t = t.clamp(0.0, 1.0);
         let r = (-4.54 - t * (35.34 - t * (2381.73 - t * (6402.7 - t * (7024.72 - t * 2710.57)))))
             .round();
         let g =
@@ -698,7 +730,11 @@ impl GradientBase for CividisGradient {
         let b = (81.24
             + t * (442.36 - t * (2482.43 - t * (6167.24 - t * (6614.94 - t * 2475.67)))))
             .round();
-        Color::from_rgb(clamp0_1(r / 255.0), clamp0_1(g / 255.0), clamp0_1(b / 255.0))
+        Color::from_rgb(
+            (r / 255.0).clamp(0.0, 1.0),
+            (g / 255.0).clamp(0.0, 1.0),
+            (b / 255.0).clamp(0.0, 1.0),
+        )
     }
 }
 
@@ -718,12 +754,15 @@ impl Cubehelix {
         let h = (self.h + 120.0).to_radians();
         let l = self.l;
         let a = self.s * l * (1.0 - l);
+
         let cosh = h.cos();
         let sinh = h.sin();
+
         let r = l - a * (0.14861 * cosh - 1.78277 * sinh).min(1.0);
         let g = l - a * (0.29227 * cosh + 0.90649 * sinh).min(1.0);
         let b = l + a * (1.97294 * cosh);
-        Color::from_rgb(clamp0_1(r), clamp0_1(g), clamp0_1(b))
+
+        Color::from_rgb(r.clamp(0.0, 1.0), g.clamp(0.0, 1.0), b.clamp(0.0, 1.0))
     }
 
     fn interpolate(&self, other: &Cubehelix, t: f64) -> Cubehelix {
@@ -745,7 +784,9 @@ struct CubehelixGradient {
 
 impl GradientBase for CubehelixGradient {
     fn at(&self, t: f64) -> Color {
-        self.start.interpolate(&self.end, clamp0_1(t)).to_color()
+        self.start
+            .interpolate(&self.end, t.clamp(0.0, 1.0))
+            .to_color()
     }
 }
 
@@ -794,7 +835,7 @@ struct RainbowGradient {}
 
 impl GradientBase for RainbowGradient {
     fn at(&self, t: f64) -> Color {
-        let t = clamp0_1(t);
+        let t = t.clamp(0.0, 1.0);
         let ts = (t - 0.5).abs();
         Cubehelix {
             h: 360.0 * t - 100.0,
@@ -813,19 +854,18 @@ fn linspace(min: f64, max: f64, n: usize) -> Vec<f64> {
     if n == 1 {
         return vec![min];
     }
+
     let d = max - min;
     let l = n as f64 - 1.0;
     (0..n).map(|i| min + (i as f64 * d) / l).collect()
 }
 
-fn clamp0_1(t: f64) -> f64 {
-    t.clamp(0.0, 1.0)
-}
-
+#[inline]
 fn modulo(x: f64, y: f64) -> f64 {
     (x % y + y) % y
 }
 
+#[inline]
 // Map t from range [a, b] to range [0, 1]
 fn norm(t: f64, a: f64, b: f64) -> f64 {
     (t - a) * (1.0 / (b - a))
@@ -843,15 +883,5 @@ mod tests {
         assert_eq!(linspace(0.0, 1.0, 3), vec![0.0, 0.5, 1.0]);
         assert_eq!(linspace(-1.0, 1.0, 5), vec![-1.0, -0.5, 0.0, 0.5, 1.0]);
         assert_eq!(linspace(0.0, 100.0, 5), vec![0.0, 25.0, 50.0, 75.0, 100.0]);
-    }
-
-    #[test]
-    fn test_clamp() {
-        assert_eq!(clamp0_1(-0.01), 0.0);
-        assert_eq!(clamp0_1(1.01), 1.0);
-        assert_eq!(clamp0_1(0.99), 0.99);
-        assert_eq!(clamp0_1(0.01), 0.01);
-        assert_eq!(clamp0_1(0.0), 0.0);
-        assert_eq!(clamp0_1(1.0), 1.0);
     }
 }

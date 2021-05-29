@@ -19,9 +19,11 @@ impl CatmullRomInterpolator {
 
         let mut vals = Vec::with_capacity(n + 2);
         vals.push(2.0 * values[0] - values[1]);
+
         for v in values.iter() {
             vals.push(*v);
         }
+
         vals.push(2.0 * values[n - 1] - values[n - 2]);
 
         let mut segments = Vec::new();
@@ -31,10 +33,12 @@ impl CatmullRomInterpolator {
             let v1 = vals[i];
             let v2 = vals[i + 1];
             let v3 = vals[i + 2];
+
             let t0 = 0.0;
             let t1 = t0 + (v0 - v1).abs().powf(alpha);
             let t2 = t1 + (v1 - v2).abs().powf(alpha);
             let t3 = t2 + (v2 - v3).abs().powf(alpha);
+
             let m1 = (1.0 - tension)
                 * (t2 - t1)
                 * ((v0 - v1) / (t0 - t1) - (v0 - v2) / (t0 - t2) + (v1 - v2) / (t1 - t2));
@@ -43,12 +47,15 @@ impl CatmullRomInterpolator {
                 * ((v1 - v2) / (t1 - t2) - (v1 - v3) / (t1 - t3) + (v2 - v3) / (t2 - t3));
             let m1 = if m1.is_nan() { 0.0 } else { m1 };
             let m2 = if m2.is_nan() { 0.0 } else { m2 };
+
             let a = 2.0 * v1 - 2.0 * v2 + m1 + m2;
             let b = -3.0 * v1 + 3.0 * v2 - 2.0 * m1 - m2;
             let c = m1;
             let d = v1;
+
             segments.push([a, b, c, d]);
         }
+
         CatmullRomInterpolator {
             pos: pos.to_vec(),
             segments,
@@ -72,6 +79,7 @@ impl Interpolator for CatmullRomInterpolator {
 
 // Adapted from https://github.com/d3/d3-interpolate/blob/master/src/basis.js
 
+#[inline]
 fn basis(t1: f64, v0: f64, v1: f64, v2: f64, v3: f64) -> f64 {
     let t2 = t1 * t1;
     let t3 = t2 * t1;
@@ -99,21 +107,25 @@ impl BasisInterpolator {
 impl Interpolator for BasisInterpolator {
     fn at(&self, t: f64) -> f64 {
         let n = self.values.len() - 1;
+
         for (i, (pos, val)) in self.pos.windows(2).zip(self.values.windows(2)).enumerate() {
             if (pos[0] <= t) && (t <= pos[1]) {
                 let t = (t - pos[0]) / (pos[1] - pos[0]);
                 let v1 = val[0];
                 let v2 = val[1];
+
                 let v0 = if i > 0 {
                     self.values[i - 1]
                 } else {
                     2.0 * v1 - v2
                 };
+
                 let v3 = if i < (n - 1) {
                     self.values[i + 2]
                 } else {
                     2.0 * v2 - v1
                 };
+
                 return basis(t, v0, v1, v2, v3);
             }
         }
@@ -137,7 +149,9 @@ impl<T: Interpolator> GradientBase for SplineGradient<T> {
         if t.is_nan() {
             return Color::from_rgb(0.0, 0.0, 0.0);
         }
+
         let t = t.clamp(self.dmin, self.dmax);
+
         match self.mode {
             BlendMode::Rgb => {
                 Color::from_rgba(self.a.at(t), self.b.at(t), self.c.at(t), self.d.at(t))
@@ -179,6 +193,7 @@ pub(crate) fn spline_gradient(
         c.push(c3);
         d.push(c4);
     }
+
     let dmin = pos[0];
     let dmax = pos[n - 1];
 
@@ -193,6 +208,7 @@ pub(crate) fn spline_gradient(
                 dmax,
                 mode: space,
             };
+
             Gradient {
                 gradient: Box::new(gradbase),
                 dmin,
@@ -209,6 +225,7 @@ pub(crate) fn spline_gradient(
                 dmax,
                 mode: space,
             };
+
             Gradient {
                 gradient: Box::new(gradbase),
                 dmin,
@@ -220,11 +237,13 @@ pub(crate) fn spline_gradient(
 
 pub(crate) fn preset_spline(html_colors: &[&str]) -> Gradient {
     let mut colors = Vec::new();
+
     for s in html_colors {
         if let Ok(c) = csscolorparser::parse(s) {
             colors.push(c);
         }
     }
+
     let pos = linspace(0.0, 1.0, colors.len());
     spline_gradient(&colors, &pos, BlendMode::Rgb, Interpolation::Basis)
 }

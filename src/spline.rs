@@ -14,15 +14,15 @@ struct CatmullRomInterpolator {
 impl CatmullRomInterpolator {
     fn new(values: &[f64], pos: &[f64]) -> CatmullRomInterpolator {
         let alpha = 0.5;
-        let tension = 0.;
+        let tension = 0.0;
         let n = values.len();
 
         let mut vals = Vec::with_capacity(n + 2);
-        vals.push(2. * values[0] - values[1]);
+        vals.push(2.0 * values[0] - values[1]);
         for v in values.iter() {
             vals.push(*v);
         }
-        vals.push(2. * values[n - 1] - values[n - 2]);
+        vals.push(2.0 * values[n - 1] - values[n - 2]);
 
         let mut segments = Vec::new();
 
@@ -31,20 +31,20 @@ impl CatmullRomInterpolator {
             let v1 = vals[i];
             let v2 = vals[i + 1];
             let v3 = vals[i + 2];
-            let t0 = 0.;
+            let t0 = 0.0;
             let t1 = t0 + (v0 - v1).abs().powf(alpha);
             let t2 = t1 + (v1 - v2).abs().powf(alpha);
             let t3 = t2 + (v2 - v3).abs().powf(alpha);
-            let m1 = (1. - tension)
+            let m1 = (1.0 - tension)
                 * (t2 - t1)
                 * ((v0 - v1) / (t0 - t1) - (v0 - v2) / (t0 - t2) + (v1 - v2) / (t1 - t2));
-            let m2 = (1. - tension)
+            let m2 = (1.0 - tension)
                 * (t2 - t1)
                 * ((v1 - v2) / (t1 - t2) - (v1 - v3) / (t1 - t3) + (v2 - v3) / (t2 - t3));
-            let m1 = if m1.is_nan() { 0. } else { m1 };
-            let m2 = if m2.is_nan() { 0. } else { m2 };
-            let a = 2. * v1 - 2. * v2 + m1 + m2;
-            let b = -3. * v1 + 3. * v2 - 2. * m1 - m2;
+            let m1 = if m1.is_nan() { 0.0 } else { m1 };
+            let m2 = if m2.is_nan() { 0.0 } else { m2 };
+            let a = 2.0 * v1 - 2.0 * v2 + m1 + m2;
+            let b = -3.0 * v1 + 3.0 * v2 - 2.0 * m1 - m2;
             let c = m1;
             let d = v1;
             segments.push([a, b, c, d]);
@@ -66,7 +66,7 @@ impl Interpolator for CatmullRomInterpolator {
                 return seg[0] * t3 + seg[1] * t2 + seg[2] * t1 + seg[3];
             }
         }
-        0.
+        0.0
     }
 }
 
@@ -75,11 +75,11 @@ impl Interpolator for CatmullRomInterpolator {
 fn basis(t1: f64, v0: f64, v1: f64, v2: f64, v3: f64) -> f64 {
     let t2 = t1 * t1;
     let t3 = t2 * t1;
-    ((1. - 3. * t1 + 3. * t2 - t3) * v0
-        + (4. - 6. * t2 + 3. * t3) * v1
-        + (1. + 3. * t1 + 3. * t2 - 3. * t3) * v2
+    ((1.0 - 3.0 * t1 + 3.0 * t2 - t3) * v0
+        + (4.0 - 6.0 * t2 + 3.0 * t3) * v1
+        + (1.0 + 3.0 * t1 + 3.0 * t2 - 3.0 * t3) * v2
         + t3 * v3)
-        / 6.
+        / 6.0
 }
 
 struct BasisInterpolator {
@@ -107,17 +107,17 @@ impl Interpolator for BasisInterpolator {
                 let v0 = if i > 0 {
                     self.values[i - 1]
                 } else {
-                    2. * v1 - v2
+                    2.0 * v1 - v2
                 };
                 let v3 = if i < (n - 1) {
                     self.values[i + 2]
                 } else {
-                    2. * v2 - v1
+                    2.0 * v2 - v1
                 };
                 return basis(t, v0, v1, v2, v3);
             }
         }
-        0.
+        0.0
     }
 }
 
@@ -135,7 +135,7 @@ struct SplineGradient<T: Interpolator> {
 impl<T: Interpolator> GradientBase for SplineGradient<T> {
     fn at(&self, t: f64) -> Color {
         if t.is_nan() {
-            return Color::from_rgb(0., 0., 0.);
+            return Color::from_rgb(0.0, 0.0, 0.0);
         }
         let t = t.clamp(self.dmin, self.dmax);
         match self.mode {
@@ -225,6 +225,6 @@ pub(crate) fn preset_spline(html_colors: &[&str]) -> Gradient {
             colors.push(c);
         }
     }
-    let pos = linspace(0., 1., colors.len());
+    let pos = linspace(0.0, 1.0, colors.len());
     spline_gradient(&colors, &pos, BlendMode::Rgb, Interpolation::Basis)
 }

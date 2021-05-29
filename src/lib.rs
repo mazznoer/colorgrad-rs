@@ -8,7 +8,7 @@
 //! ```
 //! let g = colorgrad::rainbow();
 //!
-//! assert_eq!(g.domain(), (0., 1.)); // all preset gradients are in the domain [0..1]
+//! assert_eq!(g.domain(), (0.0, 1.0)); // all preset gradients are in the domain [0..1]
 //! assert_eq!(g.at(0.5).rgba_u8(), (175, 240, 91, 255));
 //! assert_eq!(g.at(0.5).to_hex_string(), "#aff05b");
 //! ```
@@ -133,8 +133,8 @@ use std::fmt;
 mod spline;
 use spline::{preset_spline, spline_gradient};
 
-const PI1_3: f64 = PI / 3.;
-const PI2_3: f64 = PI * 2. / 3.;
+const PI1_3: f64 = PI / 3.0;
+const PI2_3: f64 = PI * 2.0 / 3.0;
 
 /// Color blending mode
 #[derive(Debug, Copy, Clone)]
@@ -212,14 +212,14 @@ impl Gradient {
     pub fn repeat_at(&self, t: f64) -> Color {
         let t = norm(t, self.dmin, self.dmax);
         self.gradient
-            .at(self.dmin + modulo(t, 1.) * (self.dmax - self.dmin))
+            .at(self.dmin + modulo(t, 1.0) * (self.dmax - self.dmin))
     }
 
     /// Get color at certain position
     pub fn reflect_at(&self, t: f64) -> Color {
         let t = norm(t, self.dmin, self.dmax);
         self.gradient
-            .at(self.dmin + (modulo(1. + t, 2.) - 1.).abs() * (self.dmax - self.dmin))
+            .at(self.dmin + (modulo(1.0 + t, 2.0) - 1.0).abs() * (self.dmax - self.dmin))
     }
 
     /// Get n colors evenly spaced across gradient
@@ -261,7 +261,7 @@ impl Gradient {
                 dmax: self.dmax,
             };
         }
-        if smoothness > 0. {
+        if smoothness > 0.0 {
             return sharp_gradient_x(self, segment, smoothness);
         }
         sharp_gradient(self, segment)
@@ -380,7 +380,7 @@ fn sharp_gradient_x(grad: &Gradient, n: usize, t: f64) -> Gradient {
         colors.push(c.clone());
     }
     let (dmin, dmax) = grad.domain();
-    let t = clamp0_1(t) * (dmax - dmin) / n as f64 / 4.;
+    let t = clamp0_1(t) * (dmax - dmin) / n as f64 / 4.0;
     let p = linspace(dmin, dmax, n + 1);
     let mut pos = Vec::with_capacity(n * 2);
     let mut j = 0;
@@ -422,13 +422,13 @@ fn sharp_gradient_x(grad: &Gradient, n: usize, t: f64) -> Gradient {
 /// let grad = colorgrad::CustomGradient::new()
 ///     .colors(&[
 ///         Color::from_rgb_u8(255, 0, 0),
-///         Color::from_rgb(0., 0., 1.),
+///         Color::from_rgb(0.0, 0.0, 1.0),
 ///     ])
 ///     .build()?;
 ///
-/// assert_eq!(grad.domain(), (0., 1.)); // default domain
-/// assert_eq!(grad.at(0.).rgba_u8(), (255, 0, 0, 255));
-/// assert_eq!(grad.at(1.).rgba_u8(), (0, 0, 255, 255));
+/// assert_eq!(grad.domain(), (0.0, 1.0)); // default domain
+/// assert_eq!(grad.at(0.0).rgba_u8(), (255, 0, 0, 255));
+/// assert_eq!(grad.at(1.0).rgba_u8(), (0, 0, 255, 255));
 /// # Ok(())
 /// # }
 /// ```
@@ -440,12 +440,12 @@ fn sharp_gradient_x(grad: &Gradient, n: usize, t: f64) -> Gradient {
 /// # fn main() -> Result<(), Box<dyn Error>> {
 /// let grad = colorgrad::CustomGradient::new()
 ///     .html_colors(&["deeppink", "gold", "seagreen"])
-///     .domain(&[0., 100.])
+///     .domain(&[0.0, 100.0])
 ///     .mode(colorgrad::BlendMode::Rgb)
 ///     .build()?;
 ///
-/// assert_eq!(grad.at(0.).rgba_u8(), (255, 20, 147, 255));
-/// assert_eq!(grad.at(100.).rgba_u8(), (46, 139, 87, 255));
+/// assert_eq!(grad.at(0.0).rgba_u8(), (255, 20, 147, 255));
+/// assert_eq!(grad.at(100.0).rgba_u8(), (46, 139, 87, 255));
 /// # Ok(())
 /// # }
 /// ```
@@ -532,7 +532,7 @@ impl CustomGradient {
         }
 
         let colors = if self.colors.is_empty() {
-            vec![Color::from_rgb(0., 0., 0.), Color::from_rgb(1., 1., 1.)]
+            vec![Color::from_rgb(0.0, 0.0, 0.0), Color::from_rgb(1.0, 1.0, 1.0)]
         } else if self.colors.len() == 1 {
             vec![self.colors[0].clone(), self.colors[0].clone()]
         } else {
@@ -540,7 +540,7 @@ impl CustomGradient {
         };
 
         let pos = if self.pos.is_empty() {
-            linspace(0., 1., colors.len())
+            linspace(0.0, 1.0, colors.len())
         } else if self.pos.len() == colors.len() {
             for p in self.pos.windows(2) {
                 if p[0] > p[1] {
@@ -639,8 +639,8 @@ macro_rules! preset_fn {
         pub fn $name() -> Gradient {
             Gradient {
                 gradient: Box::new($gradient_base),
-                dmin: 0.,
-                dmax: 1.,
+                dmin: 0.0,
+                dmax: 1.0,
             }
         }
     };
@@ -678,7 +678,7 @@ impl GradientBase for TurboGradient {
         let b = (27.2
             + t * (3211.1 - t * (15327.97 - t * (27814.0 - t * (22569.18 - t * 6838.66)))))
             .round();
-        Color::from_rgb(clamp0_1(r / 255.), clamp0_1(g / 255.), clamp0_1(b / 255.))
+        Color::from_rgb(clamp0_1(r / 255.0), clamp0_1(g / 255.0), clamp0_1(b / 255.0))
     }
 }
 
@@ -698,7 +698,7 @@ impl GradientBase for CividisGradient {
         let b = (81.24
             + t * (442.36 - t * (2482.43 - t * (6167.24 - t * (6614.94 - t * 2475.67)))))
             .round();
-        Color::from_rgb(clamp0_1(r / 255.), clamp0_1(g / 255.), clamp0_1(b / 255.))
+        Color::from_rgb(clamp0_1(r / 255.0), clamp0_1(g / 255.0), clamp0_1(b / 255.0))
     }
 }
 
@@ -715,13 +715,13 @@ struct Cubehelix {
 
 impl Cubehelix {
     fn to_color(&self) -> Color {
-        let h = (self.h + 120.).to_radians();
+        let h = (self.h + 120.0).to_radians();
         let l = self.l;
-        let a = self.s * l * (1. - l);
+        let a = self.s * l * (1.0 - l);
         let cosh = h.cos();
         let sinh = h.sin();
-        let r = l - a * (0.14861 * cosh - 1.78277 * sinh).min(1.);
-        let g = l - a * (0.29227 * cosh + 0.90649 * sinh).min(1.);
+        let r = l - a * (0.14861 * cosh - 1.78277 * sinh).min(1.0);
+        let g = l - a * (0.29227 * cosh + 0.90649 * sinh).min(1.0);
         let b = l + a * (1.97294 * cosh);
         Color::from_rgb(clamp0_1(r), clamp0_1(g), clamp0_1(b))
     }
@@ -751,25 +751,25 @@ impl GradientBase for CubehelixGradient {
 
 preset_fn!(cubehelix_default; CubehelixGradient {
     start: Cubehelix {
-        h: 300.,
+        h: 300.0,
         s: 0.5,
-        l: 0.,
+        l: 0.0,
     },
     end: Cubehelix {
-        h: -240.,
+        h: -240.0,
         s: 0.5,
-        l: 1.,
+        l: 1.0,
     },
 });
 
 preset_fn!(warm; CubehelixGradient {
     start: Cubehelix {
-        h: -100.,
+        h: -100.0,
         s: 0.75,
         l: 0.35,
     },
     end: Cubehelix {
-        h: 80.,
+        h: 80.0,
         s: 1.5,
         l: 0.8,
     },
@@ -777,12 +777,12 @@ preset_fn!(warm; CubehelixGradient {
 
 preset_fn!(cool; CubehelixGradient {
     start: Cubehelix {
-        h: 260.,
+        h: 260.0,
         s: 0.75,
         l: 0.35,
     },
     end: Cubehelix {
-        h: 80.,
+        h: 80.0,
         s: 1.5,
         l: 0.8,
     },
@@ -797,7 +797,7 @@ impl GradientBase for RainbowGradient {
         let t = clamp0_1(t);
         let ts = (t - 0.5).abs();
         Cubehelix {
-            h: 360. * t - 100.,
+            h: 360.0 * t - 100.0,
             s: 1.5 - 1.5 * ts,
             l: 0.8 - 0.9 * ts,
         }
@@ -814,12 +814,12 @@ fn linspace(min: f64, max: f64, n: usize) -> Vec<f64> {
         return vec![min];
     }
     let d = max - min;
-    let l = n as f64 - 1.;
+    let l = n as f64 - 1.0;
     (0..n).map(|i| min + (i as f64 * d) / l).collect()
 }
 
 fn clamp0_1(t: f64) -> f64 {
-    t.clamp(0., 1.)
+    t.clamp(0.0, 1.0)
 }
 
 fn modulo(x: f64, y: f64) -> f64 {
@@ -828,7 +828,7 @@ fn modulo(x: f64, y: f64) -> f64 {
 
 // Map t from range [a, b] to range [0, 1]
 fn norm(t: f64, a: f64, b: f64) -> f64 {
-    (t - a) * (1. / (b - a))
+    (t - a) * (1.0 / (b - a))
 }
 
 #[cfg(test)]
@@ -837,21 +837,21 @@ mod tests {
 
     #[test]
     fn test_linspace() {
-        assert_eq!(linspace(0., 1., 0), vec![]);
-        assert_eq!(linspace(0., 1., 1), vec![0.]);
-        assert_eq!(linspace(0., 1., 2), vec![0., 1.]);
-        assert_eq!(linspace(0., 1., 3), vec![0., 0.5, 1.]);
-        assert_eq!(linspace(-1., 1., 5), vec![-1., -0.5, 0., 0.5, 1.]);
-        assert_eq!(linspace(0., 100., 5), vec![0., 25., 50., 75., 100.]);
+        assert_eq!(linspace(0.0, 1.0, 0), vec![]);
+        assert_eq!(linspace(0.0, 1.0, 1), vec![0.0]);
+        assert_eq!(linspace(0.0, 1.0, 2), vec![0.0, 1.0]);
+        assert_eq!(linspace(0.0, 1.0, 3), vec![0.0, 0.5, 1.0]);
+        assert_eq!(linspace(-1.0, 1.0, 5), vec![-1.0, -0.5, 0.0, 0.5, 1.0]);
+        assert_eq!(linspace(0.0, 100.0, 5), vec![0.0, 25.0, 50.0, 75.0, 100.0]);
     }
 
     #[test]
     fn test_clamp() {
-        assert_eq!(clamp0_1(-0.01), 0.);
-        assert_eq!(clamp0_1(1.01), 1.);
+        assert_eq!(clamp0_1(-0.01), 0.0);
+        assert_eq!(clamp0_1(1.01), 1.0);
         assert_eq!(clamp0_1(0.99), 0.99);
         assert_eq!(clamp0_1(0.01), 0.01);
-        assert_eq!(clamp0_1(0.), 0.);
-        assert_eq!(clamp0_1(1.), 1.);
+        assert_eq!(clamp0_1(0.0), 0.0);
+        assert_eq!(clamp0_1(1.0), 1.0);
     }
 }

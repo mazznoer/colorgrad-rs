@@ -47,8 +47,8 @@ let g = colorgrad::CustomGradient::new()
         Color::from_rgb_u8(0, 206, 209),
         Color::from_rgb_u8(255, 105, 180),
         Color::from_rgb(0.274, 0.5, 0.7),
-        Color::from_hsv(50., 1., 1.),
-        Color::from_hsv(348., 0.9, 0.8),
+        Color::from_hsv(50.0, 1.0, 1.0),
+        Color::from_hsv(348.0, 0.9, 0.8),
     ])
     .build()?;
 ```
@@ -88,7 +88,7 @@ let g = colorgrad::CustomGradient::new()
     .html_colors(&["deeppink", "gold", "seagreen"])
     .build()?;
 
-assert_eq!(g.domain(), (0., 1.));
+assert_eq!(g.domain(), (0.0, 1.0));
 ```
 ![img](docs/images/domain-default.png)
 
@@ -97,10 +97,10 @@ Set the domain to [0..100].
 ```rust
 let g = colorgrad::CustomGradient::new()
     .html_colors(&["deeppink", "gold", "seagreen"])
-    .domain(&[0., 100.])
+    .domain(&[0.0, 100.0])
     .build()?;
 
-assert_eq!(g.domain(), (0., 100.));
+assert_eq!(g.domain(), (0.0, 100.0));
 ```
 ![img](docs/images/domain-100.png)
 
@@ -109,10 +109,10 @@ Set the domain to [-1..1].
 ```rust
 let g = colorgrad::CustomGradient::new()
     .html_colors(&["deeppink", "gold", "seagreen"])
-    .domain(&[-1., 1.])
+    .domain(&[-1.0, 1.0])
     .build()?;
 
-assert_eq!(g.domain(), (-1., 1.));
+assert_eq!(g.domain(), (-1.0, 1.0));
 ```
 ![img](docs/images/domain-neg1-1.png)
 
@@ -121,10 +121,10 @@ Set exact position for each color. The domain is [0..1].
 ```rust
 let g = colorgrad::CustomGradient::new()
     .html_colors(&["deeppink", "gold", "seagreen"])
-    .domain(&[0., 0.7, 1.])
+    .domain(&[0.0, 0.7, 1.0])
     .build()?;
 
-assert_eq!(g.domain(), (0., 1.));
+assert_eq!(g.domain(), (0.0, 1.0));
 ```
 ![img](docs/images/color-position-1.png)
 
@@ -133,10 +133,10 @@ Set exact position for each color. The domain is [15..80].
 ```rust
 let g = colorgrad::CustomGradient::new()
     .html_colors(&["deeppink", "gold", "seagreen"])
-    .domain(&[15., 30., 80.])
+    .domain(&[15.0, 30.0, 80.0])
     .build()?;
 
-assert_eq!(g.domain(), (15., 80.));
+assert_eq!(g.domain(), (15.0, 80.0));
 ```
 ![img](docs/images/color-position-2.png)
 
@@ -297,7 +297,7 @@ All preset gradients are in the domain [0..1]. Uniform B-splines is used to inte
 ```rust
 let grad = colorgrad::rainbow();
 
-assert_eq!(grad.domain(), (0., 1.));
+assert_eq!(grad.domain(), (0.0, 1.0));
 ```
 
 ### Get single color at certain position
@@ -350,7 +350,7 @@ Output:
 Convert gradient to hard-edged gradient with 11 segments and 0 smoothness.
 
 ```rust
-let g = colorgrad::rainbow().sharp(11, 0.);
+let g = colorgrad::rainbow().sharp(11, 0.0);
 ```
 ![img](docs/images/rainbow-sharp.png)
 
@@ -372,12 +372,11 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let w = 1500;
     let h = 70;
-    let fw = w as f64;
 
     let mut imgbuf = image::ImageBuffer::new(w, h);
 
     for (x, _, pixel) in imgbuf.enumerate_pixels_mut() {
-        let (r, g, b, _) = grad.at(x as f64 / fw).rgba_u8();
+        let (r, g, b, _) = grad.at(x as f64 / w as f64).rgba_u8();
         *pixel = image::Rgb([r, g, b]);
     }
 

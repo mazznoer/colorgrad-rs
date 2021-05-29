@@ -56,8 +56,8 @@ fn main() {
             Color::from_rgb_u8(0, 206, 209),
             Color::from_rgb_u8(255, 105, 180),
             Color::from_rgb(0.274, 0.5, 0.7),
-            Color::from_hsv(50., 1., 1.),
-            Color::from_hsv(348., 0.9, 0.8),
+            Color::from_hsv(50.0, 1.0, 1.0),
+            Color::from_hsv(348.0, 0.9, 0.8),
         ])
         .build()
         .unwrap();
@@ -86,31 +86,31 @@ fn main() {
 
     let domain_2 = CustomGradient::new()
         .html_colors(&["deeppink", "gold", "seagreen"])
-        .domain(&[0., 100.])
+        .domain(&[0.0, 100.0])
         .build()
         .unwrap();
 
     let domain_3 = CustomGradient::new()
         .html_colors(&["deeppink", "gold", "seagreen"])
-        .domain(&[-1., 1.])
+        .domain(&[-1.0, 1.0])
         .build()
         .unwrap();
 
     let color_pos_1 = CustomGradient::new()
         .html_colors(&["deeppink", "gold", "seagreen"])
-        .domain(&[0., 0.7, 1.])
+        .domain(&[0.0, 0.7, 1.0])
         .build()
         .unwrap();
 
     let color_pos_2 = CustomGradient::new()
         .html_colors(&["deeppink", "gold", "seagreen"])
-        .domain(&[15., 30., 80.])
+        .domain(&[15.0, 30.0, 80.0])
         .build()
         .unwrap();
 
     let color_pos_3 = CustomGradient::new()
         .html_colors(&["deeppink", "#470a5e", "red", "#ff0"])
-        .domain(&[0., 0.7, 0.7, 1.])
+        .domain(&[0.0, 0.7, 0.7, 1.0])
         .build()
         .unwrap();
 
@@ -244,7 +244,7 @@ fn gradient_image(gradient: &Gradient, width: u32, height: u32) -> ImageBuffer<R
     let fw = width as f64;
     let mut imgbuf = ImageBuffer::new(width, height);
     for (x, _, pixel) in imgbuf.enumerate_pixels_mut() {
-        let (r, g, b, _) = gradient.at(remap(x as f64, 0., fw, dmin, dmax)).rgba_u8();
+        let (r, g, b, _) = gradient.at(remap(x as f64, 0.0, fw, dmin, dmax)).rgba_u8();
         *pixel = Rgb([r, g, b]);
     }
     imgbuf

@@ -4,21 +4,21 @@ use colorgrad::{BlendMode, Color, CustomGradient};
 fn custom_gradient() {
     // Custom gradient default
     let g = CustomGradient::new().build().unwrap();
-    assert_eq!(g.domain(), (0., 1.));
-    assert_eq!(g.at(0.).to_hex_string(), "#000000");
-    assert_eq!(g.at(1.).to_hex_string(), "#ffffff");
+    assert_eq!(g.domain(), (0.0, 1.0));
+    assert_eq!(g.at(0.0).to_hex_string(), "#000000");
+    assert_eq!(g.at(1.0).to_hex_string(), "#ffffff");
     assert_eq!(format!("{:?}", g), "Gradient { dmin: 0.0, dmax: 1.0 }");
 
     // Custom colors
     let g = CustomGradient::new()
         .colors(&[
-            Color::from_rgb(1., 0., 0.),
-            Color::from_rgb(1., 1., 0.),
-            Color::from_rgb(0., 0., 1.),
+            Color::from_rgb(1.0, 0.0, 0.0),
+            Color::from_rgb(1.0, 1.0, 0.0),
+            Color::from_rgb(0.0, 0.0, 1.0),
         ])
         .build()
         .unwrap();
-    assert_eq!(g.domain(), (0., 1.));
+    assert_eq!(g.domain(), (0.0, 1.0));
     assert_eq!(g.at(0.0).to_hex_string(), "#ff0000");
     assert_eq!(g.at(0.5).to_hex_string(), "#ffff00");
     assert_eq!(g.at(1.0).to_hex_string(), "#0000ff");
@@ -26,7 +26,7 @@ fn custom_gradient() {
     // Custom colors #2
     let g = CustomGradient::new()
         .html_colors(&["#00f", "#00ffff"])
-        .colors(&[Color::from_rgba(1., 1., 0., 0.5)])
+        .colors(&[Color::from_rgba(1.0, 1.0, 0.0, 0.5)])
         .html_colors(&["lime"])
         .build()
         .unwrap();
@@ -38,7 +38,7 @@ fn custom_gradient() {
 
     // Single color
     let g = CustomGradient::new()
-        .colors(&[Color::from_rgb(1., 0., 0.)])
+        .colors(&[Color::from_rgb(1.0, 0.0, 0.0)])
         .build()
         .unwrap();
     assert_eq!(g.at(0.0).rgba_u8(), (255, 0, 0, 255));
@@ -117,21 +117,21 @@ fn custom_gradient_error() {
     // Wrong domain #1
     let g = CustomGradient::new()
         .html_colors(&["#777", "gold", "#bbb", "#f0f"])
-        .domain(&[0., 0.75, 1.])
+        .domain(&[0.0, 0.75, 1.0])
         .build();
     assert_eq!(g.unwrap_err().to_string(), "Wrong domain count");
 
     // Wrong domain #2
     let g = CustomGradient::new()
         .html_colors(&["#777", "gold", "#bbb", "#f0f"])
-        .domain(&[0., 0.71, 0.7, 1.])
+        .domain(&[0.0, 0.71, 0.7, 1.0])
         .build();
     assert_eq!(g.unwrap_err().to_string(), "Wrong domain");
 
     // Wrong domain #3
     let g = CustomGradient::new()
         .html_colors(&["#777", "gold", "#bbb", "#f0f"])
-        .domain(&[1., 0.])
+        .domain(&[1.0, 0.0])
         .build();
     assert_eq!(g.unwrap_err().to_string(), "Wrong domain");
 }
@@ -141,56 +141,56 @@ fn custom_gradient_domain() {
     // Custom domain #1
     let g = CustomGradient::new()
         .html_colors(&["yellow", "blue", "lime"])
-        .domain(&[0., 100.])
+        .domain(&[0.0, 100.0])
         .build()
         .unwrap();
-    assert_eq!(g.at(0.).to_hex_string(), "#ffff00");
-    assert_eq!(g.at(50.).to_hex_string(), "#0000ff");
-    assert_eq!(g.at(100.).to_hex_string(), "#00ff00");
+    assert_eq!(g.at(0.0).to_hex_string(), "#ffff00");
+    assert_eq!(g.at(50.0).to_hex_string(), "#0000ff");
+    assert_eq!(g.at(100.0).to_hex_string(), "#00ff00");
 
-    assert_eq!(g.at(-10.).to_hex_string(), "#ffff00");
-    assert_eq!(g.at(110.).to_hex_string(), "#00ff00");
+    assert_eq!(g.at(-10.0).to_hex_string(), "#ffff00");
+    assert_eq!(g.at(110.0).to_hex_string(), "#00ff00");
     assert_eq!(g.at(f64::NAN).to_hex_string(), "#ffff00");
 
     // Custom domain #2
     let g = CustomGradient::new()
         .html_colors(&["yellow", "blue", "lime"])
-        .domain(&[-1., 1.])
+        .domain(&[-1.0, 1.0])
         .build()
         .unwrap();
-    assert_eq!(g.at(-1.).to_hex_string(), "#ffff00");
-    assert_eq!(g.at(0.).to_hex_string(), "#0000ff");
-    assert_eq!(g.at(1.).to_hex_string(), "#00ff00");
+    assert_eq!(g.at(-1.0).to_hex_string(), "#ffff00");
+    assert_eq!(g.at(0.0).to_hex_string(), "#0000ff");
+    assert_eq!(g.at(1.0).to_hex_string(), "#00ff00");
 
-    assert_eq!(g.at(-2.).to_hex_string(), "#ffff00");
-    assert_eq!(g.at(2.).to_hex_string(), "#00ff00");
+    assert_eq!(g.at(-2.0).to_hex_string(), "#ffff00");
+    assert_eq!(g.at(2.0).to_hex_string(), "#00ff00");
 
     // Custom color position #1
     let g = CustomGradient::new()
         .html_colors(&["yellow", "blue", "lime"])
-        .domain(&[0., 0.75, 1.])
+        .domain(&[0.0, 0.75, 1.0])
         .build()
         .unwrap();
-    assert_eq!(g.at(0.).to_hex_string(), "#ffff00");
+    assert_eq!(g.at(0.0).to_hex_string(), "#ffff00");
     assert_eq!(g.at(0.75).to_hex_string(), "#0000ff");
-    assert_eq!(g.at(1.).to_hex_string(), "#00ff00");
+    assert_eq!(g.at(1.0).to_hex_string(), "#00ff00");
 
-    assert_eq!(g.at(-10.).to_hex_string(), "#ffff00");
-    assert_eq!(g.at(110.).to_hex_string(), "#00ff00");
+    assert_eq!(g.at(-10.0).to_hex_string(), "#ffff00");
+    assert_eq!(g.at(110.0).to_hex_string(), "#00ff00");
 
     // Custom color position #2
     let g = CustomGradient::new()
         .html_colors(&["yellow", "blue", "lime", "red"])
-        .domain(&[15., 25., 29., 63.])
+        .domain(&[15.0, 25.0, 29.0, 63.0])
         .build()
         .unwrap();
-    assert_eq!(g.at(15.).to_hex_string(), "#ffff00");
-    assert_eq!(g.at(25.).to_hex_string(), "#0000ff");
-    assert_eq!(g.at(29.).to_hex_string(), "#00ff00");
-    assert_eq!(g.at(63.).to_hex_string(), "#ff0000");
+    assert_eq!(g.at(15.0).to_hex_string(), "#ffff00");
+    assert_eq!(g.at(25.0).to_hex_string(), "#0000ff");
+    assert_eq!(g.at(29.0).to_hex_string(), "#00ff00");
+    assert_eq!(g.at(63.0).to_hex_string(), "#ff0000");
 
-    assert_eq!(g.at(10.).to_hex_string(), "#ffff00");
-    assert_eq!(g.at(64.).to_hex_string(), "#ff0000");
+    assert_eq!(g.at(10.0).to_hex_string(), "#ffff00");
+    assert_eq!(g.at(64.0).to_hex_string(), "#ff0000");
 }
 
 #[test]
@@ -200,17 +200,17 @@ fn sharp_gradient() {
         .build()
         .unwrap();
 
-    let g0 = grad.sharp(0, 0.);
+    let g0 = grad.sharp(0, 0.0);
     assert_eq!(g0.at(0.0).rgba_u8(), (255, 0, 0, 255));
     assert_eq!(g0.at(0.5).rgba_u8(), (255, 0, 0, 255));
     assert_eq!(g0.at(0.1).rgba_u8(), (255, 0, 0, 255));
 
-    let g1 = grad.sharp(1, 0.);
+    let g1 = grad.sharp(1, 0.0);
     assert_eq!(g1.at(0.0).rgba_u8(), (255, 0, 0, 255));
     assert_eq!(g1.at(0.5).rgba_u8(), (255, 0, 0, 255));
     assert_eq!(g1.at(0.1).rgba_u8(), (255, 0, 0, 255));
 
-    let g3 = grad.sharp(3, 0.);
+    let g3 = grad.sharp(3, 0.0);
     assert_eq!(g3.at(0.0).rgba_u8(), (255, 0, 0, 255));
     assert_eq!(g3.at(0.1).rgba_u8(), (255, 0, 0, 255));
 
@@ -227,11 +227,11 @@ fn sharp_gradient() {
 
     let grad = CustomGradient::new()
         .html_colors(&["red", "lime", "blue"])
-        .domain(&[-1., 1.])
+        .domain(&[-1.0, 1.0])
         .build()
         .unwrap();
 
-    let g2 = grad.sharp(2, 0.);
+    let g2 = grad.sharp(2, 0.0);
     assert_eq!(g2.at(-1.0).rgba_u8(), (255, 0, 0, 255));
     assert_eq!(g2.at(-0.5).rgba_u8(), (255, 0, 0, 255));
     assert_eq!(g2.at(-0.1).rgba_u8(), (255, 0, 0, 255));
@@ -262,13 +262,13 @@ fn sharp_gradient_x() {
     assert_eq!(g.at(0.0).rgba_u8(), (255, 0, 0, 255));
     assert_eq!(g.at(0.1).rgba_u8(), (255, 0, 0, 255));
 
-    assert_eq!(g.at(1. / 3.).rgba_u8(), (128, 128, 0, 255));
+    assert_eq!(g.at(1.0 / 3.0).rgba_u8(), (128, 128, 0, 255));
 
     assert_eq!(g.at(0.45).rgba_u8(), (0, 255, 0, 255));
     assert_eq!(g.at(0.50).rgba_u8(), (0, 255, 0, 255));
     assert_eq!(g.at(0.55).rgba_u8(), (0, 255, 0, 255));
 
-    assert_eq!(g.at(1. / 3. * 2.).rgba_u8(), (0, 128, 128, 255));
+    assert_eq!(g.at(1.0 / 3.0 * 2.0).rgba_u8(), (0, 128, 128, 255));
 
     assert_eq!(g.at(0.9).rgba_u8(), (0, 0, 255, 255));
     assert_eq!(g.at(1.0).rgba_u8(), (0, 0, 255, 255));
@@ -305,7 +305,7 @@ fn colors() {
 
     let g = CustomGradient::new()
         .html_colors(&["#f00", "#0f0", "#00f"])
-        .domain(&[-1., 1.])
+        .domain(&[-1.0, 1.0])
         .build()
         .unwrap();
 
@@ -327,35 +327,35 @@ fn preset() {
     assert_eq!(g.at(f64::NAN).to_hex_string(), "#000000");
 
     let g = colorgrad::greys();
-    assert_eq!(g.at(0.).to_hex_string(), "#ffffff");
-    assert_eq!(g.at(1.).to_hex_string(), "#000000");
+    assert_eq!(g.at(0.0).to_hex_string(), "#ffffff");
+    assert_eq!(g.at(1.0).to_hex_string(), "#000000");
 
     let g = colorgrad::turbo();
-    assert_eq!(g.at(0.).to_hex_string(), "#23171b");
-    assert_eq!(g.at(1.).to_hex_string(), "#900c00");
+    assert_eq!(g.at(0.0).to_hex_string(), "#23171b");
+    assert_eq!(g.at(1.0).to_hex_string(), "#900c00");
 
     let g = colorgrad::cividis();
-    assert_eq!(g.at(0.).to_hex_string(), "#002051");
-    assert_eq!(g.at(1.).to_hex_string(), "#fdea45");
+    assert_eq!(g.at(0.0).to_hex_string(), "#002051");
+    assert_eq!(g.at(1.0).to_hex_string(), "#fdea45");
 
     let g = colorgrad::cubehelix_default();
-    assert_eq!(g.at(0.).to_hex_string(), "#000000");
-    assert_eq!(g.at(1.).to_hex_string(), "#ffffff");
+    assert_eq!(g.at(0.0).to_hex_string(), "#000000");
+    assert_eq!(g.at(1.0).to_hex_string(), "#ffffff");
 
     let g = colorgrad::warm();
-    assert_eq!(g.at(0.).to_hex_string(), "#6e40aa");
-    assert_eq!(g.at(1.).to_hex_string(), "#aff05b");
+    assert_eq!(g.at(0.0).to_hex_string(), "#6e40aa");
+    assert_eq!(g.at(1.0).to_hex_string(), "#aff05b");
 
     let g = colorgrad::cool();
-    assert_eq!(g.at(0.).to_hex_string(), "#6e40aa");
-    assert_eq!(g.at(1.).to_hex_string(), "#aff05b");
+    assert_eq!(g.at(0.0).to_hex_string(), "#6e40aa");
+    assert_eq!(g.at(1.0).to_hex_string(), "#aff05b");
 }
 
 #[test]
 fn cyclic() {
     let g = colorgrad::rainbow();
-    assert_eq!(g.at(0.).rgba_u8(), g.at(1.).rgba_u8());
+    assert_eq!(g.at(0.0).rgba_u8(), g.at(1.0).rgba_u8());
 
     let g = colorgrad::sinebow();
-    assert_eq!(g.at(0.).rgba_u8(), g.at(1.).rgba_u8());
+    assert_eq!(g.at(0.0).rgba_u8(), g.at(1.0).rgba_u8());
 }

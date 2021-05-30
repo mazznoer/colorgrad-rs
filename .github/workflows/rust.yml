@@ -17,6 +17,16 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build
-      run: cargo build --verbose
+      run: cargo build --verbose --all-features
     - name: Run tests
-      run: cargo test --verbose
+      run: cargo test --verbose --all-features
+
+    - name: Tarpaulin code coverage
+      id: coverage
+      uses: actions-rs/tarpaulin@v0.1
+
+    - name: Upload to codecov.io
+      uses: codecov/codecov-action@v1.0.2
+      with:
+        token: ${{secrets.CODECOV_TOKEN}}
+

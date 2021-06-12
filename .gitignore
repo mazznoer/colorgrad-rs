@@ -11,4 +11,5 @@ Cargo.lock
 **/*.rs.bk
 
 example_output/
+gradient.png
 

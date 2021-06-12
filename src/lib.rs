@@ -129,7 +129,7 @@ use std::{error, fmt};
 mod preset;
 mod spline;
 
-pub use csscolorparser::{Color, ParseError};
+pub use csscolorparser::{Color, ParseColorError};
 pub use preset::*;
 use spline::spline_gradient;
 
@@ -294,7 +294,7 @@ impl GradientBase for LinearGradient {
 
                 match self.mode {
                     BlendMode::Rgb => return col[0].interpolate_rgb(&col[1], t),
-                    BlendMode::LinearRgb => return col[0].interpolate_lrgb(&col[1], t),
+                    BlendMode::LinearRgb => return col[0].interpolate_linear_rgb(&col[1], t),
                     BlendMode::Hsv => return col[0].interpolate_hsv(&col[1], t),
                     BlendMode::Oklab => return col[0].interpolate_oklab(&col[1], t),
                 }

@@ -157,7 +157,7 @@ impl<T: Interpolator> GradientBase for SplineGradient<T> {
                 Color::from_rgba(self.a.at(t), self.b.at(t), self.c.at(t), self.d.at(t))
             }
             BlendMode::LinearRgb => {
-                Color::from_lrgba(self.a.at(t), self.b.at(t), self.c.at(t), self.d.at(t))
+                Color::from_linear_rgba(self.a.at(t), self.b.at(t), self.c.at(t), self.d.at(t))
             }
             BlendMode::Oklab => {
                 Color::from_oklaba(self.a.at(t), self.b.at(t), self.c.at(t), self.d.at(t))
@@ -184,7 +184,7 @@ pub(crate) fn spline_gradient(
     for col in colors.iter() {
         let (c1, c2, c3, c4) = match space {
             BlendMode::Rgb => col.rgba(),
-            BlendMode::LinearRgb => col.to_lrgba(),
+            BlendMode::LinearRgb => col.to_linear_rgba(),
             BlendMode::Oklab => col.to_oklaba(),
             BlendMode::Hsv => col.to_hsva(),
         };

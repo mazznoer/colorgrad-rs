@@ -126,10 +126,12 @@
 
 use std::{error, fmt};
 
+mod gimp_gradient;
 mod preset;
 mod spline;
 
 pub use csscolorparser::{Color, ParseColorError};
+pub use gimp_gradient::{parse_ggr, ParseGgrError};
 pub use preset::*;
 use spline::spline_gradient;
 

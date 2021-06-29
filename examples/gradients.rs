@@ -1,8 +1,7 @@
-#![allow(dead_code, unreachable_code, unused_variables, unused_imports)]
-
 use colorgrad::{BlendMode, Color, CustomGradient, Gradient, Interpolation};
-use image::{ImageBuffer, Rgb};
-use std::fs::create_dir;
+use image::{ImageBuffer, Rgba};
+use std::fs::{create_dir, File};
+use std::io::BufReader;
 use std::path::Path;
 
 fn main() {
@@ -74,6 +73,14 @@ fn main() {
 
     let grad_5 = CustomGradient::new()
         .html_colors(&["rgb(125,110,221)", "rgb(90%,45%,97%)", "hsl(229,79%,85%)"])
+        .build()
+        .unwrap();
+
+    let grad_6 = CustomGradient::new()
+        .colors(&[
+            Color::from_rgba_u8(255, 0, 0, 255),
+            Color::from_rgba_u8(255, 0, 0, 0),
+        ])
         .build()
         .unwrap();
 
@@ -168,12 +175,18 @@ fn main() {
         .build()
         .unwrap();
 
+    // GIMP gradients
+
+    let ggr_1 = parse_ggr("examples/Abstract_1.ggr");
+    let ggr_2 = parse_ggr("examples/Full_saturation_spectrum_CW.ggr");
+
     let custom_gradients = &[
         (&grad_1, "custom-default"),
         (&grad_2, "custom-colors"),
         (&grad_3, "custom-hex-colors"),
         (&grad_4, "custom-named-colors"),
         (&grad_5, "custom-css-colors"),
+        (&grad_6, "custom-transparent"),
         (&domain_1, "domain-default"),
         (&domain_2, "domain-0-100"),
         (&domain_3, "domain-neg1-1"),
@@ -187,6 +200,8 @@ fn main() {
         (&interp_linear, "interpolation-linear"),
         (&interp_catmull_rom, "interpolation-catmull-rom"),
         (&interp_basis, "interpolation-basis"),
+        (&ggr_1.0, "ggr_abstract_1"),
+        (&ggr_2.0, "ggr_full_spectrum_cw"),
     ];
 
     // Sharp gradients
@@ -239,14 +254,26 @@ fn main() {
     }
 }
 
-fn gradient_image(gradient: &Gradient, width: u32, height: u32) -> ImageBuffer<Rgb<u8>, Vec<u8>> {
+fn parse_ggr<P: AsRef<Path>>(filepath: P) -> (Gradient, String) {
+    let input = File::open(filepath).unwrap();
+    let buf = BufReader::new(input);
+    let fg = Color::from_rgb(0.0, 0.0, 0.0);
+    let bg = Color::from_rgb(1.0, 1.0, 1.0);
+    colorgrad::parse_ggr(buf, &fg, &bg).unwrap()
+}
+
+fn gradient_image(gradient: &Gradient, width: u32, height: u32) -> ImageBuffer<Rgba<u8>, Vec<u8>> {
     let (dmin, dmax) = gradient.domain();
-    let fw = width as f64;
     let mut imgbuf = ImageBuffer::new(width, height);
+
     for (x, _, pixel) in imgbuf.enumerate_pixels_mut() {
-        let (r, g, b, _) = gradient.at(remap(x as f64, 0.0, fw, dmin, dmax)).rgba_u8();
-        *pixel = Rgb([r, g, b]);
+        let (r, g, b, a) = gradient
+            .at(remap(x as f64, 0.0, width as f64, dmin, dmax))
+            .rgba_u8();
+
+        *pixel = Rgba([r, g, b, a]);
     }
+
     imgbuf
 }
 

@@ -45,12 +45,19 @@ enum ColoringType {
 
 #[derive(Debug)]
 struct GimpSegment {
+    // Left endpoint color
     lcolor: Color,
+    // Right endpoint color
     rcolor: Color,
+    // Left endpoint coordinate
     lpos: f64,
+    // Midpoint coordinate
     mpos: f64,
+    // Right endpoint coordinate
     rpos: f64,
+    // Blending function type
     blending_type: BlendingType,
+    // Coloring type
     coloring_type: ColoringType,
 }
 
@@ -85,9 +92,9 @@ impl GradientBase for GimpGradient {
                     BlendingType::Linear => calc_linear_factor(middle, pos),
                     BlendingType::Curved => {
                         if middle < f64::EPSILON {
-                            1.0
+                            return seg.rcolor.clone();
                         } else if (1.0 - middle).abs() < f64::EPSILON {
-                            0.0
+                            return seg.lcolor.clone();
                         } else {
                             (-LN_2 * pos.log10() / middle.log10()).exp()
                         }
@@ -106,9 +113,9 @@ impl GradientBase for GimpGradient {
                     }
                     BlendingType::Step => {
                         if pos >= middle {
-                            1.0
+                            return seg.rcolor.clone();
                         } else {
-                            0.0
+                            return seg.lcolor.clone();
                         }
                     }
                 };

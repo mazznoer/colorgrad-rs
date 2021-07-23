@@ -18,12 +18,15 @@
 
 + [Custom Gradient](#custom-gradient)
 + [Preset Gradients](#preset-gradients)
++ [Parsing GIMP Gradient](#parsing-gimp-gradient)
 + [Using the Gradient](#using-the-gradient)
 + [Examples](#examples)
++ [Similar Projects](#similar-projects)
 
 ## Usage
 
 Add this to your `Cargo.toml`
+
 ```toml
 colorgrad = "0.4.0"
 ```
@@ -290,6 +293,24 @@ All preset gradients are in the domain [0..1]. Uniform B-splines is used to inte
 `colorgrad::sinebow()`
 ![img](docs/images/preset/sinebow.png)
 
+## Parsing GIMP Gradient
+
+```rust
+use colorgrad::Color;
+use std::fs::File;
+use std::io::BufReader;
+
+let input = File::open("examples/Abstract_1.ggr")?;
+let buf = BufReader::new(input);
+let fg = Color::from_rgb(0.0, 0.0, 0.0);
+let bg = Color::from_rgb(1.0, 1.0, 1.0);
+let (grad, name) = colorgrad::parse_ggr(buf, &fg, &bg)?;
+
+assert_eq!(name, "Abstract 1");
+```
+
+![img](docs/images/ggr_abstract_1.png)
+
 ## Using the Gradient
 
 ### Get the domain
@@ -421,13 +442,14 @@ Example output:
 
 ![img](docs/images/example-noise.png)
 
-## Inspirations
+## Similar Projects
 
-* [chroma.js](https://gka.github.io/chroma.js/#color-scales)
-* [d3-scale-chromatic](https://github.com/d3/d3-scale-chromatic/)
+* [colorgrad](https://github.com/mazznoer/colorgrad) (Go version of this library)
+* [colorous](https://github.com/dtolnay/colorous) (Rust)
+* [chroma.js](https://gka.github.io/chroma.js/#color-scales) (Javascript)
+* [d3-scale-chromatic](https://github.com/d3/d3-scale-chromatic/) (Javascript)
 
 ## Links
 
-* [colorgrad](https://github.com/mazznoer/colorgrad) - Go version of this library
 * [Color Blindness Simulator](https://www.color-blindness.com/coblis-color-blindness-simulator/)
 * [Visual System Simulator](https://github.com/UniStuttgart-VISUS/visual-system-simulator)

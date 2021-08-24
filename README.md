@@ -1,12 +1,12 @@
 # colorgrad-rs
 
+[![Stars](https://img.shields.io/github/stars/mazznoer/colorgrad-rs?logo=github)](https://github.com/mazznoer/colorgrad-rs)
+[![License](https://img.shields.io/crates/l/colorgrad)](https://github.com/mazznoer/colorgrad-rs)
 [![crates.io](https://img.shields.io/crates/v/colorgrad.svg)](https://crates.io/crates/colorgrad)
 [![Documentation](https://docs.rs/colorgrad/badge.svg)](https://docs.rs/colorgrad)
 [![Build Status](https://github.com/mazznoer/colorgrad-rs/workflows/Rust/badge.svg)](https://github.com/mazznoer/colorgrad-rs/actions)
-[![Build Status](https://travis-ci.org/mazznoer/colorgrad-rs.svg?branch=master)](https://travis-ci.org/mazznoer/colorgrad-rs)
 [![codecov](https://codecov.io/gh/mazznoer/colorgrad-rs/branch/master/graph/badge.svg)](https://codecov.io/gh/mazznoer/colorgrad-rs)
 [![Total Downloads](https://img.shields.io/crates/d/colorgrad.svg)](https://crates.io/crates/colorgrad)
-[![Lines of Code](https://tokei.rs/b1/github/mazznoer/colorgrad-rs?category=code)](https://github.com/mazznoer/colorgrad-rs)
 
 [Rust](https://www.rust-lang.org/) color scales library for data visualization, charts, games, maps, generative art and others.
 
@@ -22,13 +22,14 @@
 + [Using the Gradient](#using-the-gradient)
 + [Examples](#examples)
 + [Similar Projects](#similar-projects)
++ [Projects using `colorgrad`](#projects-using-colorgrad)
 
 ## Usage
 
 Add this to your `Cargo.toml`
 
 ```toml
-colorgrad = "0.4.0"
+colorgrad = "0.5.0"
 ```
 
 ## Custom Gradient
@@ -384,21 +385,19 @@ This is the effect of different smoothness.
 ### Gradient Image
 
 ```rust
-use std::error::Error;
-
-fn main() -> Result<(), Box<dyn Error>> {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let grad = colorgrad::CustomGradient::new()
         .html_colors(&["deeppink", "gold", "seagreen"])
         .build()?;
 
-    let w = 1500;
-    let h = 70;
+    let width = 1500;
+    let height = 70;
 
-    let mut imgbuf = image::ImageBuffer::new(w, h);
+    let mut imgbuf = image::ImageBuffer::new(width, height);
 
     for (x, _, pixel) in imgbuf.enumerate_pixels_mut() {
-        let (r, g, b, _) = grad.at(x as f64 / w as f64).rgba_u8();
-        *pixel = image::Rgb([r, g, b]);
+        let (r, g, b, a) = grad.at(x as f64 / width as f64).rgba_u8();
+        *pixel = image::Rgba([r, g, b, a]);
     }
 
     imgbuf.save("gradient.png")?;
@@ -416,19 +415,18 @@ Example output:
 use noise::NoiseFn;
 
 fn main() {
-    let w = 600;
-    let h = 350;
     let scale = 0.015;
 
     let grad = colorgrad::rainbow().sharp(5, 0.15);
     let ns = noise::OpenSimplex::new();
-    let mut imgbuf = image::ImageBuffer::new(w, h);
+    let mut imgbuf = image::ImageBuffer::new(600, 350);
 
     for (x, y, pixel) in imgbuf.enumerate_pixels_mut() {
         let t = ns.get([x as f64 * scale, y as f64 * scale]);
-        let (r, g, b, _) = grad.at(remap(t, -0.5, 0.5, 0.0, 1.0)).rgba_u8();
-        *pixel = image::Rgb([r, g, b]);
+        let (r, g, b, a) = grad.at(remap(t, -0.5, 0.5, 0.0, 1.0)).rgba_u8();
+        *pixel = image::Rgba([r, g, b, a]);
     }
+
     imgbuf.save("noise.png").unwrap();
 }
 
@@ -448,6 +446,15 @@ Example output:
 * [colorous](https://github.com/dtolnay/colorous) (Rust)
 * [chroma.js](https://gka.github.io/chroma.js/#color-scales) (Javascript)
 * [d3-scale-chromatic](https://github.com/d3/d3-scale-chromatic/) (Javascript)
+
+## Projects using `colorgrad`
+
+* [WezTerm](https://github.com/wez/wezterm) - A GPU-accelerated cross-platform terminal emulator and multiplexer
+* [bytehound](https://github.com/koute/bytehound) - A memory profiler for Linux
+* [rust-fractal](https://github.com/rust-fractal/rust-fractal-core) - Mandelbrot fractal visualizer
+* [eruption](https://github.com/X3n0m0rph59/eruption) - A Linux user-mode input and LED driver for keyboards, mice and other devices
+* [lcat](https://github.com/davidkna/lcat-rs) - `lolcat` clone
+* [gradient](https://github.com/mazznoer/gradient-rs) - A command line tool for playing with color gradient
 
 ## Links
 

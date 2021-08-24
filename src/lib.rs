@@ -15,10 +15,9 @@
 //!
 //! Custom gradient:
 //! ```
-//! # use std::error::Error;
 //! use colorgrad::Color;
 //!
-//! # fn main() -> Result<(), Box<dyn Error>> {
+//! # fn main() -> Result<(), Box<dyn std::error::Error>> {
 //! let g = colorgrad::CustomGradient::new()
 //!     .colors(&[
 //!         Color::from_rgb_u8(255, 0, 0),
@@ -38,22 +37,19 @@
 //! ### Gradient Image
 //!
 //! ```rust
-//! use std::error::Error;
-//!
-//! fn main() -> Result<(), Box<dyn Error>> {
+//! fn main() -> Result<(), Box<dyn std::error::Error>> {
 //!     let grad = colorgrad::CustomGradient::new()
 //!         .html_colors(&["deeppink", "gold", "seagreen"])
 //!         .build()?;
 //!
-//!     let w = 1500;
-//!     let h = 70;
-//!     let fw = w as f64;
+//!     let width = 1500;
+//!     let height = 70;
 //!
-//!     let mut imgbuf = image::ImageBuffer::new(w, h);
+//!     let mut imgbuf = image::ImageBuffer::new(width, height);
 //!
 //!     for (x, _, pixel) in imgbuf.enumerate_pixels_mut() {
-//!         let (r, g, b, _) = grad.at(x as f64 / fw).rgba_u8();
-//!         *pixel = image::Rgb([r, g, b]);
+//!         let (r, g, b, a) = grad.at(x as f64 / width as f64).rgba_u8();
+//!         *pixel = image::Rgba([r, g, b, a]);
 //!     }
 //!
 //!     imgbuf.save("gradient.png")?;
@@ -71,19 +67,18 @@
 //! use noise::NoiseFn;
 //!
 //! fn main() {
-//!     let w = 600;
-//!     let h = 350;
 //!     let scale = 0.015;
 //!
 //!     let grad = colorgrad::rainbow().sharp(5, 0.15);
 //!     let ns = noise::OpenSimplex::new();
-//!     let mut imgbuf = image::ImageBuffer::new(w, h);
+//!     let mut imgbuf = image::ImageBuffer::new(600, 350);
 //!
 //!     for (x, y, pixel) in imgbuf.enumerate_pixels_mut() {
 //!         let t = ns.get([x as f64 * scale, y as f64 * scale]);
-//!         let (r, g, b, _) = grad.at(remap(t, -0.5, 0.5, 0.0, 1.0)).rgba_u8();
-//!         *pixel = image::Rgb([r, g, b]);
+//!         let (r, g, b, a) = grad.at(remap(t, -0.5, 0.5, 0.0, 1.0)).rgba_u8();
+//!         *pixel = image::Rgba([r, g, b, a]);
 //!     }
+//!
 //!     imgbuf.save("noise.png").unwrap();
 //! }
 //!

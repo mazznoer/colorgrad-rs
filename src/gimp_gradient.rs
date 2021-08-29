@@ -201,7 +201,7 @@ pub fn parse_ggr<R: BufRead>(
 
             seg_x += 1;
 
-            if let Some(seg) = parse_segment(&s, &foreground, &background) {
+            if let Some(seg) = parse_segment(&s, foreground, background) {
                 segments.push(seg);
             } else {
                 return Err(ParseGgrError {

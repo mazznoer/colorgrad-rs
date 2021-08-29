@@ -200,10 +200,10 @@ pub(crate) fn spline_gradient(
     match interpolation {
         Interpolation::CatmullRom => {
             let gradbase = SplineGradient {
-                a: CatmullRomInterpolator::new(&a, &pos),
-                b: CatmullRomInterpolator::new(&b, &pos),
-                c: CatmullRomInterpolator::new(&c, &pos),
-                d: CatmullRomInterpolator::new(&d, &pos),
+                a: CatmullRomInterpolator::new(&a, pos),
+                b: CatmullRomInterpolator::new(&b, pos),
+                c: CatmullRomInterpolator::new(&c, pos),
+                d: CatmullRomInterpolator::new(&d, pos),
                 dmin,
                 dmax,
                 mode: space,
@@ -217,10 +217,10 @@ pub(crate) fn spline_gradient(
         }
         _ => {
             let gradbase = SplineGradient {
-                a: BasisInterpolator::new(&a, &pos),
-                b: BasisInterpolator::new(&b, &pos),
-                c: BasisInterpolator::new(&c, &pos),
-                d: BasisInterpolator::new(&d, &pos),
+                a: BasisInterpolator::new(&a, pos),
+                b: BasisInterpolator::new(&b, pos),
+                c: BasisInterpolator::new(&c, pos),
+                d: BasisInterpolator::new(&d, pos),
                 dmin,
                 dmax,
                 mode: space,

@@ -440,6 +440,10 @@ Example output:
 
 ![img](docs/images/example-noise.png)
 
+## Default Feature
+
+* __named-colors__: Enables parsing from [named colors](https://www.w3.org/TR/css-color-4/#named-colors). Requires [`phf`](https://crates.io/crates/phf). Can be disabled using `default-features = false`.
+
 ## Similar Projects
 
 * [colorgrad](https://github.com/mazznoer/colorgrad) (Go version of this library)

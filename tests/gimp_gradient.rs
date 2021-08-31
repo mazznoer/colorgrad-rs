@@ -17,6 +17,7 @@ fn parse_gimp_gradients() {
     assert_eq!(grad.at(1.0).rgba_u8(), (255, 255, 255, 255));
     assert_eq!(grad.at(-0.5).rgba_u8(), (0, 0, 0, 255));
     assert_eq!(grad.at(1.5).rgba_u8(), (255, 255, 255, 255));
+    assert_eq!(grad.at(f64::NAN).rgba_u8(), (0, 0, 0, 255));
 
     // Foreground to background
     let ggr = "GIMP Gradient\nName: My Gradient\n1\n0 0.5 1 0 0 0 1 1 1 1 1 0 0 1 3";
@@ -25,12 +26,26 @@ fn parse_gimp_gradients() {
     assert_eq!(grad.at(0.0).rgba_u8(), (255, 0, 0, 255));
     assert_eq!(grad.at(1.0).rgba_u8(), (0, 0, 255, 255));
 
+    // Background to foreground
+    let ggr = "GIMP Gradient\nName: My Gradient\n1\n0 0.5 1 0 0 0 1 1 1 1 1 0 0 3 1";
+    let (grad, _) = parse_ggr(BufReader::new(ggr.as_bytes()), &red, &blue).unwrap();
+
+    assert_eq!(grad.at(0.0).rgba_u8(), (0, 0, 255, 255));
+    assert_eq!(grad.at(1.0).rgba_u8(), (255, 0, 0, 255));
+
     // Foreground transparent to background transparent
     let ggr = "GIMP Gradient\nName: My Gradient\n1\n0 0.5 1 0 0 0 1 1 1 1 1 0 0 2 4";
     let (grad, _) = parse_ggr(BufReader::new(ggr.as_bytes()), &red, &blue).unwrap();
 
     assert_eq!(grad.at(0.0).rgba_u8(), (255, 0, 0, 0));
     assert_eq!(grad.at(1.0).rgba_u8(), (0, 0, 255, 0));
+
+    // Background transparent to foreground transparent
+    let ggr = "GIMP Gradient\nName: My Gradient\n1\n0 0.5 1 0 0 0 1 1 1 1 1 0 0 4 2";
+    let (grad, _) = parse_ggr(BufReader::new(ggr.as_bytes()), &red, &blue).unwrap();
+
+    assert_eq!(grad.at(0.0).rgba_u8(), (0, 0, 255, 0));
+    assert_eq!(grad.at(1.0).rgba_u8(), (255, 0, 0, 0));
 
     // Blending function: step
     let ggr = "GIMP Gradient\nName: My Gradient\n1\n0 0.5 1 1 0 0 1 0 0 1 1 5 0 0 0";
@@ -85,5 +100,18 @@ fn invalid_format() {
     for (ggr, err_msg) in test_data {
         let res = parse_ggr(BufReader::new(ggr.as_bytes()), &col, &col);
         assert_eq!(res.unwrap_err().to_string(), err_msg);
+    }
+
+    let invalid_segments = vec![
+        "GIMP Gradient\nName: Gradient\n1\n0 0.5 1 0 0 0 1 1 1 1 1 6 0 0 0",
+        "GIMP Gradient\nName: Gradient\n1\n0 0.5 1 0 0 0 1 1 1 1 1 0 3 0 0",
+        "GIMP Gradient\nName: Gradient\n1\n0 0.5 1 0 0 0 1 1 1 1 1 0 0 5 0",
+        "GIMP Gradient\nName: Gradient\n1\n0 0.5 1 0 0 0 1 1 1 1 1 0 0 0 5",
+        "GIMP Gradient\nName: Gradient\n1\n0 0.5 1 0 0 0 A 1 1 1 A 0 0 0 0",
+    ];
+
+    for ggr in invalid_segments {
+        let res = parse_ggr(BufReader::new(ggr.as_bytes()), &col, &col);
+        assert!(res.is_err());
     }
 }

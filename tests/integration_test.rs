@@ -1,4 +1,4 @@
-use colorgrad::{BlendMode, Color, CustomGradient};
+use colorgrad::{BlendMode, Color, CustomGradient, Interpolation};
 
 #[test]
 fn custom_gradient() {
@@ -100,6 +100,39 @@ fn custom_gradient_blend_mode() {
         .unwrap();
     assert_eq!(g.at(0.0).rgba_u8(), (255, 0, 0, 255));
     assert_eq!(g.at(0.5).rgba_u8(), (255, 255, 0, 255));
+    assert_eq!(g.at(1.0).rgba_u8(), (0, 0, 255, 255));
+}
+
+#[test]
+fn custom_gradient_interpolation_mode() {
+    // Interpolation linear
+    let g = CustomGradient::new()
+        .html_colors(&["#f00", "#ff0", "#00f"])
+        .interpolation(Interpolation::Linear)
+        .build()
+        .unwrap();
+    assert_eq!(g.at(0.0).rgba_u8(), (255, 0, 0, 255));
+    assert_eq!(g.at(0.5).rgba_u8(), (255, 255, 0, 255));
+    assert_eq!(g.at(1.0).rgba_u8(), (0, 0, 255, 255));
+
+    // Interpolation catmull-rom
+    let g = CustomGradient::new()
+        .html_colors(&["#f00", "#ff0", "#00f"])
+        .interpolation(Interpolation::CatmullRom)
+        .build()
+        .unwrap();
+    assert_eq!(g.at(0.0).rgba_u8(), (255, 0, 0, 255));
+    assert_eq!(g.at(0.5).rgba_u8(), (255, 255, 0, 255));
+    assert_eq!(g.at(1.0).rgba_u8(), (0, 0, 255, 255));
+
+    // Interpolation basis
+    let g = CustomGradient::new()
+        .html_colors(&["#f00", "#ff0", "#00f"])
+        .interpolation(Interpolation::Basis)
+        .build()
+        .unwrap();
+    assert_eq!(g.at(0.0).rgba_u8(), (255, 0, 0, 255));
+    assert!(g.at(0.5).rgba_u8() != (255, 255, 0, 255));
     assert_eq!(g.at(1.0).rgba_u8(), (0, 0, 255, 255));
 }
 

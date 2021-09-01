@@ -13,11 +13,8 @@ categories = ["graphics"]
 exclude = [
 	".github/*",
 	".gitignore",
-	".travis.yml",
 	"docs/*",
-	"examples/*",
 	"example_output/*",
-	"tests/*",
 ]
 
 [dependencies]

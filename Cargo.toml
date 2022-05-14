@@ -18,12 +18,12 @@ exclude = [
 ]
 
 [dependencies]
-csscolorparser = { version = "0.5.0", default-features = false }
+csscolorparser = { version = "0.6.0", default-features = false }
 
 [features]
 default = ["named-colors"]
 named-colors = ["csscolorparser/named-colors"]
 
 [dev-dependencies]
-image = { version = "0.23.14", default-features = false, features = ["png"] }
+image = { version = "0.24.2", default-features = false, features = ["png"] }
 

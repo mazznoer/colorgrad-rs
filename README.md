@@ -29,7 +29,7 @@
 Add this to your `Cargo.toml`
 
 ```toml
-colorgrad = "0.5.0"
+colorgrad = "0.6.0"
 ```
 
 ## Custom Gradient
@@ -453,12 +453,14 @@ Example output:
 
 ## Projects using `colorgrad`
 
-* [WezTerm](https://github.com/wez/wezterm) - A GPU-accelerated cross-platform terminal emulator and multiplexer
+* [binocle](https://github.com/sharkdp/binocle) - A graphical tool to visualize binary data
 * [bytehound](https://github.com/koute/bytehound) - A memory profiler for Linux
-* [rust-fractal](https://github.com/rust-fractal/rust-fractal-core) - Mandelbrot fractal visualizer
 * [eruption](https://github.com/X3n0m0rph59/eruption) - A Linux user-mode input and LED driver for keyboards, mice and other devices
-* [lcat](https://github.com/davidkna/lcat-rs) - `lolcat` clone
 * [gradient](https://github.com/mazznoer/gradient-rs) - A command line tool for playing with color gradient
+* [lcat](https://github.com/davidkna/lcat-rs) - `lolcat` clone
+* [lolcrab](https://github.com/mazznoer/lolcrab) - `lolcat` but with noise (`lcat` fork)
+* [rust-fractal](https://github.com/rust-fractal/rust-fractal-core) - Mandelbrot fractal visualizer
+* [WezTerm](https://github.com/wez/wezterm) - A GPU-accelerated cross-platform terminal emulator and multiplexer
 
 ## Links
 

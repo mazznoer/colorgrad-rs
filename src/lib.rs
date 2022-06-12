@@ -117,8 +117,6 @@
 //!
 //! See more complete gradient preview and examples at [Github](https://github.com/mazznoer/colorgrad-rs).
 
-#![allow(clippy::many_single_char_names)]
-
 use std::{error, fmt};
 
 mod gimp_gradient;

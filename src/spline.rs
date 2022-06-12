@@ -236,14 +236,10 @@ pub(crate) fn spline_gradient(
 }
 
 pub(crate) fn preset_spline(html_colors: &[&str]) -> Gradient {
-    let mut colors = Vec::new();
-
-    for s in html_colors {
-        if let Ok(c) = csscolorparser::parse(s) {
-            colors.push(c);
-        }
-    }
-
+    let colors = html_colors
+        .iter()
+        .map(|s| csscolorparser::parse(s).unwrap())
+        .collect::<Vec<_>>();
     let pos = linspace(0.0, 1.0, colors.len());
     spline_gradient(&colors, &pos, BlendMode::Rgb, Interpolation::Basis)
 }

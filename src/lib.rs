@@ -265,7 +265,7 @@ impl Gradient {
 
 #[derive(Debug)]
 struct LinearGradient {
-    stops: Vec<(f64, Color)>,
+    stops: Vec<(f64, [f64; 4])>,
     dmin: f64,
     dmax: f64,
     mode: BlendMode,
@@ -288,11 +288,15 @@ impl GradientBase for LinearGradient {
             let (pos_1, col_1) = &segment[1];
             if (*pos_0 <= t) && (t <= *pos_1) {
                 let t = (t - pos_0) / (pos_1 - pos_0);
+                let [a, b, c, d] = linear_interpolation(col_0, col_1, t);
                 match self.mode {
-                    BlendMode::Rgb => return col_0.interpolate_rgb(&col_1, t),
-                    BlendMode::LinearRgb => return col_0.interpolate_linear_rgb(&col_1, t),
-                    BlendMode::Hsv => return col_0.interpolate_hsv(&col_1, t),
-                    BlendMode::Oklab => return col_0.interpolate_oklab(&col_1, t),
+                    BlendMode::Rgb => return Color::from_rgba(a, b, c, d),
+                    BlendMode::LinearRgb => return Color::from_linear_rgba(a, b, c, d),
+                    BlendMode::Oklab => return Color::from_oklaba(a, b, c, d),
+                    BlendMode::Hsv => {
+                        let hue = interp_angle(col_0[0], col_1[0], t);
+                        return Color::from_hsva(hue, b, c, d);
+                    }
                 }
             }
         }
@@ -581,11 +585,12 @@ impl CustomGradient {
         if let Interpolation::Linear = self.interpolation {
             let first_color = colors[0].clone();
             let last_color = colors[colors.len() - 1].clone();
+            let colors = convert_colors(&colors, self.mode);
             let gradbase = LinearGradient {
                 stops: pos
                     .iter()
                     .zip(colors.iter())
-                    .map(|(p, c)| (*p, c.clone()))
+                    .map(|(p, c)| (*p, *c))
                     .collect(),
                 dmin: pos[0],
                 dmax: pos[pos.len() - 1],
@@ -611,6 +616,35 @@ impl CustomGradient {
 }
 
 // ---
+
+fn convert_colors(colors: &[Color], mode: BlendMode) -> Vec<[f64; 4]> {
+    let mut result = Vec::with_capacity(colors.len());
+    for col in colors.iter() {
+        let (a, b, c, d) = match mode {
+            BlendMode::Rgb => (col.r, col.g, col.b, col.a),
+            BlendMode::LinearRgb => col.to_linear_rgba(),
+            BlendMode::Oklab => col.to_oklaba(),
+            BlendMode::Hsv => col.to_hsva(),
+        };
+        result.push([a, b, c, d]);
+    }
+    result
+}
+
+fn linear_interpolation(a: &[f64; 4], b: &[f64; 4], t: f64) -> [f64; 4] {
+    [
+        a[0] + t * (b[0] - a[0]),
+        a[1] + t * (b[1] - a[1]),
+        a[2] + t * (b[2] - a[2]),
+        a[3] + t * (b[3] - a[3]),
+    ]
+}
+
+#[inline]
+fn interp_angle(a0: f64, a1: f64, t: f64) -> f64 {
+    let delta = (((a1 - a0) % 360.0) + 540.0) % 360.0 - 180.0;
+    (a0 + t * delta + 360.0) % 360.0
+}
 
 fn linspace(min: f64, max: f64, n: usize) -> Vec<f64> {
     if n == 1 {

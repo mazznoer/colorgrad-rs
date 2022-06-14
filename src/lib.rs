@@ -265,38 +265,39 @@ impl Gradient {
 
 #[derive(Debug)]
 struct LinearGradient {
-    colors: Vec<Color>,
-    pos: Vec<f64>,
-    count: usize,
+    stops: Vec<(f64, Color)>,
     dmin: f64,
     dmax: f64,
     mode: BlendMode,
+    first_color: Color,
+    last_color: Color,
 }
 
 impl GradientBase for LinearGradient {
     fn at(&self, t: f64) -> Color {
-        if t < self.dmin {
-            return self.colors[0].clone();
+        if t <= self.dmin {
+            return self.first_color.clone();
         }
 
-        if t > self.dmax {
-            return self.colors[self.count].clone();
+        if t >= self.dmax {
+            return self.last_color.clone();
         }
 
-        for (pos, col) in self.pos.windows(2).zip(self.colors.windows(2)) {
-            if (pos[0] <= t) && (t <= pos[1]) {
-                let t = (t - pos[0]) / (pos[1] - pos[0]);
-
+        for segment in self.stops.windows(2) {
+            let (pos_0, col_0) = &segment[0];
+            let (pos_1, col_1) = &segment[1];
+            if (*pos_0 <= t) && (t <= *pos_1) {
+                let t = (t - pos_0) / (pos_1 - pos_0);
                 match self.mode {
-                    BlendMode::Rgb => return col[0].interpolate_rgb(&col[1], t),
-                    BlendMode::LinearRgb => return col[0].interpolate_linear_rgb(&col[1], t),
-                    BlendMode::Hsv => return col[0].interpolate_hsv(&col[1], t),
-                    BlendMode::Oklab => return col[0].interpolate_oklab(&col[1], t),
+                    BlendMode::Rgb => return col_0.interpolate_rgb(&col_1, t),
+                    BlendMode::LinearRgb => return col_0.interpolate_linear_rgb(&col_1, t),
+                    BlendMode::Hsv => return col_0.interpolate_hsv(&col_1, t),
+                    BlendMode::Oklab => return col_0.interpolate_oklab(&col_1, t),
                 }
             }
         }
 
-        self.colors[0].clone()
+        self.last_color.clone()
     }
 }
 
@@ -578,13 +579,19 @@ impl CustomGradient {
         };
 
         if let Interpolation::Linear = self.interpolation {
+            let first_color = colors[0].clone();
+            let last_color = colors[colors.len() - 1].clone();
             let gradbase = LinearGradient {
-                colors: colors.to_vec(),
-                pos: pos.to_vec(),
-                count: colors.len() - 1,
+                stops: pos
+                    .iter()
+                    .zip(colors.iter())
+                    .map(|(p, c)| (*p, c.clone()))
+                    .collect(),
                 dmin: pos[0],
                 dmax: pos[pos.len() - 1],
                 mode: self.mode,
+                first_color,
+                last_color,
             };
 
             return Ok(Gradient {

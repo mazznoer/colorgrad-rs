@@ -239,27 +239,17 @@ impl Gradient {
     /// ```
     /// ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/rainbow-sharp.png)
     pub fn sharp(&self, segment: usize, smoothness: f64) -> Gradient {
-        if segment < 2 {
-            let gradbase = SharpGradient {
-                colors: vec![self.gradient.at(self.dmin)],
-                pos: vec![self.dmin, self.dmax],
-                n: 0,
-                dmin: self.dmin,
-                dmax: self.dmax,
-            };
-
-            return Gradient {
-                gradient: Box::new(gradbase),
-                dmin: self.dmin,
-                dmax: self.dmax,
-            };
+        let colors = if segment > 1 {
+            self.colors(segment)
+        } else {
+            vec![self.at(self.dmin), self.at(self.dmin)]
+        };
+        let gradbase = SharpGradient::new(&colors, self.domain(), smoothness);
+        Gradient {
+            gradient: Box::new(gradbase),
+            dmin: self.dmin,
+            dmax: self.dmax,
         }
-
-        if smoothness > 0.0 {
-            return sharp_gradient_x(self, segment, smoothness);
-        }
-
-        sharp_gradient(self, segment)
     }
 }
 
@@ -305,130 +295,86 @@ impl GradientBase for LinearGradient {
     }
 }
 
-#[derive(Debug)]
-struct SharpGradient {
-    colors: Vec<Color>,
-    pos: Vec<f64>,
-    n: usize,
-    dmin: f64,
-    dmax: f64,
+#[derive(Debug, Clone)]
+pub struct SharpGradient {
+    stops: Vec<(f64, Color)>,
+    domain: (f64, f64),
+    first_color: Color,
+    last_color: Color,
+}
+
+impl SharpGradient {
+    fn new(colors_in: &[Color], domain: (f64, f64), t: f64) -> Self {
+        let n = colors_in.len();
+        let mut colors = Vec::with_capacity(n * 2);
+
+        for c in colors_in {
+            colors.push(c.clone());
+            colors.push(c.clone());
+        }
+
+        let t = t.clamp(0.0, 1.0) * (domain.1 - domain.0) / n as f64 / 4.0;
+        let p = linspace(domain.0, domain.1, n + 1);
+        let mut positions = Vec::with_capacity(n * 2);
+        let mut j = 0;
+
+        for i in 0..n {
+            positions.push(p[i]);
+
+            if j > 0 {
+                positions[j] += t;
+            }
+
+            j += 1;
+            positions.push(p[i + 1]);
+
+            if j < colors.len() - 1 {
+                positions[j] -= t;
+            }
+
+            j += 1;
+        }
+
+        let first_color = colors_in[0].clone();
+        let last_color = colors_in[n - 1].clone();
+
+        Self {
+            stops: positions
+                .iter()
+                .zip(colors.iter())
+                .map(|(p, c)| (*p, c.clone()))
+                .collect(),
+            domain,
+            first_color,
+            last_color,
+        }
+    }
 }
 
 impl GradientBase for SharpGradient {
     fn at(&self, t: f64) -> Color {
-        if t < self.dmin {
-            return self.colors[0].clone();
+        if t <= self.domain.0 {
+            return self.first_color.clone();
         }
 
-        if t > self.dmax {
-            return self.colors[self.n].clone();
+        if t >= self.domain.1 {
+            return self.last_color.clone();
         }
 
-        for (pos, col) in self.pos.windows(2).zip(self.colors.iter()) {
-            if (pos[0] <= t) && (t <= pos[1]) {
-                return col.clone();
-            }
-        }
+        for (i, segment) in self.stops.windows(2).enumerate() {
+            let (pos_0, col_0) = &segment[0];
+            let (pos_1, col_1) = &segment[1];
 
-        self.colors[0].clone()
-    }
-}
-
-fn sharp_gradient(grad: &Gradient, n: usize) -> Gradient {
-    let (dmin, dmax) = grad.domain();
-
-    let gradbase = SharpGradient {
-        colors: grad.colors(n),
-        pos: linspace(dmin, dmax, n + 1),
-        n: n - 1,
-        dmin,
-        dmax,
-    };
-
-    Gradient {
-        gradient: Box::new(gradbase),
-        dmin,
-        dmax,
-    }
-}
-
-#[derive(Debug)]
-struct SharpGradientX {
-    colors: Vec<Color>,
-    pos: Vec<f64>,
-    dmin: f64,
-    dmax: f64,
-    last_idx: usize,
-}
-
-impl GradientBase for SharpGradientX {
-    fn at(&self, t: f64) -> Color {
-        if t < self.dmin {
-            return self.colors[0].clone();
-        }
-
-        if t > self.dmax {
-            return self.colors[self.last_idx].clone();
-        }
-
-        for (i, (pos, col)) in self.pos.windows(2).zip(self.colors.windows(2)).enumerate() {
-            if (pos[0] <= t) && (t <= pos[1]) {
+            if (*pos_0 <= t) && (t <= *pos_1) {
                 if i & 1 == 0 {
-                    return col[0].clone();
+                    return col_0.clone();
                 }
-
-                let t = (t - pos[0]) / (pos[1] - pos[0]);
-                return col[0].interpolate_rgb(&col[1], t);
+                let t = (t - pos_0) / (pos_1 - pos_0);
+                return col_0.interpolate_rgb(col_1, t);
             }
         }
 
-        self.colors[0].clone()
-    }
-}
-
-fn sharp_gradient_x(grad: &Gradient, n: usize, t: f64) -> Gradient {
-    let mut colors = Vec::with_capacity(n * 2);
-
-    for c in grad.colors(n) {
-        colors.push(c.clone());
-        colors.push(c.clone());
-    }
-
-    let (dmin, dmax) = grad.domain();
-    let t = t.clamp(0.0, 1.0) * (dmax - dmin) / n as f64 / 4.0;
-    let p = linspace(dmin, dmax, n + 1);
-    let mut pos = Vec::with_capacity(n * 2);
-    let mut j = 0;
-
-    for i in 0..n {
-        pos.push(p[i]);
-
-        if j > 0 {
-            pos[j] += t;
-        }
-
-        j += 1;
-        pos.push(p[i + 1]);
-
-        if j < colors.len() - 1 {
-            pos[j] -= t;
-        }
-
-        j += 1;
-    }
-
-    let gradbase = SharpGradientX {
-        colors,
-        pos,
-        last_idx: n * 2 - 1,
-        dmin,
-        dmax,
-    };
-
-    Gradient {
-        gradient: Box::new(gradbase),
-        dmin,
-        dmax,
+        Color::from_rgba(0.0, 0.0, 0.0, 1.0)
     }
 }
 

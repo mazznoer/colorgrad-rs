@@ -256,7 +256,7 @@ fn sharp_gradient() {
 
     assert_eq!(g3.at(-0.1).rgba_u8(), (255, 0, 0, 255));
     assert_eq!(g3.at(1.1).rgba_u8(), (0, 0, 255, 255));
-    assert_eq!(g3.at(f64::NAN).rgba_u8(), (255, 0, 0, 255));
+    assert_eq!(g3.at(f64::NAN).rgba_u8(), (0, 0, 0, 255));
 
     let grad = CustomGradient::new()
         .html_colors(&["red", "lime", "blue"])
@@ -308,7 +308,7 @@ fn sharp_gradient_x() {
 
     assert_eq!(g.at(-0.5).rgba_u8(), (255, 0, 0, 255));
     assert_eq!(g.at(1.5).rgba_u8(), (0, 0, 255, 255));
-    assert_eq!(g.at(f64::NAN).rgba_u8(), (255, 0, 0, 255));
+    assert_eq!(g.at(f64::NAN).rgba_u8(), (0, 0, 0, 255));
 }
 
 #[test]

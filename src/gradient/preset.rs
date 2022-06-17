@@ -1,6 +1,6 @@
 use std::f64::consts::{FRAC_PI_3, PI};
 
-use crate::{spline::preset_spline, Color, Gradient, GradientBase};
+use crate::{gradient::spline::preset_spline, Color, Gradient, GradientBase};
 
 const PI2_3: f64 = PI * 2.0 / 3.0;
 

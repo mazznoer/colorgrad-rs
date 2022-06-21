@@ -70,7 +70,7 @@ impl error::Error for CustomGradientError {}
 /// # Ok(())
 /// # }
 /// ```
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct CustomGradient {
     colors: Vec<Color>,
     pos: Vec<f64>,

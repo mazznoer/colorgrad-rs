@@ -54,10 +54,21 @@ fn custom_gradient() {
     ]);
     gb.domain(&[0.0, 0.5, 1.0]);
     gb.mode(BlendMode::Rgb);
+
+    let mut gb2 = gb.clone();
+
     let g = gb.build().unwrap();
     assert_eq!(g.at(0.0).rgba_u8(), (255, 0, 0, 255));
     assert_eq!(g.at(0.5).rgba_u8(), (0, 0, 255, 255));
     assert_eq!(g.at(1.0).rgba_u8(), (0, 255, 0, 255));
+
+    // change color position
+    gb2.domain(&[0.0, 35.0, 100.0]);
+    let g = gb2.build().unwrap();
+
+    assert_eq!(g.at(0.0).rgba_u8(), (255, 0, 0, 255));
+    assert_eq!(g.at(35.0).rgba_u8(), (0, 0, 255, 255));
+    assert_eq!(g.at(100.0).rgba_u8(), (0, 255, 0, 255));
 }
 
 #[test]

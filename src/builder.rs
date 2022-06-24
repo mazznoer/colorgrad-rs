@@ -81,8 +81,8 @@ pub struct CustomGradient {
 
 impl CustomGradient {
     #[allow(clippy::new_without_default)]
-    pub fn new() -> CustomGradient {
-        CustomGradient {
+    pub fn new() -> Self {
+        Self {
             colors: Vec::new(),
             pos: Vec::new(),
             mode: BlendMode::Rgb,
@@ -92,7 +92,7 @@ impl CustomGradient {
     }
 
     /// Set gradient color
-    pub fn colors<'a>(&'a mut self, colors: &[Color]) -> &'a mut CustomGradient {
+    pub fn colors<'a>(&'a mut self, colors: &[Color]) -> &'a mut Self {
         for c in colors {
             self.colors.push(c.clone());
         }
@@ -113,7 +113,7 @@ impl CustomGradient {
     /// * `hsl()` and `hsla()`
     /// * `hwb()`
     /// * `hsv()` - not in CSS standard.
-    pub fn html_colors<'a>(&'a mut self, html_colors: &[&str]) -> &'a mut CustomGradient {
+    pub fn html_colors<'a>(&'a mut self, html_colors: &[&str]) -> &'a mut Self {
         for s in html_colors {
             if let Ok(c) = csscolorparser::parse(s) {
                 self.colors.push(c);
@@ -125,21 +125,21 @@ impl CustomGradient {
     }
 
     /// Set the gradient domain and/or color position.
-    pub fn domain<'a>(&'a mut self, pos: &[f64]) -> &'a mut CustomGradient {
+    pub fn domain<'a>(&'a mut self, pos: &[f64]) -> &'a mut Self {
         self.pos = pos.to_vec();
         self
     }
 
     /// Set the color blending mode
     #[allow(clippy::needless_lifetimes)]
-    pub fn mode<'a>(&'a mut self, mode: BlendMode) -> &'a mut CustomGradient {
+    pub fn mode<'a>(&'a mut self, mode: BlendMode) -> &'a mut Self {
         self.mode = mode;
         self
     }
 
     /// Set the interpolation mode
     #[allow(clippy::needless_lifetimes)]
-    pub fn interpolation<'a>(&'a mut self, mode: Interpolation) -> &'a mut CustomGradient {
+    pub fn interpolation<'a>(&'a mut self, mode: Interpolation) -> &'a mut Self {
         self.interpolation = mode;
         self
     }

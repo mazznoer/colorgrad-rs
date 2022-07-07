@@ -155,7 +155,7 @@ fn custom_gradient_error() {
         .build();
     assert_eq!(
         g.unwrap_err().to_string(),
-        "Invalid html colors:'bloodred', '#zzz'"
+        "invalid html colors: 'bloodred', '#zzz'"
     );
 
     // Wrong domain #1
@@ -163,21 +163,21 @@ fn custom_gradient_error() {
         .html_colors(&["#777", "gold", "#bbb", "#f0f"])
         .domain(&[0.0, 0.75, 1.0])
         .build();
-    assert_eq!(g.unwrap_err().to_string(), "Wrong domain count");
+    assert_eq!(g.unwrap_err().to_string(), "wrong domain count");
 
     // Wrong domain #2
     let g = CustomGradient::new()
         .html_colors(&["#777", "gold", "#bbb", "#f0f"])
         .domain(&[0.0, 0.71, 0.7, 1.0])
         .build();
-    assert_eq!(g.unwrap_err().to_string(), "Wrong domain");
+    assert_eq!(g.unwrap_err().to_string(), "wrong domain");
 
     // Wrong domain #3
     let g = CustomGradient::new()
         .html_colors(&["#777", "gold", "#bbb", "#f0f"])
         .domain(&[1.0, 0.0])
         .build();
-    assert_eq!(g.unwrap_err().to_string(), "Wrong domain");
+    assert_eq!(g.unwrap_err().to_string(), "wrong domain");
 }
 
 #[test]

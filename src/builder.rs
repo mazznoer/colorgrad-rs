@@ -12,10 +12,10 @@ pub enum CustomGradientError {
 impl fmt::Display for CustomGradientError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            CustomGradientError::InvalidHtmlColor(ref colors) => {
+            Self::InvalidHtmlColor(ref colors) => {
                 write!(
                     f,
-                    "Invalid html colors:{}",
+                    "invalid html colors: {}",
                     colors
                         .iter()
                         .map(|x| format!("'{}'", x))
@@ -23,8 +23,8 @@ impl fmt::Display for CustomGradientError {
                         .join(", ")
                 )
             }
-            CustomGradientError::WrongDomainCount => f.write_str("Wrong domain count"),
-            CustomGradientError::WrongDomain => f.write_str("Wrong domain"),
+            Self::WrongDomainCount => f.write_str("wrong domain count"),
+            Self::WrongDomain => f.write_str("wrong domain"),
         }
     }
 }

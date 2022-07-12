@@ -4,23 +4,23 @@ use colorgrad::CustomGradient;
 fn spread_inside_domain() {
     let g = colorgrad::blues();
 
-    assert_eq!(g.at(0.0).rgba_u8(), g.repeat_at(0.0).rgba_u8());
-    assert_eq!(g.at(0.0).rgba_u8(), g.reflect_at(0.0).rgba_u8());
+    assert_eq!(g.at(0.0).to_rgba8(), g.repeat_at(0.0).to_rgba8());
+    assert_eq!(g.at(0.0).to_rgba8(), g.reflect_at(0.0).to_rgba8());
 
-    assert_eq!(g.at(0.01).rgba_u8(), g.repeat_at(0.01).rgba_u8());
-    assert_eq!(g.at(0.01).rgba_u8(), g.reflect_at(0.01).rgba_u8());
+    assert_eq!(g.at(0.01).to_rgba8(), g.repeat_at(0.01).to_rgba8());
+    assert_eq!(g.at(0.01).to_rgba8(), g.reflect_at(0.01).to_rgba8());
 
-    assert_eq!(g.at(0.25).rgba_u8(), g.repeat_at(0.25).rgba_u8());
-    assert_eq!(g.at(0.25).rgba_u8(), g.reflect_at(0.25).rgba_u8());
+    assert_eq!(g.at(0.25).to_rgba8(), g.repeat_at(0.25).to_rgba8());
+    assert_eq!(g.at(0.25).to_rgba8(), g.reflect_at(0.25).to_rgba8());
 
-    assert_eq!(g.at(0.5).rgba_u8(), g.repeat_at(0.5).rgba_u8());
-    assert_eq!(g.at(0.5).rgba_u8(), g.reflect_at(0.5).rgba_u8());
+    assert_eq!(g.at(0.5).to_rgba8(), g.repeat_at(0.5).to_rgba8());
+    assert_eq!(g.at(0.5).to_rgba8(), g.reflect_at(0.5).to_rgba8());
 
-    assert_eq!(g.at(0.75).rgba_u8(), g.repeat_at(0.75).rgba_u8());
-    assert_eq!(g.at(0.75).rgba_u8(), g.reflect_at(0.75).rgba_u8());
+    assert_eq!(g.at(0.75).to_rgba8(), g.repeat_at(0.75).to_rgba8());
+    assert_eq!(g.at(0.75).to_rgba8(), g.reflect_at(0.75).to_rgba8());
 
-    assert_eq!(g.at(0.999).rgba_u8(), g.repeat_at(0.999).rgba_u8());
-    assert_eq!(g.at(0.999).rgba_u8(), g.reflect_at(0.999).rgba_u8());
+    assert_eq!(g.at(0.999).to_rgba8(), g.repeat_at(0.999).to_rgba8());
+    assert_eq!(g.at(0.999).to_rgba8(), g.reflect_at(0.999).to_rgba8());
 }
 
 #[test]

@@ -12,9 +12,9 @@ fn custom_gradient() {
     // Custom colors
     let g = CustomGradient::new()
         .colors(&[
-            Color::from_rgb(1.0, 0.0, 0.0),
-            Color::from_rgb(1.0, 1.0, 0.0),
-            Color::from_rgb(0.0, 0.0, 1.0),
+            Color::new(1.0, 0.0, 0.0, 1.0),
+            Color::new(1.0, 1.0, 0.0, 1.0),
+            Color::new(0.0, 0.0, 1.0, 1.0),
         ])
         .build()
         .unwrap();
@@ -26,31 +26,31 @@ fn custom_gradient() {
     // Custom colors #2
     let g = CustomGradient::new()
         .html_colors(&["#00f", "#00ffff"])
-        .colors(&[Color::from_rgba(1.0, 1.0, 0.0, 0.5)])
+        .colors(&[Color::new(1.0, 1.0, 0.0, 0.5)])
         .html_colors(&["lime"])
         .build()
         .unwrap();
     let colors = g.colors(4);
-    assert_eq!(colors[0].rgba_u8(), (0, 0, 255, 255));
-    assert_eq!(colors[1].rgba_u8(), (0, 255, 255, 255));
-    assert_eq!(colors[2].rgba_u8(), (255, 255, 0, 128));
-    assert_eq!(colors[3].rgba_u8(), (0, 255, 0, 255));
+    assert_eq!(colors[0].to_rgba8(), [0, 0, 255, 255]);
+    assert_eq!(colors[1].to_rgba8(), [0, 255, 255, 255]);
+    assert_eq!(colors[2].to_rgba8(), [255, 255, 0, 128]);
+    assert_eq!(colors[3].to_rgba8(), [0, 255, 0, 255]);
 
     // Single color
     let g = CustomGradient::new()
-        .colors(&[Color::from_rgb(1.0, 0.0, 0.0)])
+        .colors(&[Color::new(1.0, 0.0, 0.0, 1.0)])
         .build()
         .unwrap();
-    assert_eq!(g.at(0.0).rgba_u8(), (255, 0, 0, 255));
-    assert_eq!(g.at(0.5).rgba_u8(), (255, 0, 0, 255));
-    assert_eq!(g.at(1.0).rgba_u8(), (255, 0, 0, 255));
+    assert_eq!(g.at(0.0).to_rgba8(), [255, 0, 0, 255]);
+    assert_eq!(g.at(0.5).to_rgba8(), [255, 0, 0, 255]);
+    assert_eq!(g.at(1.0).to_rgba8(), [255, 0, 0, 255]);
 
     // Builder pattern style 2
     let mut gb = CustomGradient::new();
     gb.colors(&[
-        Color::from_rgb_u8(255, 0, 0),
-        Color::from_rgb_u8(0, 0, 255),
-        Color::from_rgb_u8(0, 255, 0),
+        Color::from_rgba8(255, 0, 0, 255),
+        Color::from_rgba8(0, 0, 255, 255),
+        Color::from_rgba8(0, 255, 0, 255),
     ]);
     gb.domain(&[0.0, 0.5, 1.0]);
     gb.mode(BlendMode::Rgb);
@@ -58,17 +58,17 @@ fn custom_gradient() {
     let mut gb2 = gb.clone();
 
     let g = gb.build().unwrap();
-    assert_eq!(g.at(0.0).rgba_u8(), (255, 0, 0, 255));
-    assert_eq!(g.at(0.5).rgba_u8(), (0, 0, 255, 255));
-    assert_eq!(g.at(1.0).rgba_u8(), (0, 255, 0, 255));
+    assert_eq!(g.at(0.0).to_rgba8(), [255, 0, 0, 255]);
+    assert_eq!(g.at(0.5).to_rgba8(), [0, 0, 255, 255]);
+    assert_eq!(g.at(1.0).to_rgba8(), [0, 255, 0, 255]);
 
     // change color position
     gb2.domain(&[0.0, 35.0, 100.0]);
     let g = gb2.build().unwrap();
 
-    assert_eq!(g.at(0.0).rgba_u8(), (255, 0, 0, 255));
-    assert_eq!(g.at(35.0).rgba_u8(), (0, 0, 255, 255));
-    assert_eq!(g.at(100.0).rgba_u8(), (0, 255, 0, 255));
+    assert_eq!(g.at(0.0).to_rgba8(), [255, 0, 0, 255]);
+    assert_eq!(g.at(35.0).to_rgba8(), [0, 0, 255, 255]);
+    assert_eq!(g.at(100.0).to_rgba8(), [0, 255, 0, 255]);
 }
 
 #[test]
@@ -79,9 +79,9 @@ fn custom_gradient_blend_mode() {
         .mode(BlendMode::Rgb)
         .build()
         .unwrap();
-    assert_eq!(g.at(0.0).rgba_u8(), (255, 0, 0, 255));
-    assert_eq!(g.at(0.5).rgba_u8(), (255, 255, 0, 255));
-    assert_eq!(g.at(1.0).rgba_u8(), (0, 0, 255, 255));
+    assert_eq!(g.at(0.0).to_rgba8(), [255, 0, 0, 255]);
+    assert_eq!(g.at(0.5).to_rgba8(), [255, 255, 0, 255]);
+    assert_eq!(g.at(1.0).to_rgba8(), [0, 0, 255, 255]);
 
     // Blend mode Linear RGB
     let g = CustomGradient::new()
@@ -89,9 +89,9 @@ fn custom_gradient_blend_mode() {
         .mode(BlendMode::LinearRgb)
         .build()
         .unwrap();
-    assert_eq!(g.at(0.0).rgba_u8(), (255, 0, 0, 255));
-    assert_eq!(g.at(0.5).rgba_u8(), (255, 255, 0, 255));
-    assert_eq!(g.at(1.0).rgba_u8(), (0, 0, 255, 255));
+    assert_eq!(g.at(0.0).to_rgba8(), [255, 0, 0, 255]);
+    assert_eq!(g.at(0.5).to_rgba8(), [255, 255, 0, 255]);
+    assert_eq!(g.at(1.0).to_rgba8(), [0, 0, 255, 255]);
 
     // Blend mode HSV
     let g = CustomGradient::new()
@@ -99,9 +99,9 @@ fn custom_gradient_blend_mode() {
         .mode(BlendMode::Hsv)
         .build()
         .unwrap();
-    assert_eq!(g.at(0.0).rgba_u8(), (255, 0, 0, 255));
-    assert_eq!(g.at(0.5).rgba_u8(), (255, 255, 0, 255));
-    assert_eq!(g.at(1.0).rgba_u8(), (0, 0, 255, 255));
+    assert_eq!(g.at(0.0).to_rgba8(), [255, 0, 0, 255]);
+    assert_eq!(g.at(0.5).to_rgba8(), [255, 255, 0, 255]);
+    assert_eq!(g.at(1.0).to_rgba8(), [0, 0, 255, 255]);
 
     // Blend mode Oklab
     let g = CustomGradient::new()
@@ -109,9 +109,9 @@ fn custom_gradient_blend_mode() {
         .mode(BlendMode::Oklab)
         .build()
         .unwrap();
-    assert_eq!(g.at(0.0).rgba_u8(), (255, 0, 0, 255));
-    assert_eq!(g.at(0.5).rgba_u8(), (255, 255, 0, 255));
-    assert_eq!(g.at(1.0).rgba_u8(), (0, 0, 255, 255));
+    assert_eq!(g.at(0.0).to_rgba8(), [255, 0, 0, 255]);
+    assert_eq!(g.at(0.5).to_rgba8(), [255, 255, 0, 255]);
+    assert_eq!(g.at(1.0).to_rgba8(), [0, 0, 255, 255]);
 }
 
 #[test]
@@ -122,9 +122,9 @@ fn custom_gradient_interpolation_mode() {
         .interpolation(Interpolation::Linear)
         .build()
         .unwrap();
-    assert_eq!(g.at(0.0).rgba_u8(), (255, 0, 0, 255));
-    assert_eq!(g.at(0.5).rgba_u8(), (255, 255, 0, 255));
-    assert_eq!(g.at(1.0).rgba_u8(), (0, 0, 255, 255));
+    assert_eq!(g.at(0.0).to_rgba8(), [255, 0, 0, 255]);
+    assert_eq!(g.at(0.5).to_rgba8(), [255, 255, 0, 255]);
+    assert_eq!(g.at(1.0).to_rgba8(), [0, 0, 255, 255]);
 
     // Interpolation catmull-rom
     let g = CustomGradient::new()
@@ -132,9 +132,9 @@ fn custom_gradient_interpolation_mode() {
         .interpolation(Interpolation::CatmullRom)
         .build()
         .unwrap();
-    assert_eq!(g.at(0.0).rgba_u8(), (255, 0, 0, 255));
-    assert_eq!(g.at(0.5).rgba_u8(), (255, 255, 0, 255));
-    assert_eq!(g.at(1.0).rgba_u8(), (0, 0, 255, 255));
+    assert_eq!(g.at(0.0).to_rgba8(), [255, 0, 0, 255]);
+    assert_eq!(g.at(0.5).to_rgba8(), [255, 255, 0, 255]);
+    assert_eq!(g.at(1.0).to_rgba8(), [0, 0, 255, 255]);
 
     // Interpolation basis
     let g = CustomGradient::new()
@@ -142,9 +142,9 @@ fn custom_gradient_interpolation_mode() {
         .interpolation(Interpolation::Basis)
         .build()
         .unwrap();
-    assert_eq!(g.at(0.0).rgba_u8(), (255, 0, 0, 255));
-    assert!(g.at(0.5).rgba_u8() != (255, 255, 0, 255));
-    assert_eq!(g.at(1.0).rgba_u8(), (0, 0, 255, 255));
+    assert_eq!(g.at(0.0).to_rgba8(), [255, 0, 0, 255]);
+    assert!(g.at(0.5).to_rgba8() != [255, 255, 0, 255]);
+    assert_eq!(g.at(1.0).to_rgba8(), [0, 0, 255, 255]);
 }
 
 #[test]
@@ -245,29 +245,29 @@ fn sharp_gradient() {
         .unwrap();
 
     let g0 = grad.sharp(0, 0.0);
-    assert_eq!(g0.at(0.0).rgba_u8(), (255, 0, 0, 255));
-    assert_eq!(g0.at(0.5).rgba_u8(), (255, 0, 0, 255));
-    assert_eq!(g0.at(0.1).rgba_u8(), (255, 0, 0, 255));
+    assert_eq!(g0.at(0.0).to_rgba8(), [255, 0, 0, 255]);
+    assert_eq!(g0.at(0.5).to_rgba8(), [255, 0, 0, 255]);
+    assert_eq!(g0.at(0.1).to_rgba8(), [255, 0, 0, 255]);
 
     let g1 = grad.sharp(1, 0.0);
-    assert_eq!(g1.at(0.0).rgba_u8(), (255, 0, 0, 255));
-    assert_eq!(g1.at(0.5).rgba_u8(), (255, 0, 0, 255));
-    assert_eq!(g1.at(0.1).rgba_u8(), (255, 0, 0, 255));
+    assert_eq!(g1.at(0.0).to_rgba8(), [255, 0, 0, 255]);
+    assert_eq!(g1.at(0.5).to_rgba8(), [255, 0, 0, 255]);
+    assert_eq!(g1.at(0.1).to_rgba8(), [255, 0, 0, 255]);
 
     let g3 = grad.sharp(3, 0.0);
-    assert_eq!(g3.at(0.0).rgba_u8(), (255, 0, 0, 255));
-    assert_eq!(g3.at(0.1).rgba_u8(), (255, 0, 0, 255));
+    assert_eq!(g3.at(0.0).to_rgba8(), [255, 0, 0, 255]);
+    assert_eq!(g3.at(0.1).to_rgba8(), [255, 0, 0, 255]);
 
-    assert_eq!(g3.at(0.4).rgba_u8(), (0, 255, 0, 255));
-    assert_eq!(g3.at(0.5).rgba_u8(), (0, 255, 0, 255));
-    assert_eq!(g3.at(0.6).rgba_u8(), (0, 255, 0, 255));
+    assert_eq!(g3.at(0.4).to_rgba8(), [0, 255, 0, 255]);
+    assert_eq!(g3.at(0.5).to_rgba8(), [0, 255, 0, 255]);
+    assert_eq!(g3.at(0.6).to_rgba8(), [0, 255, 0, 255]);
 
-    assert_eq!(g3.at(0.9).rgba_u8(), (0, 0, 255, 255));
-    assert_eq!(g3.at(1.0).rgba_u8(), (0, 0, 255, 255));
+    assert_eq!(g3.at(0.9).to_rgba8(), [0, 0, 255, 255]);
+    assert_eq!(g3.at(1.0).to_rgba8(), [0, 0, 255, 255]);
 
-    assert_eq!(g3.at(-0.1).rgba_u8(), (255, 0, 0, 255));
-    assert_eq!(g3.at(1.1).rgba_u8(), (0, 0, 255, 255));
-    assert_eq!(g3.at(f64::NAN).rgba_u8(), (0, 0, 0, 255));
+    assert_eq!(g3.at(-0.1).to_rgba8(), [255, 0, 0, 255]);
+    assert_eq!(g3.at(1.1).to_rgba8(), [0, 0, 255, 255]);
+    assert_eq!(g3.at(f64::NAN).to_rgba8(), [0, 0, 0, 255]);
 
     let grad = CustomGradient::new()
         .html_colors(&["red", "lime", "blue"])
@@ -276,13 +276,13 @@ fn sharp_gradient() {
         .unwrap();
 
     let g2 = grad.sharp(2, 0.0);
-    assert_eq!(g2.at(-1.0).rgba_u8(), (255, 0, 0, 255));
-    assert_eq!(g2.at(-0.5).rgba_u8(), (255, 0, 0, 255));
-    assert_eq!(g2.at(-0.1).rgba_u8(), (255, 0, 0, 255));
+    assert_eq!(g2.at(-1.0).to_rgba8(), [255, 0, 0, 255]);
+    assert_eq!(g2.at(-0.5).to_rgba8(), [255, 0, 0, 255]);
+    assert_eq!(g2.at(-0.1).to_rgba8(), [255, 0, 0, 255]);
 
-    assert_eq!(g2.at(0.1).rgba_u8(), (0, 0, 255, 255));
-    assert_eq!(g2.at(0.5).rgba_u8(), (0, 0, 255, 255));
-    assert_eq!(g2.at(1.0).rgba_u8(), (0, 0, 255, 255));
+    assert_eq!(g2.at(0.1).to_rgba8(), [0, 0, 255, 255]);
+    assert_eq!(g2.at(0.5).to_rgba8(), [0, 0, 255, 255]);
+    assert_eq!(g2.at(1.0).to_rgba8(), [0, 0, 255, 255]);
 }
 
 #[test]
@@ -293,33 +293,33 @@ fn sharp_gradient_x() {
         .unwrap();
 
     let g0 = g.sharp(0, 0.1);
-    assert_eq!(g0.at(0.0).rgba_u8(), (255, 0, 0, 255));
-    assert_eq!(g0.at(0.5).rgba_u8(), (255, 0, 0, 255));
-    assert_eq!(g0.at(1.0).rgba_u8(), (255, 0, 0, 255));
+    assert_eq!(g0.at(0.0).to_rgba8(), [255, 0, 0, 255]);
+    assert_eq!(g0.at(0.5).to_rgba8(), [255, 0, 0, 255]);
+    assert_eq!(g0.at(1.0).to_rgba8(), [255, 0, 0, 255]);
 
     let g1 = g.sharp(1, 0.1);
-    assert_eq!(g1.at(0.0).rgba_u8(), (255, 0, 0, 255));
-    assert_eq!(g1.at(0.5).rgba_u8(), (255, 0, 0, 255));
-    assert_eq!(g1.at(1.0).rgba_u8(), (255, 0, 0, 255));
+    assert_eq!(g1.at(0.0).to_rgba8(), [255, 0, 0, 255]);
+    assert_eq!(g1.at(0.5).to_rgba8(), [255, 0, 0, 255]);
+    assert_eq!(g1.at(1.0).to_rgba8(), [255, 0, 0, 255]);
 
     let g = g.sharp(3, 0.1);
-    assert_eq!(g.at(0.0).rgba_u8(), (255, 0, 0, 255));
-    assert_eq!(g.at(0.1).rgba_u8(), (255, 0, 0, 255));
+    assert_eq!(g.at(0.0).to_rgba8(), [255, 0, 0, 255]);
+    assert_eq!(g.at(0.1).to_rgba8(), [255, 0, 0, 255]);
 
-    assert_eq!(g.at(1.0 / 3.0).rgba_u8(), (128, 128, 0, 255));
+    assert_eq!(g.at(1.0 / 3.0).to_rgba8(), [128, 128, 0, 255]);
 
-    assert_eq!(g.at(0.45).rgba_u8(), (0, 255, 0, 255));
-    assert_eq!(g.at(0.50).rgba_u8(), (0, 255, 0, 255));
-    assert_eq!(g.at(0.55).rgba_u8(), (0, 255, 0, 255));
+    assert_eq!(g.at(0.45).to_rgba8(), [0, 255, 0, 255]);
+    assert_eq!(g.at(0.50).to_rgba8(), [0, 255, 0, 255]);
+    assert_eq!(g.at(0.55).to_rgba8(), [0, 255, 0, 255]);
 
-    assert_eq!(g.at(1.0 / 3.0 * 2.0).rgba_u8(), (0, 128, 128, 255));
+    assert_eq!(g.at(1.0 / 3.0 * 2.0).to_rgba8(), [0, 128, 128, 255]);
 
-    assert_eq!(g.at(0.9).rgba_u8(), (0, 0, 255, 255));
-    assert_eq!(g.at(1.0).rgba_u8(), (0, 0, 255, 255));
+    assert_eq!(g.at(0.9).to_rgba8(), [0, 0, 255, 255]);
+    assert_eq!(g.at(1.0).to_rgba8(), [0, 0, 255, 255]);
 
-    assert_eq!(g.at(-0.5).rgba_u8(), (255, 0, 0, 255));
-    assert_eq!(g.at(1.5).rgba_u8(), (0, 0, 255, 255));
-    assert_eq!(g.at(f64::NAN).rgba_u8(), (0, 0, 0, 255));
+    assert_eq!(g.at(-0.5).to_rgba8(), [255, 0, 0, 255]);
+    assert_eq!(g.at(1.5).to_rgba8(), [0, 0, 255, 255]);
+    assert_eq!(g.at(f64::NAN).to_rgba8(), [0, 0, 0, 255]);
 }
 
 #[test]
@@ -398,8 +398,8 @@ fn preset() {
 #[test]
 fn cyclic() {
     let g = colorgrad::rainbow();
-    assert_eq!(g.at(0.0).rgba_u8(), g.at(1.0).rgba_u8());
+    assert_eq!(g.at(0.0).to_rgba8(), g.at(1.0).to_rgba8());
 
     let g = colorgrad::sinebow();
-    assert_eq!(g.at(0.0).rgba_u8(), g.at(1.0).rgba_u8());
+    assert_eq!(g.at(0.0).to_rgba8(), g.at(1.0).to_rgba8());
 }

@@ -52,11 +52,11 @@ fn main() {
 
     let grad_2 = CustomGradient::new()
         .colors(&[
-            Color::from_rgb_u8(0, 206, 209),
-            Color::from_rgb_u8(255, 105, 180),
-            Color::from_rgb(0.274, 0.5, 0.7),
-            Color::from_hsv(50.0, 1.0, 1.0),
-            Color::from_hsv(348.0, 0.9, 0.8),
+            Color::from_rgba8(0, 206, 209, 255),
+            Color::from_rgba8(255, 105, 180, 255),
+            Color::new(0.274, 0.5, 0.7, 1.0),
+            Color::from_hsva(50.0, 1.0, 1.0, 1.0),
+            Color::from_hsva(348.0, 0.9, 0.8, 1.0),
         ])
         .build()
         .unwrap();
@@ -78,8 +78,8 @@ fn main() {
 
     let grad_6 = CustomGradient::new()
         .colors(&[
-            Color::from_rgba_u8(255, 0, 0, 255),
-            Color::from_rgba_u8(255, 0, 0, 0),
+            Color::from_rgba8(255, 0, 0, 255),
+            Color::from_rgba8(255, 0, 0, 0),
         ])
         .build()
         .unwrap();
@@ -257,8 +257,8 @@ fn main() {
 fn parse_ggr<P: AsRef<Path>>(filepath: P) -> (Gradient, String) {
     let input = File::open(filepath).unwrap();
     let buf = BufReader::new(input);
-    let fg = Color::from_rgb(0.0, 0.0, 0.0);
-    let bg = Color::from_rgb(1.0, 1.0, 1.0);
+    let fg = Color::new(0.0, 0.0, 0.0, 1.0);
+    let bg = Color::new(1.0, 1.0, 1.0, 1.0);
     colorgrad::parse_ggr(buf, &fg, &bg).unwrap()
 }
 
@@ -267,11 +267,11 @@ fn gradient_image(gradient: &Gradient, width: u32, height: u32) -> ImageBuffer<R
     let mut imgbuf = ImageBuffer::new(width, height);
 
     for (x, _, pixel) in imgbuf.enumerate_pixels_mut() {
-        let (r, g, b, a) = gradient
+        let rgba = gradient
             .at(remap(x as f64, 0.0, width as f64, dmin, dmax))
-            .rgba_u8();
+            .to_rgba8();
 
-        *pixel = Rgba([r, g, b, a]);
+        *pixel = Rgba(rgba);
     }
 
     imgbuf

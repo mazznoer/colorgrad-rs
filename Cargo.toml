@@ -1,6 +1,6 @@
 [package]
 name = "colorgrad"
-version = "0.6.0"
+version = "0.6.1"
 authors = ["Nor Khasyatillah <mazznoer@ymail.com>"]
 edition = "2018"
 description = "Color scales library for data visualization, charts, games, generative art and others."
@@ -9,7 +9,7 @@ repository = "https://github.com/mazznoer/colorgrad-rs"
 documentation = "https://docs.rs/colorgrad/"
 license = "MIT OR Apache-2.0"
 keywords = ["color", "colormap", "color-scales", "visualization", "gradient"]
-categories = ["graphics"]
+categories = ["graphics", "visualization"]
 exclude = [
 	".github/*",
 	".gitignore",
@@ -18,7 +18,8 @@ exclude = [
 ]
 
 [dependencies]
-csscolorparser = { version = "0.6.0", default-features = false }
+#csscolorparser = { version = "0.6.1", default-features = false }
+csscolorparser = { git = "https://github.com/mazznoer/csscolorparser-rs" }
 
 [features]
 default = ["named-colors"]

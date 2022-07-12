@@ -164,8 +164,8 @@ fn calc_linear_factor(middle: f64, pos: f64) -> f64 {
 /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
 /// let input = File::open("examples/Abstract_1.ggr")?;
 /// let buf = BufReader::new(input);
-/// let fg = Color::from_rgb(0.0, 0.0, 0.0);
-/// let bg = Color::from_rgb(1.0, 1.0, 1.0);
+/// let fg = Color::new(0.0, 0.0, 0.0, 1.0);
+/// let bg = Color::new(1.0, 1.0, 1.0, 1.0);
 /// let (grad, name) = colorgrad::parse_ggr(buf, &fg, &bg)?;
 ///
 /// assert_eq!(name, "Abstract 1");
@@ -297,31 +297,31 @@ fn parse_segment(s: &str, foreground: &Color, background: &Color) -> Option<Gimp
     let rcolor_code = if d.len() == 15 { d[14] as isize } else { 0 };
 
     let lcolor = match lcolor_code {
-        0 => Color::from_rgba(d[3], d[4], d[5], d[6]),
+        0 => Color::new(d[3], d[4], d[5], d[6]),
         1 => foreground.clone(),
         2 => {
-            let (r, g, b, _) = foreground.rgba();
-            Color::from_rgba(r, g, b, 0.0)
+            let [r, g, b, _] = foreground.to_array();
+            Color::new(r, g, b, 0.0)
         }
         3 => background.clone(),
         4 => {
-            let (r, g, b, _) = background.rgba();
-            Color::from_rgba(r, g, b, 0.0)
+            let [r, g, b, _] = background.to_array();
+            Color::new(r, g, b, 0.0)
         }
         _ => return None,
     };
 
     let rcolor = match rcolor_code {
-        0 => Color::from_rgba(d[7], d[8], d[9], d[10]),
+        0 => Color::new(d[7], d[8], d[9], d[10]),
         1 => foreground.clone(),
         2 => {
-            let (r, g, b, _) = foreground.rgba();
-            Color::from_rgba(r, g, b, 0.0)
+            let [r, g, b, _] = foreground.to_array();
+            Color::new(r, g, b, 0.0)
         }
         3 => background.clone(),
         4 => {
-            let (r, g, b, _) = background.rgba();
-            Color::from_rgba(r, g, b, 0.0)
+            let [r, g, b, _] = background.to_array();
+            Color::new(r, g, b, 0.0)
         }
         _ => return None,
     };

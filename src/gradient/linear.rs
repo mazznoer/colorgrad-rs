@@ -49,7 +49,7 @@ impl GradientBase for LinearGradient {
                 let t = (t - pos_0) / (pos_1 - pos_0);
                 let [a, b, c, d] = linear_interpolation(col_0, col_1, t);
                 match self.mode {
-                    BlendMode::Rgb => return Color::from_rgba(a, b, c, d),
+                    BlendMode::Rgb => return Color::new(a, b, c, d),
                     BlendMode::LinearRgb => return Color::from_linear_rgba(a, b, c, d),
                     BlendMode::Oklab => return Color::from_oklaba(a, b, c, d),
                     BlendMode::Hsv => {

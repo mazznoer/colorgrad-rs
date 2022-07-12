@@ -79,6 +79,6 @@ impl GradientBase for SharpGradient {
             }
         }
 
-        Color::from_rgba(0.0, 0.0, 0.0, 1.0)
+        Color::new(0.0, 0.0, 0.0, 1.0)
     }
 }

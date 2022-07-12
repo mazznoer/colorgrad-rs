@@ -23,10 +23,11 @@ struct SinebowGradient {}
 impl GradientBase for SinebowGradient {
     fn at(&self, t: f64) -> Color {
         let t = (0.5 - t) * PI;
-        Color::from_rgb(
+        Color::new(
             t.sin().powi(2).clamp(0.0, 1.0),
             (t + FRAC_PI_3).sin().powi(2).clamp(0.0, 1.0),
             (t + PI2_3).sin().powi(2).clamp(0.0, 1.0),
+            1.0,
         )
     }
 }
@@ -48,10 +49,11 @@ impl GradientBase for TurboGradient {
         let b = (27.2
             + t * (3211.1 - t * (15327.97 - t * (27814.0 - t * (22569.18 - t * 6838.66)))))
             .round();
-        Color::from_rgb(
+        Color::new(
             (r / 255.0).clamp(0.0, 1.0),
             (g / 255.0).clamp(0.0, 1.0),
             (b / 255.0).clamp(0.0, 1.0),
+            1.0,
         )
     }
 }
@@ -72,10 +74,11 @@ impl GradientBase for CividisGradient {
         let b = (81.24
             + t * (442.36 - t * (2482.43 - t * (6167.24 - t * (6614.94 - t * 2475.67)))))
             .round();
-        Color::from_rgb(
+        Color::new(
             (r / 255.0).clamp(0.0, 1.0),
             (g / 255.0).clamp(0.0, 1.0),
             (b / 255.0).clamp(0.0, 1.0),
+            1.0,
         )
     }
 }
@@ -104,7 +107,7 @@ impl Cubehelix {
         let g = l - a * (0.29227 * cosh + 0.90649 * sinh).min(1.0);
         let b = l + a * (1.97294 * cosh);
 
-        Color::from_rgb(r.clamp(0.0, 1.0), g.clamp(0.0, 1.0), b.clamp(0.0, 1.0))
+        Color::new(r.clamp(0.0, 1.0), g.clamp(0.0, 1.0), b.clamp(0.0, 1.0), 1.0)
     }
 
     fn interpolate(&self, other: &Cubehelix, t: f64) -> Cubehelix {

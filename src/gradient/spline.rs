@@ -147,15 +147,13 @@ struct SplineGradient<T: Interpolator> {
 impl<T: Interpolator> GradientBase for SplineGradient<T> {
     fn at(&self, t: f64) -> Color {
         if t.is_nan() {
-            return Color::from_rgb(0.0, 0.0, 0.0);
+            return Color::new(0.0, 0.0, 0.0, 1.0);
         }
 
         let t = t.clamp(self.dmin, self.dmax);
 
         match self.mode {
-            BlendMode::Rgb => {
-                Color::from_rgba(self.a.at(t), self.b.at(t), self.c.at(t), self.d.at(t))
-            }
+            BlendMode::Rgb => Color::new(self.a.at(t), self.b.at(t), self.c.at(t), self.d.at(t)),
             BlendMode::LinearRgb => {
                 Color::from_linear_rgba(self.a.at(t), self.b.at(t), self.c.at(t), self.d.at(t))
             }
@@ -183,7 +181,7 @@ pub(crate) fn spline_gradient(
 
     for col in colors.iter() {
         let (c1, c2, c3, c4) = match space {
-            BlendMode::Rgb => col.rgba(),
+            BlendMode::Rgb => (col.r, col.g, col.b, col.a),
             BlendMode::LinearRgb => col.to_linear_rgba(),
             BlendMode::Oklab => col.to_oklaba(),
             BlendMode::Hsv => col.to_hsva(),

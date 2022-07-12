@@ -42,14 +42,14 @@ impl error::Error for CustomGradientError {}
 /// # fn main() -> Result<(), Box<dyn Error>> {
 /// let grad = colorgrad::CustomGradient::new()
 ///     .colors(&[
-///         Color::from_rgb_u8(255, 0, 0),
-///         Color::from_rgb(0.0, 0.0, 1.0),
+///         Color::from_rgba8(255, 0, 0, 255),
+///         Color::new(0.0, 0.0, 1.0, 1.0),
 ///     ])
 ///     .build()?;
 ///
 /// assert_eq!(grad.domain(), (0.0, 1.0)); // default domain
-/// assert_eq!(grad.at(0.0).rgba_u8(), (255, 0, 0, 255));
-/// assert_eq!(grad.at(1.0).rgba_u8(), (0, 0, 255, 255));
+/// assert_eq!(grad.at(0.0).to_rgba8(), [255, 0, 0, 255]);
+/// assert_eq!(grad.at(1.0).to_rgba8(), [0, 0, 255, 255]);
 /// # Ok(())
 /// # }
 /// ```
@@ -65,8 +65,8 @@ impl error::Error for CustomGradientError {}
 ///     .mode(colorgrad::BlendMode::Rgb)
 ///     .build()?;
 ///
-/// assert_eq!(grad.at(0.0).rgba_u8(), (255, 20, 147, 255));
-/// assert_eq!(grad.at(100.0).rgba_u8(), (46, 139, 87, 255));
+/// assert_eq!(grad.at(0.0).to_rgba8(), [255, 20, 147, 255]);
+/// assert_eq!(grad.at(100.0).to_rgba8(), [46, 139, 87, 255]);
 /// # Ok(())
 /// # }
 /// ```
@@ -154,8 +154,8 @@ impl CustomGradient {
 
         let colors = if self.colors.is_empty() {
             vec![
-                Color::from_rgb(0.0, 0.0, 0.0),
-                Color::from_rgb(1.0, 1.0, 1.0),
+                Color::new(0.0, 0.0, 0.0, 1.0),
+                Color::new(1.0, 1.0, 1.0, 1.0),
             ]
         } else if self.colors.len() == 1 {
             vec![self.colors[0].clone(), self.colors[0].clone()]

@@ -29,7 +29,7 @@
 Add this to your `Cargo.toml`
 
 ```toml
-colorgrad = "0.6.0"
+colorgrad = "0.6.1"
 ```
 
 ## Custom Gradient
@@ -48,11 +48,11 @@ use colorgrad::Color;
 
 let g = colorgrad::CustomGradient::new()
     .colors(&[
-        Color::from_rgb_u8(0, 206, 209),
-        Color::from_rgb_u8(255, 105, 180),
-        Color::from_rgb(0.274, 0.5, 0.7),
-        Color::from_hsv(50.0, 1.0, 1.0),
-        Color::from_hsv(348.0, 0.9, 0.8),
+        Color::from_rgba8(0, 206, 209, 255),
+        Color::from_rgba8(255, 105, 180, 255),
+        Color::new(0.274, 0.5, 0.7, 1.0),
+        Color::from_hsva(50.0, 1.0, 1.0, 1.0),
+        Color::from_hsva(348.0, 0.9, 0.8, 1.0),
     ])
     .build()?;
 ```
@@ -303,8 +303,8 @@ use std::io::BufReader;
 
 let input = File::open("examples/Abstract_1.ggr")?;
 let buf = BufReader::new(input);
-let fg = Color::from_rgb(0.0, 0.0, 0.0);
-let bg = Color::from_rgb(1.0, 1.0, 1.0);
+let fg = Color::new(0.0, 0.0, 0.0, 1.0);
+let bg = Color::new(1.0, 1.0, 1.0, 1.0);
 let (grad, name) = colorgrad::parse_ggr(buf, &fg, &bg)?;
 
 assert_eq!(name, "Abstract 1");
@@ -327,15 +327,15 @@ assert_eq!(grad.domain(), (0.0, 1.0));
 ```rust
 let grad = colorgrad::blues();
 
-assert_eq!(grad.at(0.0).rgba_u8(), (247, 251, 255, 255));
-assert_eq!(grad.at(0.5).rgba_u8(), (109, 174, 213, 255));
-assert_eq!(grad.at(1.0).rgba_u8(), (8,   48,  107, 255));
+assert_eq!(grad.at(0.0).to_rgba8(), [247, 251, 255, 255]);
+assert_eq!(grad.at(0.5).to_rgba8(), [109, 174, 213, 255]);
+assert_eq!(grad.at(1.0).to_rgba8(), [8,   48,  107, 255]);
 
-assert_eq!(grad.at(0.3).rgba_u8(), grad.repeat_at(0.3).rgba_u8());
-assert_eq!(grad.at(0.3).rgba_u8(), grad.reflect_at(0.3).rgba_u8());
+assert_eq!(grad.at(0.3).to_rgba8(), grad.repeat_at(0.3).to_rgba8());
+assert_eq!(grad.at(0.3).to_rgba8(), grad.reflect_at(0.3).to_rgba8());
 
-assert_eq!(grad.at(0.7).rgba_u8(), grad.repeat_at(0.7).rgba_u8());
-assert_eq!(grad.at(0.7).rgba_u8(), grad.reflect_at(0.7).rgba_u8());
+assert_eq!(grad.at(0.7).to_rgba8(), grad.repeat_at(0.7).to_rgba8());
+assert_eq!(grad.at(0.7).to_rgba8(), grad.reflect_at(0.7).to_rgba8());
 ```
 
 The difference of `at()`, `repeat_at()` and `reflect_at()`.
@@ -396,8 +396,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut imgbuf = image::ImageBuffer::new(width, height);
 
     for (x, _, pixel) in imgbuf.enumerate_pixels_mut() {
-        let (r, g, b, a) = grad.at(x as f64 / width as f64).rgba_u8();
-        *pixel = image::Rgba([r, g, b, a]);
+        let rgba = grad.at(x as f64 / width as f64).to_rgba8();
+        *pixel = image::Rgba(rgba);
     }
 
     imgbuf.save("gradient.png")?;
@@ -423,8 +423,8 @@ fn main() {
 
     for (x, y, pixel) in imgbuf.enumerate_pixels_mut() {
         let t = ns.get([x as f64 * scale, y as f64 * scale]);
-        let (r, g, b, a) = grad.at(remap(t, -0.5, 0.5, 0.0, 1.0)).rgba_u8();
-        *pixel = image::Rgba([r, g, b, a]);
+        let rgba = grad.at(remap(t, -0.5, 0.5, 0.0, 1.0)).to_rgba8();
+        *pixel = image::Rgba(rgba);
     }
 
     imgbuf.save("noise.png").unwrap();

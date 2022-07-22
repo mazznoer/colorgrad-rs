@@ -9,7 +9,7 @@
 //! let g = colorgrad::rainbow();
 //!
 //! assert_eq!(g.domain(), (0.0, 1.0)); // all preset gradients are in the domain [0..1]
-//! assert_eq!(g.at(0.5).rgba_u8(), (175, 240, 91, 255));
+//! assert_eq!(g.at(0.5).to_rgba8(), [175, 240, 91, 255]);
 //! assert_eq!(g.at(0.5).to_hex_string(), "#aff05b");
 //! ```
 //!
@@ -20,12 +20,12 @@
 //! # fn main() -> Result<(), Box<dyn std::error::Error>> {
 //! let g = colorgrad::CustomGradient::new()
 //!     .colors(&[
-//!         Color::from_rgb_u8(255, 0, 0),
-//!         Color::from_rgb_u8(0, 255, 0),
+//!         Color::from_rgba8(255, 0, 0, 255),
+//!         Color::from_rgba8(0, 255, 0, 255),
 //!     ])
 //!     .build()?;
 //!
-//! assert_eq!(g.at(0.0).rgba_u8(), (255, 0, 0, 255));
+//! assert_eq!(g.at(0.0).to_rgba8(), [255, 0, 0, 255]);
 //! assert_eq!(g.at(0.0).to_hex_string(), "#ff0000");
 //! assert_eq!(g.at(1.0).to_hex_string(), "#00ff00");
 //! # Ok(())
@@ -48,8 +48,8 @@
 //!     let mut imgbuf = image::ImageBuffer::new(width, height);
 //!
 //!     for (x, _, pixel) in imgbuf.enumerate_pixels_mut() {
-//!         let (r, g, b, a) = grad.at(x as f64 / width as f64).rgba_u8();
-//!         *pixel = image::Rgba([r, g, b, a]);
+//!         let rgba = grad.at(x as f64 / width as f64).to_rgba8();
+//!         *pixel = image::Rgba(rgba);
 //!     }
 //!
 //!     imgbuf.save("gradient.png")?;
@@ -75,8 +75,8 @@
 //!
 //!     for (x, y, pixel) in imgbuf.enumerate_pixels_mut() {
 //!         let t = ns.get([x as f64 * scale, y as f64 * scale]);
-//!         let (r, g, b, a) = grad.at(remap(t, -0.5, 0.5, 0.0, 1.0)).rgba_u8();
-//!         *pixel = image::Rgba([r, g, b, a]);
+//!         let rgba = grad.at(remap(t, -0.5, 0.5, 0.0, 1.0)).to_rgba8();
+//!         *pixel = image::Rgba(rgba);
 //!     }
 //!
 //!     imgbuf.save("noise.png").unwrap();

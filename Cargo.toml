@@ -18,16 +18,15 @@ exclude = [
 ]
 
 [dependencies]
-#csscolorparser = { version = "0.6.1", default-features = false }
-csscolorparser = { git = "https://github.com/mazznoer/csscolorparser-rs" }
+csscolorparser = { version = "0.6.2", default-features = false }
 
 [features]
 default = ["named-colors"]
 named-colors = ["csscolorparser/named-colors"]
 
 [dev-dependencies]
-criterion = "0.3.5"
-image = { version = "0.24.2", default-features = false, features = ["png"] }
+criterion = { version = "0.3.6", features = ["html_reports"] }
+image = { version = "0.24.3", default-features = false, features = ["png"] }
 
 [[bench]]
 name = "linear"

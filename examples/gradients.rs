@@ -1,5 +1,5 @@
 use colorgrad::{BlendMode, Color, CustomGradient, Gradient, Interpolation};
-use image::{ImageBuffer, Rgba};
+use image::{imageops, ImageBuffer, Rgba};
 use std::fs::{create_dir, File};
 use std::io::BufReader;
 use std::path::Path;
@@ -223,8 +223,9 @@ fn main() {
         (grad.sharp(segments, 1.0), "1.0"),
     ];
 
-    let width = 1300;
-    let height = 60;
+    let width = 1000;
+    let height = 150;
+    let padding = 10;
 
     let output_dir = Path::new("example_output/");
 
@@ -233,21 +234,21 @@ fn main() {
     }
 
     for (gradient, name) in preset_gradients {
-        let imgbuf = gradient_image(&gradient, width, height);
+        let imgbuf = grad_rgb_plot(&gradient, width, height, padding);
         let file_path = format!("example_output/preset_{}.png", name);
         println!("{}", file_path);
         imgbuf.save(file_path).unwrap();
     }
 
     for (gradient, name) in custom_gradients {
-        let imgbuf = gradient_image(&gradient, width, height);
+        let imgbuf = grad_rgb_plot(&gradient, width, height, padding);
         let file_path = format!("example_output/{}.png", name);
         println!("{}", file_path);
         imgbuf.save(file_path).unwrap();
     }
 
     for (gradient, name) in sharp_gradients {
-        let imgbuf = gradient_image(&gradient, width, height);
+        let imgbuf = grad_rgb_plot(&gradient, width, height, padding);
         let file_path = format!("example_output/sharp-smoothness-{}.png", name);
         println!("{}", file_path);
         imgbuf.save(file_path).unwrap();
@@ -264,15 +265,69 @@ fn parse_ggr<P: AsRef<Path>>(filepath: P) -> (Gradient, String) {
 
 fn gradient_image(gradient: &Gradient, width: u32, height: u32) -> ImageBuffer<Rgba<u8>, Vec<u8>> {
     let (dmin, dmax) = gradient.domain();
-    let mut imgbuf = ImageBuffer::new(width, height);
-
-    for (x, _, pixel) in imgbuf.enumerate_pixels_mut() {
+    ImageBuffer::from_fn(width, height, |x, _| {
         let rgba = gradient
             .at(remap(x as f64, 0.0, width as f64, dmin, dmax))
             .to_rgba8();
+        Rgba(rgba)
+    })
+}
 
-        *pixel = Rgba(rgba);
+fn rgb_plot(grad: &Gradient, width: u32, height: u32) -> ImageBuffer<Rgba<u8>, Vec<u8>> {
+    let mut imgbuf = ImageBuffer::from_pixel(
+        width,
+        height,
+        Rgba(Color::new(0.9, 0.9, 0.9, 1.0).to_rgba8()),
+    );
+    let (dmin, dmax) = grad.domain();
+    let fw = width as f64;
+    let y1 = 0.0;
+    let y2 = height as f64;
+
+    for x in 0..width {
+        let col = grad.at(remap(x as f64, 0.0, fw, dmin, dmax));
+        let yr = remap(col.r, 0.0, 1.0, y2, y1);
+        let yg = remap(col.g, 0.0, 1.0, y2, y1);
+        let yb = remap(col.b, 0.0, 1.0, y2, y1);
+
+        if (y1..y2).contains(&yr) {
+            let pixel = imgbuf.get_pixel_mut(x, yr as u32);
+            *pixel = Rgba([255, 0, 0, 255]);
+        }
+
+        if (y1..y2).contains(&yg) {
+            let pixel = imgbuf.get_pixel_mut(x, yg as u32);
+            *pixel = Rgba([0, 128, 0, 255]);
+        }
+
+        if (y1..y2).contains(&yb) {
+            let pixel = imgbuf.get_pixel_mut(x, yb as u32);
+            *pixel = Rgba([0, 0, 255, 255]);
+        }
     }
+    imgbuf
+}
+
+fn grad_rgb_plot(
+    grad: &Gradient,
+    width: u32,
+    height: u32,
+    padding: u32,
+) -> ImageBuffer<Rgba<u8>, Vec<u8>> {
+    let w = width + padding * 2;
+    let h = height * 2 + padding * 3;
+    let mut imgbuf = ImageBuffer::from_pixel(w, h, Rgba(Color::new(1.0, 1.0, 1.0, 1.0).to_rgba8()));
+
+    let grad_img = gradient_image(grad, width, height);
+    imageops::replace(&mut imgbuf, &grad_img, padding.into(), padding.into());
+
+    let plot_img = rgb_plot(grad, width, height);
+    imageops::replace(
+        &mut imgbuf,
+        &plot_img,
+        padding.into(),
+        (height + padding * 2).into(),
+    );
 
     imgbuf
 }

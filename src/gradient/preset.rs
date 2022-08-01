@@ -1,6 +1,6 @@
 use std::f64::consts::{FRAC_PI_3, PI};
 
-use crate::{gradient::spline::preset_spline, Color, Gradient, GradientBase};
+use crate::{linspace, BasisGradient, BlendMode, Color, Gradient, GradientBase};
 
 const PI2_3: f64 = PI * 2.0 / 3.0;
 
@@ -195,10 +195,23 @@ preset_fn!(rainbow; RainbowGradient{});
 
 // ---
 
+fn build_preset(html_colors: &[&str]) -> Gradient {
+    let colors = html_colors
+        .iter()
+        .map(|s| csscolorparser::parse(s).unwrap())
+        .collect::<Vec<_>>();
+    let pos = linspace(0.0, 1.0, colors.len());
+    Gradient {
+        gradient: Box::new(BasisGradient::new(colors, pos, BlendMode::Rgb)),
+        dmin: 0.0,
+        dmax: 1.0,
+    }
+}
+
 macro_rules! preset {
     ($colors:expr; $name:ident) => {
         pub fn $name() -> Gradient {
-            preset_spline($colors)
+            build_preset($colors)
         }
     };
 }

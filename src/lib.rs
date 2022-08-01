@@ -125,11 +125,12 @@ mod builder;
 pub use builder::{CustomGradient, CustomGradientError};
 
 mod gradient;
+use gradient::basis::BasisGradient;
+use gradient::catmull_rom::CatmullRomGradient;
 pub use gradient::gimp::{parse_ggr, ParseGgrError};
 use gradient::linear::LinearGradient;
 pub use gradient::preset::*;
 use gradient::sharp::SharpGradient;
-use gradient::spline::spline_gradient;
 
 /// Color blending mode
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]

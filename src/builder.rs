@@ -1,6 +1,9 @@
 use std::{error, fmt};
 
-use crate::{linspace, spline_gradient, BlendMode, Color, Gradient, Interpolation, LinearGradient};
+use crate::{
+    linspace, BasisGradient, BlendMode, CatmullRomGradient, Color, Gradient, GradientBase,
+    Interpolation, LinearGradient,
+};
 
 #[derive(Debug, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum CustomGradientError {
@@ -181,23 +184,25 @@ impl CustomGradient {
             return Err(CustomGradientError::WrongDomainCount);
         };
 
-        if let Interpolation::Linear = self.interpolation {
-            let dmin = pos[0];
-            let dmax = pos[pos.len() - 1];
-            let gradbase = LinearGradient::new(colors, pos, self.mode);
+        let mode = if self.interpolation != Interpolation::Linear && self.mode == BlendMode::Hsv {
+            BlendMode::Rgb
+        } else {
+            self.mode
+        };
 
-            return Ok(Gradient {
-                gradient: Box::new(gradbase),
-                dmin,
-                dmax,
-            });
-        }
+        let dmin = pos[0];
+        let dmax = pos[pos.len() - 1];
 
-        Ok(spline_gradient(
-            &colors,
-            &pos,
-            self.mode,
-            self.interpolation,
-        ))
+        let gradient: Box<dyn GradientBase + Send + Sync> = match self.interpolation {
+            Interpolation::Linear => Box::new(LinearGradient::new(colors, pos, mode)),
+            Interpolation::CatmullRom => Box::new(CatmullRomGradient::new(colors, pos, mode)),
+            Interpolation::Basis => Box::new(BasisGradient::new(colors, pos, mode)),
+        };
+
+        Ok(Gradient {
+            gradient,
+            dmin,
+            dmax,
+        })
     }
 }

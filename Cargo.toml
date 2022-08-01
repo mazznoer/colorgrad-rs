@@ -39,3 +39,7 @@ harness = false
 [[bench]]
 name = "basis"
 harness = false
+
+[[bench]]
+name = "preset"
+harness = false

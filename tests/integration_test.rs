@@ -194,7 +194,7 @@ fn custom_gradient_domain() {
 
     assert_eq!(g.at(-10.0).to_hex_string(), "#ffff00");
     assert_eq!(g.at(110.0).to_hex_string(), "#00ff00");
-    assert_eq!(g.at(f64::NAN).to_hex_string(), "#00ff00");
+    assert_eq!(g.at(f64::NAN).to_hex_string(), "#000000");
 
     // Custom domain #2
     let g = CustomGradient::new()

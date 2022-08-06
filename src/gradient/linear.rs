@@ -42,24 +42,42 @@ impl GradientBase for LinearGradient {
             return self.last_color.clone();
         }
 
-        for segment in self.stops.windows(2) {
-            let (pos_0, col_0) = &segment[0];
-            let (pos_1, col_1) = &segment[1];
-            if (*pos_0 <= t) && (t <= *pos_1) {
-                let t = (t - pos_0) / (pos_1 - pos_0);
-                let [a, b, c, d] = linear_interpolation(col_0, col_1, t);
-                match self.mode {
-                    BlendMode::Rgb => return Color::new(a, b, c, d),
-                    BlendMode::LinearRgb => return Color::from_linear_rgba(a, b, c, d),
-                    BlendMode::Oklab => return Color::from_oklaba(a, b, c, d),
-                    BlendMode::Hsv => {
-                        let hue = interp_angle(col_0[0], col_1[0], t);
-                        return Color::from_hsva(hue, b, c, d);
-                    }
-                }
+        if t.is_nan() {
+            return Color::new(0.0, 0.0, 0.0, 1.0);
+        }
+
+        let mut low = 0;
+        let mut high = self.stops.len();
+
+        loop {
+            if low >= high {
+                break;
+            }
+            let mid = (low + high) / 2;
+            if self.stops[mid].0 < t {
+                low = mid + 1;
+            } else {
+                high = mid;
             }
         }
 
-        self.last_color.clone()
+        if low == 0 {
+            low = 1;
+        }
+
+        let (pos_0, col_0) = self.stops[low - 1];
+        let (pos_1, col_1) = self.stops[low];
+        let t = (t - pos_0) / (pos_1 - pos_0);
+        let [a, b, c, d] = linear_interpolation(&col_0, &col_1, t);
+
+        match self.mode {
+            BlendMode::Rgb => Color::new(a, b, c, d),
+            BlendMode::LinearRgb => Color::from_linear_rgba(a, b, c, d),
+            BlendMode::Oklab => Color::from_oklaba(a, b, c, d),
+            BlendMode::Hsv => {
+                let hue = interp_angle(col_0[0], col_1[0], t);
+                Color::from_hsva(hue, b, c, d)
+            }
+        }
     }
 }

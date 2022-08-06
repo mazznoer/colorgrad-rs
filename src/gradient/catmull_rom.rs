@@ -109,25 +109,46 @@ impl GradientBase for CatmullRomGradient {
             return self.last_color.clone();
         }
 
-        for (pos, [seg_a, seg_b, seg_c, seg_d]) in self.positions.windows(2).zip(&self.segments) {
-            if (pos[0] <= t) && (t <= pos[1]) {
-                let t1 = (t - pos[0]) / (pos[1] - pos[0]);
-                let t2 = t1 * t1;
-                let t3 = t2 * t1;
+        if t.is_nan() {
+            return Color::new(0.0, 0.0, 0.0, 1.0);
+        }
 
-                let c0 = seg_a[0] * t3 + seg_a[1] * t2 + seg_a[2] * t1 + seg_a[3];
-                let c1 = seg_b[0] * t3 + seg_b[1] * t2 + seg_b[2] * t1 + seg_b[3];
-                let c2 = seg_c[0] * t3 + seg_c[1] * t2 + seg_c[2] * t1 + seg_c[3];
-                let c3 = seg_d[0] * t3 + seg_d[1] * t2 + seg_d[2] * t1 + seg_d[3];
+        let mut low = 0;
+        let mut high = self.positions.len();
 
-                match self.mode {
-                    BlendMode::LinearRgb => return Color::from_linear_rgba(c0, c1, c2, c3),
-                    BlendMode::Oklab => return Color::from_oklaba(c0, c1, c2, c3),
-                    _ => return Color::new(c0, c1, c2, c3),
-                }
+        loop {
+            if low >= high {
+                break;
+            }
+            let mid = (low + high) / 2;
+            if self.positions[mid] < t {
+                low = mid + 1;
+            } else {
+                high = mid;
             }
         }
 
-        Color::new(0.0, 0.0, 0.0, 1.0)
+        if low == 0 {
+            low = 1;
+        }
+
+        let pos0 = self.positions[low - 1];
+        let pos1 = self.positions[low];
+        let [seg_a, seg_b, seg_c, seg_d] = self.segments[low - 1];
+
+        let t1 = (t - pos0) / (pos1 - pos0);
+        let t2 = t1 * t1;
+        let t3 = t2 * t1;
+
+        let c0 = seg_a[0] * t3 + seg_a[1] * t2 + seg_a[2] * t1 + seg_a[3];
+        let c1 = seg_b[0] * t3 + seg_b[1] * t2 + seg_b[2] * t1 + seg_b[3];
+        let c2 = seg_c[0] * t3 + seg_c[1] * t2 + seg_c[2] * t1 + seg_c[3];
+        let c3 = seg_d[0] * t3 + seg_d[1] * t2 + seg_d[2] * t1 + seg_d[3];
+
+        match self.mode {
+            BlendMode::LinearRgb => Color::from_linear_rgba(c0, c1, c2, c3),
+            BlendMode::Oklab => Color::from_oklaba(c0, c1, c2, c3),
+            _ => Color::new(c0, c1, c2, c3),
+        }
     }
 }

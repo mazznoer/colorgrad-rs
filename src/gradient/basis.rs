@@ -51,43 +51,60 @@ impl GradientBase for BasisGradient {
             return self.last_color.clone();
         }
 
-        let n = self.values.len() - 1;
+        if t.is_nan() {
+            return Color::new(0.0, 0.0, 0.0, 1.0);
+        }
 
-        for (i, (pos, val)) in self
-            .positions
-            .windows(2)
-            .zip(self.values.windows(2))
-            .enumerate()
-        {
-            if (pos[0] <= t) && (t <= pos[1]) {
-                let t = (t - pos[0]) / (pos[1] - pos[0]);
-                let mut zz = [0.0; 4];
+        let mut low = 0;
+        let mut high = self.positions.len();
+        let n = high - 1;
 
-                for (j, (v1, v2)) in val[0].iter().zip(val[1].iter()).enumerate() {
-                    let v0 = if i > 0 {
-                        self.values[i - 1][j]
-                    } else {
-                        2.0 * v1 - v2
-                    };
-
-                    let v3 = if i < (n - 1) {
-                        self.values[i + 2][j]
-                    } else {
-                        2.0 * v2 - v1
-                    };
-
-                    zz[j] = basis(t, v0, *v1, *v2, v3);
-                }
-                let [c0, c1, c2, c3] = zz;
-
-                match self.mode {
-                    BlendMode::LinearRgb => return Color::from_linear_rgba(c0, c1, c2, c3),
-                    BlendMode::Oklab => return Color::from_oklaba(c0, c1, c2, c3),
-                    _ => return Color::new(c0, c1, c2, c3),
-                }
+        loop {
+            if low >= high {
+                break;
+            }
+            let mid = (low + high) / 2;
+            if self.positions[mid] < t {
+                low = mid + 1;
+            } else {
+                high = mid;
             }
         }
 
-        Color::new(0.0, 0.0, 0.0, 1.0)
+        if low == 0 {
+            low = 1;
+        }
+
+        let pos0 = self.positions[low - 1];
+        let pos1 = self.positions[low];
+        let val0 = self.values[low - 1];
+        let val1 = self.values[low];
+        let i = low - 1;
+        let t = (t - pos0) / (pos1 - pos0);
+        let mut zz = [0.0; 4];
+
+        for (j, (v1, v2)) in val0.iter().zip(val1.iter()).enumerate() {
+            let v0 = if i > 0 {
+                self.values[i - 1][j]
+            } else {
+                2.0 * v1 - v2
+            };
+
+            let v3 = if i < (n - 1) {
+                self.values[i + 2][j]
+            } else {
+                2.0 * v2 - v1
+            };
+
+            zz[j] = basis(t, v0, *v1, *v2, v3);
+        }
+
+        let [c0, c1, c2, c3] = zz;
+
+        match self.mode {
+            BlendMode::LinearRgb => Color::from_linear_rgba(c0, c1, c2, c3),
+            BlendMode::Oklab => Color::from_oklaba(c0, c1, c2, c3),
+            _ => Color::new(c0, c1, c2, c3),
+        }
     }
 }

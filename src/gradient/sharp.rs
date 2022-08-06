@@ -66,19 +66,38 @@ impl GradientBase for SharpGradient {
             return self.last_color.clone();
         }
 
-        for (i, segment) in self.stops.windows(2).enumerate() {
-            let (pos_0, col_0) = &segment[0];
-            let (pos_1, col_1) = &segment[1];
+        if t.is_nan() {
+            return Color::new(0.0, 0.0, 0.0, 1.0);
+        }
 
-            if (*pos_0 <= t) && (t <= *pos_1) {
-                if i & 1 == 0 {
-                    return col_0.clone();
-                }
-                let t = (t - pos_0) / (pos_1 - pos_0);
-                return col_0.interpolate_rgb(col_1, t);
+        let mut low = 0;
+        let mut high = self.stops.len();
+
+        loop {
+            if low >= high {
+                break;
+            }
+            let mid = (low + high) / 2;
+            if self.stops[mid].0 < t {
+                low = mid + 1;
+            } else {
+                high = mid;
             }
         }
 
-        Color::new(0.0, 0.0, 0.0, 1.0)
+        if low == 0 {
+            low = 1;
+        }
+
+        let i = low - 1;
+        let (pos_0, col_0) = &self.stops[i];
+        let (pos_1, col_1) = &self.stops[low];
+
+        if i & 1 == 0 {
+            return col_0.clone();
+        }
+
+        let t = (t - pos_0) / (pos_1 - pos_0);
+        col_0.interpolate_rgb(col_1, t)
     }
 }

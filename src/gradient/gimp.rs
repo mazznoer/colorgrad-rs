@@ -70,65 +70,82 @@ struct GimpGradient {
 
 impl GradientBase for GimpGradient {
     fn at(&self, t: f64) -> Color {
-        if t < self.dmin {
+        if t <= self.dmin {
             return self.segments[0].lcolor.clone();
         }
 
-        if t > self.dmax {
+        if t >= self.dmax {
             return self.segments[self.segments.len() - 1].rcolor.clone();
         }
 
-        for seg in self.segments.iter() {
-            if (seg.lpos <= t) && (t <= seg.rpos) {
-                let seg_len = seg.rpos - seg.lpos;
+        if t.is_nan() {
+            return Color::new(0.0, 0.0, 0.0, 1.0);
+        }
 
-                let (middle, pos) = if seg_len < f64::EPSILON {
-                    (0.5, 0.5)
-                } else {
-                    ((seg.mpos - seg.lpos) / seg_len, (t - seg.lpos) / seg_len)
-                };
+        let mut low = 0;
+        let mut high = self.segments.len();
+        let mut mid = 0;
 
-                let f = match seg.blending_type {
-                    BlendingType::Linear => calc_linear_factor(middle, pos),
-                    BlendingType::Curved => {
-                        if middle < f64::EPSILON {
-                            return seg.rcolor.clone();
-                        } else if (1.0 - middle).abs() < f64::EPSILON {
-                            return seg.lcolor.clone();
-                        } else {
-                            (-LN_2 * pos.log10() / middle.log10()).exp()
-                        }
-                    }
-                    BlendingType::Sinusoidal => {
-                        let f = calc_linear_factor(middle, pos);
-                        ((-FRAC_PI_2 + (PI * f)).sin() + 1.0) / 2.0
-                    }
-                    BlendingType::SphericalIncreasing => {
-                        let f = calc_linear_factor(middle, pos) - 1.0;
-                        (1.0 - f * f).sqrt()
-                    }
-                    BlendingType::SphericalDecreasing => {
-                        let f = calc_linear_factor(middle, pos);
-                        1.0 - (1.0 - f * f).sqrt()
-                    }
-                    BlendingType::Step => {
-                        if pos >= middle {
-                            return seg.rcolor.clone();
-                        } else {
-                            return seg.lcolor.clone();
-                        }
-                    }
-                };
-
-                match seg.coloring_type {
-                    ColoringType::Rgb => return seg.lcolor.interpolate_rgb(&seg.rcolor, f),
-                    ColoringType::HsvCcw => return blend_hsv_ccw(&seg.lcolor, &seg.rcolor, f),
-                    ColoringType::HsvCw => return blend_hsv_cw(&seg.lcolor, &seg.rcolor, f),
-                };
+        loop {
+            if low >= high {
+                break;
+            }
+            mid = (low + high) / 2;
+            if t > self.segments[mid].rpos {
+                low = mid + 1;
+            } else if t < self.segments[mid].lpos {
+                high = mid;
+            } else {
+                break;
             }
         }
 
-        self.segments[0].lcolor.clone()
+        let seg = &self.segments[mid];
+        let seg_len = seg.rpos - seg.lpos;
+
+        let (middle, pos) = if seg_len < f64::EPSILON {
+            (0.5, 0.5)
+        } else {
+            ((seg.mpos - seg.lpos) / seg_len, (t - seg.lpos) / seg_len)
+        };
+
+        let f = match seg.blending_type {
+            BlendingType::Linear => calc_linear_factor(middle, pos),
+            BlendingType::Curved => {
+                if middle < f64::EPSILON {
+                    return seg.rcolor.clone();
+                } else if (1.0 - middle).abs() < f64::EPSILON {
+                    return seg.lcolor.clone();
+                } else {
+                    (-LN_2 * pos.log10() / middle.log10()).exp()
+                }
+            }
+            BlendingType::Sinusoidal => {
+                let f = calc_linear_factor(middle, pos);
+                ((-FRAC_PI_2 + (PI * f)).sin() + 1.0) / 2.0
+            }
+            BlendingType::SphericalIncreasing => {
+                let f = calc_linear_factor(middle, pos) - 1.0;
+                (1.0 - f * f).sqrt()
+            }
+            BlendingType::SphericalDecreasing => {
+                let f = calc_linear_factor(middle, pos);
+                1.0 - (1.0 - f * f).sqrt()
+            }
+            BlendingType::Step => {
+                if pos >= middle {
+                    return seg.rcolor.clone();
+                } else {
+                    return seg.lcolor.clone();
+                }
+            }
+        };
+
+        match seg.coloring_type {
+            ColoringType::Rgb => seg.lcolor.interpolate_rgb(&seg.rcolor, f),
+            ColoringType::HsvCcw => blend_hsv_ccw(&seg.lcolor, &seg.rcolor, f),
+            ColoringType::HsvCw => blend_hsv_cw(&seg.lcolor, &seg.rcolor, f),
+        }
     }
 }
 

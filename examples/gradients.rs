@@ -175,11 +175,6 @@ fn main() {
         .build()
         .unwrap();
 
-    // GIMP gradients
-
-    let ggr_1 = parse_ggr("examples/Abstract_1.ggr");
-    let ggr_2 = parse_ggr("examples/Full_saturation_spectrum_CW.ggr");
-
     let custom_gradients = &[
         (&grad_1, "custom-default"),
         (&grad_2, "custom-colors"),
@@ -200,8 +195,6 @@ fn main() {
         (&interp_linear, "interpolation-linear"),
         (&interp_catmull_rom, "interpolation-catmull-rom"),
         (&interp_basis, "interpolation-basis"),
-        (&ggr_1.0, "ggr_abstract_1"),
-        (&ggr_2.0, "ggr_full_spectrum_cw"),
     ];
 
     // Sharp gradients
@@ -252,6 +245,22 @@ fn main() {
         let file_path = format!("example_output/sharp-smoothness-{}.png", name);
         println!("{}", file_path);
         imgbuf.save(file_path).unwrap();
+    }
+
+    // GIMP gradients
+
+    for item in Path::new("examples/ggr/").read_dir().unwrap() {
+        let path = item.unwrap().path();
+        if let Some(ext) = path.extension() {
+            if ext == "ggr" {
+                let fname = path.file_name().unwrap().to_str().unwrap();
+                let (gradient, _) = parse_ggr(&path);
+                let imgbuf = grad_rgb_plot(&gradient, width, height, padding);
+                let file_path = format!("example_output/ggr_{fname}.png");
+                println!("{}", file_path);
+                imgbuf.save(file_path).unwrap();
+            }
+        }
     }
 }
 

@@ -179,7 +179,7 @@ fn calc_linear_factor(middle: f64, pos: f64) -> f64 {
 /// use std::io::BufReader;
 ///
 /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
-/// let input = File::open("examples/Abstract_1.ggr")?;
+/// let input = File::open("examples/ggr/Abstract_1.ggr")?;
 /// let buf = BufReader::new(input);
 /// let fg = Color::new(0.0, 0.0, 0.0, 1.0);
 /// let bg = Color::new(1.0, 1.0, 1.0, 1.0);

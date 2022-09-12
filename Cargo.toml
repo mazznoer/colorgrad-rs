@@ -29,15 +29,7 @@ criterion = { version = "0.3.6", features = ["html_reports"] }
 image = { version = "0.24.3", default-features = false, features = ["png"] }
 
 [[bench]]
-name = "linear"
-harness = false
-
-[[bench]]
-name = "catmull_rom"
-harness = false
-
-[[bench]]
-name = "basis"
+name = "custom_gradient"
 harness = false
 
 [[bench]]

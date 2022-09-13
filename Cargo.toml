@@ -35,3 +35,7 @@ harness = false
 [[bench]]
 name = "preset"
 harness = false
+
+[[bench]]
+name = "gimp"
+harness = false

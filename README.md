@@ -29,7 +29,7 @@
 Add this to your `Cargo.toml`
 
 ```toml
-colorgrad = "0.6.1"
+colorgrad = "0.6.2"
 ```
 
 ## Custom Gradient

@@ -2,24 +2,32 @@ name: Rust
 
 on:
   push:
-    branches: [ master ]
+    paths-ignore:
+      - "**.md"
   pull_request:
-    branches: [ master ]
+    paths-ignore:
+      - "**.md"
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
+
     - name: Build
       run: cargo build --verbose --all-features
+
     - name: Run tests
       run: cargo test --verbose --all-features
+
+    - name: Run cargo fmt
+      run: cargo fmt --all -- --check
+
+    - name: Run cargo clippy
+      run: cargo clippy -- -D warnings
 
     - name: Tarpaulin code coverage
       id: coverage

@@ -84,6 +84,13 @@ fn parse_gimp_gradients() {
     assert_eq!(grad.at(0.0).to_rgba8(), [255, 255, 255, 255]);
     assert_eq!(grad.at(0.5).to_rgba8(), [255, 128, 255, 255]);
     assert_eq!(grad.at(1.0).to_rgba8(), [0, 0, 255, 255]);
+
+    // UTF-8 with BOM
+    let ggr = include_str!("../examples/ggr/UTF_8_BOM.ggr");
+    let (grad, name) = parse_ggr(BufReader::new(ggr.as_bytes()), &red, &blue).unwrap();
+    assert_eq!(name, "Pelangi");
+    assert_eq!(grad.at(0.0).to_rgba8(), [36, 87, 158, 255]);
+    assert_eq!(grad.at(1.0).to_rgba8(), [72, 120, 168, 255]);
 }
 
 #[test]

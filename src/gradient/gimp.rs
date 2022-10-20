@@ -203,6 +203,7 @@ pub fn parse_ggr<R: BufRead>(
     for (line_no, line) in r.lines().enumerate() {
         if let Ok(s) = line {
             if line_no == 0 {
+                let s = s.trim_start_matches('\u{feff}');
                 if s != "GIMP Gradient" {
                     return Err(ParseGgrError {
                         message: "invalid header".to_string(),

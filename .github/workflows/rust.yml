@@ -1,4 +1,4 @@
-name: Rust
+name: CI
 
 on:
   push:
@@ -34,6 +34,7 @@ jobs:
       uses: actions-rs/tarpaulin@v0.1
 
     - name: Upload to codecov.io
+      if: github.triggering_actor == 'mazznoer'
       uses: codecov/codecov-action@v1.0.2
       with:
         token: ${{secrets.CODECOV_TOKEN}}

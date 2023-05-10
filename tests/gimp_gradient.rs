@@ -1,6 +1,10 @@
-use colorgrad::{parse_ggr, Color};
+#[cfg(feature = "ggr")]
 use std::io::BufReader;
 
+#[cfg(feature = "ggr")]
+use colorgrad::{Color, GimpGradient, Gradient};
+
+#[cfg(feature = "ggr")]
 #[test]
 fn parse_gimp_gradients() {
     let col = Color::default();
@@ -9,9 +13,9 @@ fn parse_gimp_gradients() {
 
     // Black to white
     let ggr = "GIMP Gradient\nName: My Gradient\n1\n0 0.5 1 0 0 0 1 1 1 1 1 0 0 0 0";
-    let (grad, name) = parse_ggr(BufReader::new(ggr.as_bytes()), &col, &col).unwrap();
+    let grad = GimpGradient::new(BufReader::new(ggr.as_bytes()), &col, &col).unwrap();
 
-    assert_eq!(name, "My Gradient");
+    assert_eq!(grad.name(), "My Gradient");
     assert_eq!(grad.domain(), (0.0, 1.0));
     assert_eq!(grad.at(0.0).to_rgba8(), [0, 0, 0, 255]);
     assert_eq!(grad.at(1.0).to_rgba8(), [255, 255, 255, 255]);
@@ -21,35 +25,35 @@ fn parse_gimp_gradients() {
 
     // Foreground to background
     let ggr = "GIMP Gradient\nName: My Gradient\n1\n0 0.5 1 0 0 0 1 1 1 1 1 0 0 1 3";
-    let (grad, _) = parse_ggr(BufReader::new(ggr.as_bytes()), &red, &blue).unwrap();
+    let grad = GimpGradient::new(BufReader::new(ggr.as_bytes()), &red, &blue).unwrap();
 
     assert_eq!(grad.at(0.0).to_rgba8(), [255, 0, 0, 255]);
     assert_eq!(grad.at(1.0).to_rgba8(), [0, 0, 255, 255]);
 
     // Background to foreground
     let ggr = "GIMP Gradient\nName: My Gradient\n1\n0 0.5 1 0 0 0 1 1 1 1 1 0 0 3 1";
-    let (grad, _) = parse_ggr(BufReader::new(ggr.as_bytes()), &red, &blue).unwrap();
+    let grad = GimpGradient::new(BufReader::new(ggr.as_bytes()), &red, &blue).unwrap();
 
     assert_eq!(grad.at(0.0).to_rgba8(), [0, 0, 255, 255]);
     assert_eq!(grad.at(1.0).to_rgba8(), [255, 0, 0, 255]);
 
     // Foreground transparent to background transparent
     let ggr = "GIMP Gradient\nName: My Gradient\n1\n0 0.5 1 0 0 0 1 1 1 1 1 0 0 2 4";
-    let (grad, _) = parse_ggr(BufReader::new(ggr.as_bytes()), &red, &blue).unwrap();
+    let grad = GimpGradient::new(BufReader::new(ggr.as_bytes()), &red, &blue).unwrap();
 
     assert_eq!(grad.at(0.0).to_rgba8(), [255, 0, 0, 0]);
     assert_eq!(grad.at(1.0).to_rgba8(), [0, 0, 255, 0]);
 
     // Background transparent to foreground transparent
     let ggr = "GIMP Gradient\nName: My Gradient\n1\n0 0.5 1 0 0 0 1 1 1 1 1 0 0 4 2";
-    let (grad, _) = parse_ggr(BufReader::new(ggr.as_bytes()), &red, &blue).unwrap();
+    let grad = GimpGradient::new(BufReader::new(ggr.as_bytes()), &red, &blue).unwrap();
 
     assert_eq!(grad.at(0.0).to_rgba8(), [0, 0, 255, 0]);
     assert_eq!(grad.at(1.0).to_rgba8(), [255, 0, 0, 0]);
 
     // Blending function: step
     let ggr = "GIMP Gradient\nName: My Gradient\n1\n0 0.5 1 1 0 0 1 0 0 1 1 5 0 0 0";
-    let (grad, _) = parse_ggr(BufReader::new(ggr.as_bytes()), &col, &col).unwrap();
+    let grad = GimpGradient::new(BufReader::new(ggr.as_bytes()), &col, &col).unwrap();
 
     assert_eq!(grad.at(0.00).to_rgba8(), [255, 0, 0, 255]);
     assert_eq!(grad.at(0.25).to_rgba8(), [255, 0, 0, 255]);
@@ -59,7 +63,7 @@ fn parse_gimp_gradients() {
     assert_eq!(grad.at(1.00).to_rgba8(), [0, 0, 255, 255]);
 
     let ggr = "GIMP Gradient\nName: My Gradient\n1\n0 0.75 1 1 0 0 1 0 0 1 1 5 0 0 0";
-    let (grad, _) = parse_ggr(BufReader::new(ggr.as_bytes()), &col, &col).unwrap();
+    let grad = GimpGradient::new(BufReader::new(ggr.as_bytes()), &col, &col).unwrap();
 
     assert_eq!(grad.at(0.00).to_rgba8(), [255, 0, 0, 255]);
     assert_eq!(grad.at(0.25).to_rgba8(), [255, 0, 0, 255]);
@@ -71,7 +75,7 @@ fn parse_gimp_gradients() {
 
     // Coloring type: HSV CCW (white to blue)
     let ggr = "GIMP Gradient\nName: My Gradient\n1\n0 0.5 1 1 1 1 1 0 0 1 1 0 1 0 0";
-    let (grad, _) = parse_ggr(BufReader::new(ggr.as_bytes()), &red, &blue).unwrap();
+    let grad = GimpGradient::new(BufReader::new(ggr.as_bytes()), &red, &blue).unwrap();
 
     assert_eq!(grad.at(0.0).to_rgba8(), [255, 255, 255, 255]);
     assert_eq!(grad.at(0.5).to_rgba8(), [128, 255, 128, 255]);
@@ -79,7 +83,7 @@ fn parse_gimp_gradients() {
 
     // Coloring type: HSV CW (white to blue)
     let ggr = "GIMP Gradient\nName: My Gradient\n1\n0 0.5 1 1 1 1 1 0 0 1 1 0 2 0 0";
-    let (grad, _) = parse_ggr(BufReader::new(ggr.as_bytes()), &red, &blue).unwrap();
+    let grad = GimpGradient::new(BufReader::new(ggr.as_bytes()), &red, &blue).unwrap();
 
     assert_eq!(grad.at(0.0).to_rgba8(), [255, 255, 255, 255]);
     assert_eq!(grad.at(0.5).to_rgba8(), [255, 128, 255, 255]);
@@ -87,12 +91,13 @@ fn parse_gimp_gradients() {
 
     // UTF-8 with BOM
     let ggr = include_str!("../examples/ggr/UTF_8_BOM.ggr");
-    let (grad, name) = parse_ggr(BufReader::new(ggr.as_bytes()), &red, &blue).unwrap();
-    assert_eq!(name, "Pelangi");
+    let grad = GimpGradient::new(BufReader::new(ggr.as_bytes()), &red, &blue).unwrap();
+    assert_eq!(grad.name(), "Pelangi");
     assert_eq!(grad.at(0.0).to_rgba8(), [36, 87, 158, 255]);
     assert_eq!(grad.at(1.0).to_rgba8(), [72, 120, 168, 255]);
 }
 
+#[cfg(feature = "ggr")]
 #[test]
 fn invalid_format() {
     let col = Color::default();
@@ -116,7 +121,7 @@ fn invalid_format() {
     ];
 
     for (ggr, err_msg) in test_data {
-        let res = parse_ggr(BufReader::new(ggr.as_bytes()), &col, &col);
+        let res = GimpGradient::new(BufReader::new(ggr.as_bytes()), &col, &col);
         assert_eq!(res.unwrap_err().to_string(), err_msg);
     }
 
@@ -129,7 +134,7 @@ fn invalid_format() {
     ];
 
     for ggr in invalid_segments {
-        let res = parse_ggr(BufReader::new(ggr.as_bytes()), &col, &col);
+        let res = GimpGradient::new(BufReader::new(ggr.as_bytes()), &col, &col);
         assert!(res.is_err());
     }
 }

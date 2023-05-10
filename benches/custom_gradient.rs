@@ -1,4 +1,6 @@
-use colorgrad::{BlendMode, CustomGradient, Interpolation};
+use colorgrad::{
+    BasisGradient, BlendMode, CatmullRomGradient, Gradient, GradientBuilder, LinearGradient,
+};
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 
 const COLORS: [&'static str; 104] = [
@@ -26,15 +28,14 @@ const POSITIONS: [f64; 3] = [0.03, 0.5, 0.97];
 
 fn bench_linear_gradient(c: &mut Criterion) {
     for mode in MODES {
-        let grad = CustomGradient::new()
+        let grad = GradientBuilder::new()
             .html_colors(&COLORS)
             .mode(mode)
-            .interpolation(Interpolation::Linear)
-            .build()
+            .build::<LinearGradient>()
             .unwrap();
 
         for pos in POSITIONS {
-            c.bench_function(&format!("LinearGradient ({:?}) t={pos}", mode), |b| {
+            c.bench_function(&format!("LinearGradient ({mode:?}) t={pos}"), |b| {
                 b.iter(|| {
                     grad.at(black_box(pos));
                 })
@@ -49,15 +50,14 @@ fn bench_catmull_rom_gradient(c: &mut Criterion) {
             continue;
         }
 
-        let grad = CustomGradient::new()
+        let grad = GradientBuilder::new()
             .html_colors(&COLORS)
             .mode(mode)
-            .interpolation(Interpolation::CatmullRom)
-            .build()
+            .build::<CatmullRomGradient>()
             .unwrap();
 
         for pos in POSITIONS {
-            c.bench_function(&format!("CatmullRomGradient ({:?}) t={pos}", mode), |b| {
+            c.bench_function(&format!("CatmullRomGradient ({mode:?}) t={pos}"), |b| {
                 b.iter(|| {
                     grad.at(black_box(pos));
                 })
@@ -72,15 +72,14 @@ fn bench_basis_gradient(c: &mut Criterion) {
             continue;
         }
 
-        let grad = CustomGradient::new()
+        let grad = GradientBuilder::new()
             .html_colors(&COLORS)
             .mode(mode)
-            .interpolation(Interpolation::Basis)
-            .build()
+            .build::<BasisGradient>()
             .unwrap();
 
         for pos in POSITIONS {
-            c.bench_function(&format!("BasisGradient ({:?}) t={pos}", mode), |b| {
+            c.bench_function(&format!("BasisGradient ({mode:?}) t={pos}"), |b| {
                 b.iter(|| {
                     grad.at(black_box(pos));
                 })

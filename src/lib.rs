@@ -5,7 +5,7 @@
 //! ## Usage
 //!
 //! Using preset gradient:
-//! ```
+//! ```ignore
 //! let g = colorgrad::rainbow();
 //!
 //! assert_eq!(g.domain(), (0.0, 1.0)); // all preset gradients are in the domain [0..1]
@@ -14,7 +14,7 @@
 //! ```
 //!
 //! Custom gradient:
-//! ```
+//! ```ignore
 //! use colorgrad::Color;
 //!
 //! # fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -36,7 +36,7 @@
 //!
 //! ### Gradient Image
 //!
-//! ```rust
+//! ```rust,ignore
 //! fn main() -> Result<(), Box<dyn std::error::Error>> {
 //!     let grad = colorgrad::CustomGradient::new()
 //!         .html_colors(&["deeppink", "gold", "seagreen"])
@@ -117,20 +117,22 @@
 //!
 //! See more complete gradient preview and examples at [Github](https://github.com/mazznoer/colorgrad-rs).
 
-use std::fmt;
-
 pub use csscolorparser::{Color, ParseColorError};
 
 mod builder;
-pub use builder::{CustomGradient, CustomGradientError};
+pub use builder::{GradientBuilder, GradientBuilderError};
 
 mod gradient;
-use gradient::basis::BasisGradient;
-use gradient::catmull_rom::CatmullRomGradient;
-pub use gradient::gimp::{parse_ggr, ParseGgrError};
-use gradient::linear::LinearGradient;
-pub use gradient::preset::*;
-use gradient::sharp::SharpGradient;
+pub use gradient::basis::BasisGradient;
+pub use gradient::catmull_rom::CatmullRomGradient;
+pub use gradient::linear::LinearGradient;
+pub use gradient::sharp::SharpGradient;
+
+#[cfg(feature = "preset")]
+pub use gradient::preset;
+
+#[cfg(feature = "ggr")]
+pub use gradient::gimp::{GimpGradient, ParseGgrError};
 
 /// Color blending mode
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
@@ -141,94 +143,59 @@ pub enum BlendMode {
     Oklab,
 }
 
-/// Interpolation mode
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
-pub enum Interpolation {
-    Linear,
-    Basis,
-    CatmullRom,
-}
-
-trait GradientBase {
+pub trait Gradient {
+    /// Get color at certain position
     fn at(&self, t: f64) -> Color;
-}
 
-/// The gradient
-pub struct Gradient {
-    gradient: Box<dyn GradientBase + Send + Sync>,
-    dmin: f64,
-    dmax: f64,
-}
-
-impl fmt::Debug for Gradient {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("Gradient")
-            .field("dmin", &self.dmin)
-            .field("dmax", &self.dmax)
-            .finish()
-    }
-}
-
-impl Gradient {
     /// Get color at certain position
-    pub fn at(&self, t: f64) -> Color {
-        self.gradient.at(t)
+    fn repeat_at(&self, t: f64) -> Color {
+        let (dmin, dmax) = self.domain();
+        let t = norm(t, dmin, dmax);
+        self.at(dmin + modulo(t, 1.0) * (dmax - dmin))
     }
 
     /// Get color at certain position
-    pub fn repeat_at(&self, t: f64) -> Color {
-        let t = norm(t, self.dmin, self.dmax);
-        self.gradient
-            .at(self.dmin + modulo(t, 1.0) * (self.dmax - self.dmin))
-    }
-
-    /// Get color at certain position
-    pub fn reflect_at(&self, t: f64) -> Color {
-        let t = norm(t, self.dmin, self.dmax);
-        self.gradient
-            .at(self.dmin + (modulo(1.0 + t, 2.0) - 1.0).abs() * (self.dmax - self.dmin))
-    }
-
-    /// Get n colors evenly spaced across gradient
-    pub fn colors(&self, n: usize) -> Vec<Color> {
-        linspace(self.dmin, self.dmax, n)
-            .iter()
-            .map(|&t| self.gradient.at(t))
-            .collect()
+    fn reflect_at(&self, t: f64) -> Color {
+        let (dmin, dmax) = self.domain();
+        let t = norm(t, dmin, dmax);
+        self.at(dmin + (modulo(1.0 + t, 2.0) - 1.0).abs() * (dmax - dmin))
     }
 
     /// Get the gradient's domain min and max
-    pub fn domain(&self) -> (f64, f64) {
-        (self.dmin, self.dmax)
+    fn domain(&self) -> (f64, f64) {
+        (0.0, 1.0)
+    }
+
+    /// Get n colors evenly spaced across gradient
+    fn colors(&self, n: usize) -> Vec<Color> {
+        let (dmin, dmax) = self.domain();
+
+        linspace(dmin, dmax, n)
+            .iter()
+            .map(|&t| self.at(t))
+            .collect()
     }
 
     /// Get new hard-edge gradient
     ///
-    /// ```
+    /// ```ignore
     /// let g = colorgrad::rainbow();
     /// ```
     /// ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/rainbow.png)
     ///
-    /// ```
+    /// ```ignore
     /// let g = colorgrad::rainbow().sharp(11, 0.);
     /// ```
     /// ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/rainbow-sharp.png)
-    pub fn sharp(&self, segment: usize, smoothness: f64) -> Gradient {
+    fn sharp(&self, segment: u16, smoothness: f64) -> SharpGradient {
         let colors = if segment > 1 {
-            self.colors(segment)
+            self.colors(segment.into())
         } else {
-            vec![self.at(self.dmin), self.at(self.dmin)]
+            vec![self.at(self.domain().0), self.at(self.domain().0)]
         };
-        let gradbase = SharpGradient::new(&colors, self.domain(), smoothness);
-        Gradient {
-            gradient: Box::new(gradbase),
-            dmin: self.dmin,
-            dmax: self.dmax,
-        }
+        SharpGradient::new(&colors, self.domain(), smoothness)
     }
 }
-
-// ---
 
 fn convert_colors(colors: &[Color], mode: BlendMode) -> Vec<[f64; 4]> {
     let mut result = Vec::with_capacity(colors.len());

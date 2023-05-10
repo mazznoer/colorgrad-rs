@@ -1,10 +1,14 @@
-use crate::{convert_colors, interp_angle, linear_interpolation, BlendMode, Color, GradientBase};
+use std::convert::TryFrom;
 
-#[derive(Debug)]
-pub(crate) struct LinearGradient {
+use crate::{
+    convert_colors, interp_angle, linear_interpolation, BlendMode, Color, Gradient,
+    GradientBuilder, GradientBuilderError,
+};
+
+#[derive(Debug, Clone)]
+pub struct LinearGradient {
     stops: Vec<(f64, [f64; 4])>,
-    dmin: f64,
-    dmax: f64,
+    domain: (f64, f64),
     mode: BlendMode,
     first_color: Color,
     last_color: Color,
@@ -23,8 +27,7 @@ impl LinearGradient {
                 .zip(colors.iter())
                 .map(|(p, c)| (*p, *c))
                 .collect(),
-            dmin,
-            dmax,
+            domain: (dmin, dmax),
             mode,
             first_color,
             last_color,
@@ -32,13 +35,13 @@ impl LinearGradient {
     }
 }
 
-impl GradientBase for LinearGradient {
+impl Gradient for LinearGradient {
     fn at(&self, t: f64) -> Color {
-        if t <= self.dmin {
+        if t <= self.domain.0 {
             return self.first_color.clone();
         }
 
-        if t >= self.dmax {
+        if t >= self.domain.1 {
             return self.last_color.clone();
         }
 
@@ -79,5 +82,18 @@ impl GradientBase for LinearGradient {
                 Color::from_hsva(hue, b, c, d)
             }
         }
+    }
+
+    fn domain(&self) -> (f64, f64) {
+        self.domain
+    }
+}
+
+impl TryFrom<&GradientBuilder> for LinearGradient {
+    type Error = GradientBuilderError;
+
+    fn try_from(gb: &GradientBuilder) -> Result<Self, Self::Error> {
+        let (colors, positions) = gb.build_()?;
+        Ok(Self::new(colors, positions, gb.mode))
     }
 }

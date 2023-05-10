@@ -1,4 +1,6 @@
-use crate::{convert_colors, BlendMode, Color, GradientBase};
+use std::convert::TryFrom;
+
+use crate::{convert_colors, BlendMode, Color, Gradient, GradientBuilder, GradientBuilderError};
 
 // Basis spline algorithm adapted from:
 // https://github.com/d3/d3-interpolate/blob/master/src/basis.js
@@ -15,7 +17,7 @@ fn basis(t1: f64, v0: f64, v1: f64, v2: f64, v3: f64) -> f64 {
 }
 
 #[derive(Debug, Clone)]
-pub(crate) struct BasisGradient {
+pub struct BasisGradient {
     values: Vec<[f64; 4]>,
     positions: Vec<f64>,
     domain: (f64, f64),
@@ -41,7 +43,7 @@ impl BasisGradient {
     }
 }
 
-impl GradientBase for BasisGradient {
+impl Gradient for BasisGradient {
     fn at(&self, t: f64) -> Color {
         if t <= self.domain.0 {
             return self.first_color.clone();
@@ -106,5 +108,18 @@ impl GradientBase for BasisGradient {
             BlendMode::Oklab => Color::from_oklaba(c0, c1, c2, c3),
             _ => Color::new(c0, c1, c2, c3),
         }
+    }
+
+    fn domain(&self) -> (f64, f64) {
+        self.domain
+    }
+}
+
+impl TryFrom<&GradientBuilder> for BasisGradient {
+    type Error = GradientBuilderError;
+
+    fn try_from(gb: &GradientBuilder) -> Result<Self, Self::Error> {
+        let (colors, positions) = gb.build_()?;
+        Ok(Self::new(colors, positions, gb.mode))
     }
 }

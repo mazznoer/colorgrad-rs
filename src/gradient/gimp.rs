@@ -3,7 +3,7 @@
 // https://gitlab.gnome.org/GNOME/gimp/-/blob/master/app/core/gimpgradient.c
 // https://gitlab.gnome.org/GNOME/gimp/-/blob/master/app/core/gimpgradient-load.c
 
-use crate::{Color, Gradient, GradientBase};
+use crate::{Color, Gradient};
 
 use std::{
     error,
@@ -43,7 +43,7 @@ enum ColoringType {
     HsvCcw,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct GimpSegment {
     // Left endpoint color
     lcolor: Color,
@@ -61,14 +61,28 @@ struct GimpSegment {
     coloring_type: ColoringType,
 }
 
-#[derive(Debug)]
-struct GimpGradient {
+#[derive(Debug, Clone)]
+pub struct GimpGradient {
+    name: String,
     segments: Vec<GimpSegment>,
     dmin: f64,
     dmax: f64,
 }
 
-impl GradientBase for GimpGradient {
+impl GimpGradient {
+    pub fn new<R>(r: R, foreground: &Color, background: &Color) -> Result<Self, ParseGgrError>
+    where
+        R: BufRead,
+    {
+        parse_ggr(r, foreground, background)
+    }
+
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+}
+
+impl Gradient for GimpGradient {
     fn at(&self, t: f64) -> Color {
         if t <= self.dmin {
             return self.segments[0].lcolor.clone();
@@ -173,7 +187,7 @@ fn calc_linear_factor(middle: f64, pos: f64) -> f64 {
 ///
 /// # Example
 ///
-/// ```
+/// ```ignore
 /// use colorgrad::Color;
 /// use std::fs::File;
 /// use std::io::BufReader;
@@ -190,11 +204,11 @@ fn calc_linear_factor(middle: f64, pos: f64) -> f64 {
 /// # }
 /// ```
 /// ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/ggr_abstract_1.png)
-pub fn parse_ggr<R: BufRead>(
+fn parse_ggr<R: BufRead>(
     r: R,
     foreground: &Color,
     background: &Color,
-) -> Result<(Gradient, String), ParseGgrError> {
+) -> Result<GimpGradient, ParseGgrError> {
     let mut segments = Vec::new();
     let mut seg_n = 0;
     let mut seg_x = 0;
@@ -265,20 +279,12 @@ pub fn parse_ggr<R: BufRead>(
         });
     }
 
-    let gradbase = GimpGradient {
+    Ok(GimpGradient {
+        name,
         segments,
         dmin: 0.0,
         dmax: 1.0,
-    };
-
-    Ok((
-        Gradient {
-            gradient: Box::new(gradbase),
-            dmin: 0.0,
-            dmax: 1.0,
-        },
-        name,
-    ))
+    })
 }
 
 fn parse_segment(s: &str, foreground: &Color, background: &Color) -> Option<GimpSegment> {

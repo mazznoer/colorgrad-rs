@@ -1,7 +1,7 @@
-use crate::{linspace, Color, GradientBase};
+use crate::{linspace, Color, Gradient};
 
 #[derive(Debug, Clone)]
-pub(crate) struct SharpGradient {
+pub struct SharpGradient {
     stops: Vec<(f64, Color)>,
     domain: (f64, f64),
     first_color: Color,
@@ -56,7 +56,7 @@ impl SharpGradient {
     }
 }
 
-impl GradientBase for SharpGradient {
+impl Gradient for SharpGradient {
     fn at(&self, t: f64) -> Color {
         if t <= self.domain.0 {
             return self.first_color.clone();
@@ -99,5 +99,9 @@ impl GradientBase for SharpGradient {
 
         let t = (t - pos_0) / (pos_1 - pos_0);
         col_0.interpolate_rgb(col_1, t)
+    }
+
+    fn domain(&self) -> (f64, f64) {
+        self.domain
     }
 }

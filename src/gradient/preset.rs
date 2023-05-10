@@ -1,26 +1,19 @@
 use std::f64::consts::{FRAC_PI_3, PI};
 
-use crate::{linspace, BasisGradient, BlendMode, Color, Gradient, GradientBase};
+use crate::{linspace, BasisGradient, BlendMode, Color, Gradient};
 
 const PI2_3: f64 = PI * 2.0 / 3.0;
 
-macro_rules! preset_fn {
-    ($name:ident; $gradient_base:expr) => {
-        pub fn $name() -> Gradient {
-            Gradient {
-                gradient: Box::new($gradient_base),
-                dmin: 0.0,
-                dmax: 1.0,
-            }
-        }
-    };
-}
-
 // Sinebow
 
-struct SinebowGradient {}
+#[derive(Debug, Clone)]
+pub struct SinebowGradient {}
 
-impl GradientBase for SinebowGradient {
+pub fn sinebow() -> SinebowGradient {
+    SinebowGradient {}
+}
+
+impl Gradient for SinebowGradient {
     fn at(&self, t: f64) -> Color {
         let t = (0.5 - t) * PI;
         Color::new(
@@ -32,13 +25,16 @@ impl GradientBase for SinebowGradient {
     }
 }
 
-preset_fn!(sinebow; SinebowGradient{});
-
 // Turbo
 
-struct TurboGradient {}
+#[derive(Debug, Clone)]
+pub struct TurboGradient {}
 
-impl GradientBase for TurboGradient {
+pub fn turbo() -> TurboGradient {
+    TurboGradient {}
+}
+
+impl Gradient for TurboGradient {
     fn at(&self, t: f64) -> Color {
         let t = t.clamp(0.0, 1.0);
         let r = (34.61
@@ -58,13 +54,16 @@ impl GradientBase for TurboGradient {
     }
 }
 
-preset_fn!(turbo; TurboGradient{});
-
 // Cividis
 
-struct CividisGradient {}
+#[derive(Debug, Clone)]
+pub struct CividisGradient {}
 
-impl GradientBase for CividisGradient {
+pub fn cividis() -> CividisGradient {
+    CividisGradient {}
+}
+
+impl Gradient for CividisGradient {
     fn at(&self, t: f64) -> Color {
         let t = t.clamp(0.0, 1.0);
         let r = (-4.54 - t * (35.34 - t * (2381.73 - t * (6402.7 - t * (7024.72 - t * 2710.57)))))
@@ -83,11 +82,9 @@ impl GradientBase for CividisGradient {
     }
 }
 
-preset_fn!(cividis; CividisGradient{});
-
 // Cubehelix
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct Cubehelix {
     h: f64,
     s: f64,
@@ -121,13 +118,13 @@ impl Cubehelix {
 
 // Cubehelix gradient
 
-#[derive(Debug)]
-struct CubehelixGradient {
+#[derive(Debug, Clone)]
+pub struct CubehelixGradient {
     start: Cubehelix,
     end: Cubehelix,
 }
 
-impl GradientBase for CubehelixGradient {
+impl Gradient for CubehelixGradient {
     fn at(&self, t: f64) -> Color {
         self.start
             .interpolate(&self.end, t.clamp(0.0, 1.0))
@@ -135,50 +132,61 @@ impl GradientBase for CubehelixGradient {
     }
 }
 
-preset_fn!(cubehelix_default; CubehelixGradient {
-    start: Cubehelix {
-        h: 300.0,
-        s: 0.5,
-        l: 0.0,
-    },
-    end: Cubehelix {
-        h: -240.0,
-        s: 0.5,
-        l: 1.0,
-    },
-});
+pub fn cubehelix_default() -> CubehelixGradient {
+    CubehelixGradient {
+        start: Cubehelix {
+            h: 300.0,
+            s: 0.5,
+            l: 0.0,
+        },
+        end: Cubehelix {
+            h: -240.0,
+            s: 0.5,
+            l: 1.0,
+        },
+    }
+}
 
-preset_fn!(warm; CubehelixGradient {
-    start: Cubehelix {
-        h: -100.0,
-        s: 0.75,
-        l: 0.35,
-    },
-    end: Cubehelix {
-        h: 80.0,
-        s: 1.5,
-        l: 0.8,
-    },
-});
+pub fn warm() -> CubehelixGradient {
+    CubehelixGradient {
+        start: Cubehelix {
+            h: -100.0,
+            s: 0.75,
+            l: 0.35,
+        },
+        end: Cubehelix {
+            h: 80.0,
+            s: 1.5,
+            l: 0.8,
+        },
+    }
+}
 
-preset_fn!(cool; CubehelixGradient {
-    start: Cubehelix {
-        h: 260.0,
-        s: 0.75,
-        l: 0.35,
-    },
-    end: Cubehelix {
-        h: 80.0,
-        s: 1.5,
-        l: 0.8,
-    },
-});
+pub fn cool() -> CubehelixGradient {
+    CubehelixGradient {
+        start: Cubehelix {
+            h: 260.0,
+            s: 0.75,
+            l: 0.35,
+        },
+        end: Cubehelix {
+            h: 80.0,
+            s: 1.5,
+            l: 0.8,
+        },
+    }
+}
 
 // Rainbow
 
-struct RainbowGradient {}
+#[derive(Debug, Clone)]
+pub struct RainbowGradient {}
 
-impl GradientBase for RainbowGradient {
+pub fn rainbow() -> RainbowGradient {
+    RainbowGradient {}
+}
+
+impl Gradient for RainbowGradient {
     fn at(&self, t: f64) -> Color {
         let t = t.clamp(0.0, 1.0);
         let ts = (t - 0.5).abs();
@@ -191,26 +199,20 @@ impl GradientBase for RainbowGradient {
     }
 }
 
-preset_fn!(rainbow; RainbowGradient{});
-
 // ---
 
-fn build_preset(html_colors: &[&str]) -> Gradient {
+fn build_preset(html_colors: &[&str]) -> BasisGradient {
     let colors = html_colors
         .iter()
         .map(|s| csscolorparser::parse(s).unwrap())
         .collect::<Vec<_>>();
     let pos = linspace(0.0, 1.0, colors.len());
-    Gradient {
-        gradient: Box::new(BasisGradient::new(colors, pos, BlendMode::Rgb)),
-        dmin: 0.0,
-        dmax: 1.0,
-    }
+    BasisGradient::new(colors, pos, BlendMode::Rgb)
 }
 
 macro_rules! preset {
     ($colors:expr; $name:ident) => {
-        pub fn $name() -> Gradient {
+        pub fn $name() -> BasisGradient {
             build_preset($colors)
         }
     };

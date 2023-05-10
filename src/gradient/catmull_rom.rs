@@ -1,10 +1,12 @@
-use crate::{convert_colors, BlendMode, Color, GradientBase};
+use std::convert::TryFrom;
+
+use crate::{convert_colors, BlendMode, Color, Gradient, GradientBuilder, GradientBuilderError};
 
 // Catmull-Rom spline algorithm adapted from:
 // https://qroph.github.io/2018/07/30/smooth-paths-using-catmull-rom-splines.html
 
 #[derive(Debug, Clone)]
-pub(crate) struct CatmullRomGradient {
+pub struct CatmullRomGradient {
     segments: Vec<[[f64; 4]; 4]>,
     positions: Vec<f64>,
     domain: (f64, f64),
@@ -99,7 +101,7 @@ impl CatmullRomGradient {
     }
 }
 
-impl GradientBase for CatmullRomGradient {
+impl Gradient for CatmullRomGradient {
     fn at(&self, t: f64) -> Color {
         if t <= self.domain.0 {
             return self.first_color.clone();
@@ -150,5 +152,18 @@ impl GradientBase for CatmullRomGradient {
             BlendMode::Oklab => Color::from_oklaba(c0, c1, c2, c3),
             _ => Color::new(c0, c1, c2, c3),
         }
+    }
+
+    fn domain(&self) -> (f64, f64) {
+        self.domain
+    }
+}
+
+impl TryFrom<&GradientBuilder> for CatmullRomGradient {
+    type Error = GradientBuilderError;
+
+    fn try_from(gb: &GradientBuilder) -> Result<Self, Self::Error> {
+        let (colors, positions) = gb.build_()?;
+        Ok(Self::new(colors, positions, gb.mode))
     }
 }

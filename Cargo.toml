@@ -1,6 +1,6 @@
 [package]
 name = "colorgrad"
-version = "0.6.2"
+version = "0.7.0"
 authors = ["Nor Khasyatillah <mazznoer@ymail.com>"]
 edition = "2018"
 description = "Color scales library for data visualization, charts, games, generative art and others."
@@ -23,6 +23,8 @@ csscolorparser = { version = "0.6.2", default-features = false }
 [features]
 default = ["named-colors"]
 named-colors = ["csscolorparser/named-colors"]
+preset = []
+ggr = []
 
 [dev-dependencies]
 criterion = { version = "0.3.6", features = ["html_reports"] }
@@ -35,7 +37,9 @@ harness = false
 [[bench]]
 name = "preset"
 harness = false
+required-features = ["preset"]
 
 [[bench]]
 name = "gimp"
 harness = false
+required-features = ["ggr"]

@@ -1,18 +1,16 @@
+use std::convert::TryFrom;
 use std::{error, fmt};
 
-use crate::{
-    linspace, BasisGradient, BlendMode, CatmullRomGradient, Color, Gradient, GradientBase,
-    Interpolation, LinearGradient,
-};
+use crate::{linspace, BlendMode, Color};
 
 #[derive(Debug, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
-pub enum CustomGradientError {
+pub enum GradientBuilderError {
     InvalidHtmlColor(Vec<String>),
     WrongDomainCount,
     WrongDomain,
 }
 
-impl fmt::Display for CustomGradientError {
+impl fmt::Display for GradientBuilderError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             Self::InvalidHtmlColor(ref colors) => {
@@ -32,13 +30,13 @@ impl fmt::Display for CustomGradientError {
     }
 }
 
-impl error::Error for CustomGradientError {}
+impl error::Error for GradientBuilderError {}
 
 /// Create custom gradient
 ///
 /// # Examples
 ///
-/// ```
+/// ```ignore
 /// # use std::error::Error;
 /// use colorgrad::Color;
 ///
@@ -59,7 +57,7 @@ impl error::Error for CustomGradientError {}
 ///
 /// ## Using web color format string
 ///
-/// ```
+/// ```ignore
 /// # use std::error::Error;
 /// # fn main() -> Result<(), Box<dyn Error>> {
 /// let grad = colorgrad::CustomGradient::new()
@@ -74,22 +72,20 @@ impl error::Error for CustomGradientError {}
 /// # }
 /// ```
 #[derive(Debug, Clone)]
-pub struct CustomGradient {
+pub struct GradientBuilder {
     colors: Vec<Color>,
     pos: Vec<f64>,
-    mode: BlendMode,
-    interpolation: Interpolation,
+    pub(crate) mode: BlendMode,
     invalid_html_colors: Vec<String>,
 }
 
-impl CustomGradient {
+impl GradientBuilder {
     #[allow(clippy::new_without_default)]
     pub fn new() -> Self {
         Self {
             colors: Vec::new(),
             pos: Vec::new(),
             mode: BlendMode::Rgb,
-            interpolation: Interpolation::Linear,
             invalid_html_colors: Vec::new(),
         }
     }
@@ -140,17 +136,17 @@ impl CustomGradient {
         self
     }
 
-    /// Set the interpolation mode
-    #[allow(clippy::needless_lifetimes)]
-    pub fn interpolation<'a>(&'a mut self, mode: Interpolation) -> &'a mut Self {
-        self.interpolation = mode;
-        self
+    pub fn build<'a, T>(&'a self) -> Result<T, T::Error>
+    where
+        T: TryFrom<&'a Self, Error = GradientBuilderError>,
+    {
+        T::try_from(self)
     }
 
     /// Build the gradient
-    pub fn build(&self) -> Result<Gradient, CustomGradientError> {
+    pub(crate) fn build_(&self) -> Result<(Vec<Color>, Vec<f64>), GradientBuilderError> {
         if !self.invalid_html_colors.is_empty() {
-            return Err(CustomGradientError::InvalidHtmlColor(
+            return Err(GradientBuilderError::InvalidHtmlColor(
                 self.invalid_html_colors.clone(),
             ));
         }
@@ -171,38 +167,19 @@ impl CustomGradient {
         } else if self.pos.len() == colors.len() {
             for p in self.pos.windows(2) {
                 if p[0] > p[1] {
-                    return Err(CustomGradientError::WrongDomain);
+                    return Err(GradientBuilderError::WrongDomain);
                 }
             }
             self.pos.to_vec()
         } else if self.pos.len() == 2 {
             if self.pos[0] >= self.pos[1] {
-                return Err(CustomGradientError::WrongDomain);
+                return Err(GradientBuilderError::WrongDomain);
             }
             linspace(self.pos[0], self.pos[1], colors.len())
         } else {
-            return Err(CustomGradientError::WrongDomainCount);
+            return Err(GradientBuilderError::WrongDomainCount);
         };
 
-        let mode = if self.interpolation != Interpolation::Linear && self.mode == BlendMode::Hsv {
-            BlendMode::Rgb
-        } else {
-            self.mode
-        };
-
-        let dmin = pos[0];
-        let dmax = pos[pos.len() - 1];
-
-        let gradient: Box<dyn GradientBase + Send + Sync> = match self.interpolation {
-            Interpolation::Linear => Box::new(LinearGradient::new(colors, pos, mode)),
-            Interpolation::CatmullRom => Box::new(CatmullRomGradient::new(colors, pos, mode)),
-            Interpolation::Basis => Box::new(BasisGradient::new(colors, pos, mode)),
-        };
-
-        Ok(Gradient {
-            gradient,
-            dmin,
-            dmax,
-        })
+        Ok((colors, pos))
     }
 }

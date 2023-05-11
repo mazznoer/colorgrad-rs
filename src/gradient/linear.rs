@@ -1,9 +1,6 @@
 use std::convert::TryFrom;
 
-use crate::{
-    convert_colors, interp_angle, linear_interpolation, BlendMode, Color, Gradient,
-    GradientBuilder, GradientBuilderError,
-};
+use crate::{convert_colors, BlendMode, Color, Gradient, GradientBuilder, GradientBuilderError};
 
 #[derive(Debug, Clone)]
 pub struct LinearGradient {
@@ -96,4 +93,20 @@ impl TryFrom<&GradientBuilder> for LinearGradient {
         let (colors, positions) = gb.build_()?;
         Ok(Self::new(colors, positions, gb.mode))
     }
+}
+
+#[inline]
+fn linear_interpolation(a: &[f64; 4], b: &[f64; 4], t: f64) -> [f64; 4] {
+    [
+        a[0] + t * (b[0] - a[0]),
+        a[1] + t * (b[1] - a[1]),
+        a[2] + t * (b[2] - a[2]),
+        a[3] + t * (b[3] - a[3]),
+    ]
+}
+
+#[inline]
+fn interp_angle(a0: f64, a1: f64, t: f64) -> f64 {
+    let delta = (((a1 - a0) % 360.0) + 540.0) % 360.0 - 180.0;
+    (a0 + t * delta + 360.0) % 360.0
 }

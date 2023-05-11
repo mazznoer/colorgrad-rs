@@ -211,21 +211,6 @@ fn convert_colors(colors: &[Color], mode: BlendMode) -> Vec<[f64; 4]> {
     result
 }
 
-fn linear_interpolation(a: &[f64; 4], b: &[f64; 4], t: f64) -> [f64; 4] {
-    [
-        a[0] + t * (b[0] - a[0]),
-        a[1] + t * (b[1] - a[1]),
-        a[2] + t * (b[2] - a[2]),
-        a[3] + t * (b[3] - a[3]),
-    ]
-}
-
-#[inline]
-fn interp_angle(a0: f64, a1: f64, t: f64) -> f64 {
-    let delta = (((a1 - a0) % 360.0) + 540.0) % 360.0 - 180.0;
-    (a0 + t * delta + 360.0) % 360.0
-}
-
 fn linspace(min: f64, max: f64, n: usize) -> Vec<f64> {
     if n == 1 {
         return vec![min];

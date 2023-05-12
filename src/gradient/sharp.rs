@@ -1,8 +1,8 @@
-use crate::{linspace, Color, Gradient};
+use crate::{convert_colors, linspace, BlendMode, Color, Gradient};
 
 #[derive(Debug, Clone)]
 pub struct SharpGradient {
-    stops: Vec<(f32, Color)>,
+    stops: Vec<(f32, [f32; 4])>,
     domain: (f32, f32),
     first_color: Color,
     last_color: Color,
@@ -40,6 +40,7 @@ impl SharpGradient {
             j += 1;
         }
 
+        let colors = convert_colors(&colors, BlendMode::Rgb);
         let first_color = colors_in[0].clone();
         let last_color = colors_in[n - 1].clone();
 
@@ -47,7 +48,7 @@ impl SharpGradient {
             stops: positions
                 .iter()
                 .zip(colors.iter())
-                .map(|(p, c)| (*p, c.clone()))
+                .map(|(p, c)| (*p, *c))
                 .collect(),
             domain,
             first_color,
@@ -94,14 +95,25 @@ impl Gradient for SharpGradient {
         let (pos_1, col_1) = &self.stops[low];
 
         if i & 1 == 0 {
-            return col_0.clone();
+            return Color::new(col_0[0], col_0[1], col_0[2], col_0[3]);
         }
 
         let t = (t - pos_0) / (pos_1 - pos_0);
-        col_0.interpolate_rgb(col_1, t)
+        let [a, b, c, d] = smoothstep(col_0, col_1, t);
+        Color::new(a, b, c, d)
     }
 
     fn domain(&self) -> (f32, f32) {
         self.domain
     }
+}
+
+#[inline]
+fn smoothstep(a: &[f32; 4], b: &[f32; 4], t: f32) -> [f32; 4] {
+    [
+        (b[0] - a[0]) * (3.0 - t * 2.0) * t * t + a[0],
+        (b[1] - a[1]) * (3.0 - t * 2.0) * t * t + a[1],
+        (b[2] - a[2]) * (3.0 - t * 2.0) * t * t + a[2],
+        (b[3] - a[3]) * (3.0 - t * 2.0) * t * t + a[3],
+    ]
 }

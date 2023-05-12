@@ -4,7 +4,7 @@ use std::io::BufReader;
 
 const GGR_STR: &'static str = include_str!("../examples/ggr/My_Gradient.ggr");
 
-const POSITIONS: [f64; 3] = [0.03, 0.5, 0.97];
+const POSITIONS: [f32; 3] = [0.03, 0.5, 0.97];
 
 fn bench_gimp_gradient(c: &mut Criterion) {
     let fg_color = Color::new(0.0, 0.0, 0.0, 1.0);

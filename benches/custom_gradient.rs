@@ -24,7 +24,7 @@ const MODES: [BlendMode; 4] = [
     BlendMode::Oklab,
     BlendMode::Hsv,
 ];
-const POSITIONS: [f64; 3] = [0.03, 0.5, 0.97];
+const POSITIONS: [f32; 3] = [0.03, 0.5, 0.97];
 
 fn bench_linear_gradient(c: &mut Criterion) {
     for mode in MODES {

@@ -111,7 +111,7 @@ fn custom_gradient_blend_mode() {
         .build::<LinearGradient>()
         .unwrap();
     assert_eq!(g.at(0.0).to_rgba8(), [255, 0, 0, 255]);
-    assert_eq!(g.at(0.5).to_rgba8(), [255, 255, 0, 255]);
+    assert_eq!(g.at(0.5).to_rgba8(), [255, 255, 1, 255]);
     assert_eq!(g.at(1.0).to_rgba8(), [0, 0, 255, 255]);
 }
 
@@ -192,7 +192,7 @@ fn custom_gradient_domain() {
 
     assert_eq!(g.at(-10.0).to_hex_string(), "#ffff00");
     assert_eq!(g.at(110.0).to_hex_string(), "#00ff00");
-    assert_eq!(g.at(f64::NAN).to_hex_string(), "#000000");
+    assert_eq!(g.at(f32::NAN).to_hex_string(), "#000000");
 
     // Custom domain #2
     let g = GradientBuilder::new()
@@ -265,7 +265,7 @@ fn sharp_gradient() {
 
     assert_eq!(g3.at(-0.1).to_rgba8(), [255, 0, 0, 255]);
     assert_eq!(g3.at(1.1).to_rgba8(), [0, 0, 255, 255]);
-    assert_eq!(g3.at(f64::NAN).to_rgba8(), [0, 0, 0, 255]);
+    assert_eq!(g3.at(f32::NAN).to_rgba8(), [0, 0, 0, 255]);
 
     let grad = GradientBuilder::new()
         .html_colors(&["red", "lime", "blue"])
@@ -317,7 +317,7 @@ fn sharp_gradient_x() {
 
     assert_eq!(g.at(-0.5).to_rgba8(), [255, 0, 0, 255]);
     assert_eq!(g.at(1.5).to_rgba8(), [0, 0, 255, 255]);
-    assert_eq!(g.at(f64::NAN).to_rgba8(), [0, 0, 0, 255]);
+    assert_eq!(g.at(f32::NAN).to_rgba8(), [0, 0, 0, 255]);
 }
 
 #[test]
@@ -367,7 +367,7 @@ fn preset() {
     assert_eq!(g.at(0.0).to_hex_string(), "#440154");
     assert_eq!(g.at(0.5).to_hex_string(), "#27838e");
     assert_eq!(g.at(1.0).to_hex_string(), "#fee825");
-    assert_eq!(g.at(f64::NAN).to_hex_string(), "#000000");
+    assert_eq!(g.at(f32::NAN).to_hex_string(), "#000000");
 
     let g = colorgrad::preset::greys();
     assert_eq!(g.at(0.0).to_hex_string(), "#ffffff");

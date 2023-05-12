@@ -6,7 +6,7 @@ use crate::{convert_colors, BlendMode, Color, Gradient, GradientBuilder, Gradien
 // https://github.com/d3/d3-interpolate/blob/master/src/basis.js
 
 #[inline]
-fn basis(t1: f64, v0: f64, v1: f64, v2: f64, v3: f64) -> f64 {
+fn basis(t1: f32, v0: f32, v1: f32, v2: f32, v3: f32) -> f32 {
     let t2 = t1 * t1;
     let t3 = t2 * t1;
     ((1.0 - 3.0 * t1 + 3.0 * t2 - t3) * v0
@@ -18,16 +18,16 @@ fn basis(t1: f64, v0: f64, v1: f64, v2: f64, v3: f64) -> f64 {
 
 #[derive(Debug, Clone)]
 pub struct BasisGradient {
-    values: Vec<[f64; 4]>,
-    positions: Vec<f64>,
-    domain: (f64, f64),
+    values: Vec<[f32; 4]>,
+    positions: Vec<f32>,
+    domain: (f32, f32),
     mode: BlendMode,
     first_color: Color,
     last_color: Color,
 }
 
 impl BasisGradient {
-    pub(crate) fn new(colors: Vec<Color>, positions: Vec<f64>, mode: BlendMode) -> Self {
+    pub(crate) fn new(colors: Vec<Color>, positions: Vec<f32>, mode: BlendMode) -> Self {
         let dmin = positions[0];
         let dmax = positions[positions.len() - 1];
         let first_color = colors[0].clone();
@@ -44,7 +44,7 @@ impl BasisGradient {
 }
 
 impl Gradient for BasisGradient {
-    fn at(&self, t: f64) -> Color {
+    fn at(&self, t: f32) -> Color {
         if t <= self.domain.0 {
             return self.first_color.clone();
         }
@@ -110,7 +110,7 @@ impl Gradient for BasisGradient {
         }
     }
 
-    fn domain(&self) -> (f64, f64) {
+    fn domain(&self) -> (f32, f32) {
         self.domain
     }
 }

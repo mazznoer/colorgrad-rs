@@ -74,7 +74,7 @@ impl error::Error for GradientBuilderError {}
 #[derive(Debug, Clone)]
 pub struct GradientBuilder {
     colors: Vec<Color>,
-    pos: Vec<f64>,
+    pos: Vec<f32>,
     pub(crate) mode: BlendMode,
     invalid_html_colors: Vec<String>,
 }
@@ -124,7 +124,7 @@ impl GradientBuilder {
     }
 
     /// Set the gradient domain and/or color position.
-    pub fn domain<'a>(&'a mut self, pos: &[f64]) -> &'a mut Self {
+    pub fn domain<'a>(&'a mut self, pos: &[f32]) -> &'a mut Self {
         self.pos = pos.to_vec();
         self
     }
@@ -144,7 +144,7 @@ impl GradientBuilder {
     }
 
     /// Build the gradient
-    pub(crate) fn build_(&self) -> Result<(Vec<Color>, Vec<f64>), GradientBuilderError> {
+    pub(crate) fn build_(&self) -> Result<(Vec<Color>, Vec<f32>), GradientBuilderError> {
         if !self.invalid_html_colors.is_empty() {
             return Err(GradientBuilderError::InvalidHtmlColor(
                 self.invalid_html_colors.clone(),

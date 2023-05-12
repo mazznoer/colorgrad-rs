@@ -17,8 +17,12 @@ exclude = [
 	"example_output/*",
 ]
 
+[package.metadata.docs.rs]
+features = ["named-colors", "preset", "ggr"]
+
 [dependencies]
-csscolorparser = { version = "0.6.2", default-features = false }
+#csscolorparser = { version = "0.6.2", default-features = false }
+csscolorparser = { git = "https://github.com/mazznoer/csscolorparser-rs.git", default-features = false }
 
 [features]
 default = ["named-colors"]
@@ -27,7 +31,7 @@ preset = []
 ggr = []
 
 [dev-dependencies]
-criterion = { version = "0.3.6", features = ["html_reports"] }
+criterion = { version = "0.4.0", features = ["html_reports"] }
 image = { version = "0.24.3", default-features = false, features = ["png"] }
 
 [[bench]]

@@ -1,8 +1,8 @@
-use std::f64::consts::{FRAC_PI_3, PI};
+use std::f32::consts::{FRAC_PI_3, PI};
 
 use crate::{linspace, BasisGradient, BlendMode, Color, Gradient};
 
-const PI2_3: f64 = PI * 2.0 / 3.0;
+const PI2_3: f32 = PI * 2.0 / 3.0;
 
 // Sinebow
 
@@ -14,7 +14,7 @@ pub fn sinebow() -> SinebowGradient {
 }
 
 impl Gradient for SinebowGradient {
-    fn at(&self, t: f64) -> Color {
+    fn at(&self, t: f32) -> Color {
         let t = (0.5 - t) * PI;
         Color::new(
             t.sin().powi(2).clamp(0.0, 1.0),
@@ -35,7 +35,7 @@ pub fn turbo() -> TurboGradient {
 }
 
 impl Gradient for TurboGradient {
-    fn at(&self, t: f64) -> Color {
+    fn at(&self, t: f32) -> Color {
         let t = t.clamp(0.0, 1.0);
         let r = (34.61
             + t * (1172.33 - t * (10793.56 - t * (33300.12 - t * (38394.49 - t * 14825.05)))))
@@ -64,7 +64,7 @@ pub fn cividis() -> CividisGradient {
 }
 
 impl Gradient for CividisGradient {
-    fn at(&self, t: f64) -> Color {
+    fn at(&self, t: f32) -> Color {
         let t = t.clamp(0.0, 1.0);
         let r = (-4.54 - t * (35.34 - t * (2381.73 - t * (6402.7 - t * (7024.72 - t * 2710.57)))))
             .round();
@@ -86,9 +86,9 @@ impl Gradient for CividisGradient {
 
 #[derive(Debug, Clone)]
 struct Cubehelix {
-    h: f64,
-    s: f64,
-    l: f64,
+    h: f32,
+    s: f32,
+    l: f32,
 }
 
 impl Cubehelix {
@@ -107,7 +107,7 @@ impl Cubehelix {
         Color::new(r.clamp(0.0, 1.0), g.clamp(0.0, 1.0), b.clamp(0.0, 1.0), 1.0)
     }
 
-    fn interpolate(&self, other: &Cubehelix, t: f64) -> Cubehelix {
+    fn interpolate(&self, other: &Cubehelix, t: f32) -> Cubehelix {
         Cubehelix {
             h: self.h + t * (other.h - self.h),
             s: self.s + t * (other.s - self.s),
@@ -125,7 +125,7 @@ pub struct CubehelixGradient {
 }
 
 impl Gradient for CubehelixGradient {
-    fn at(&self, t: f64) -> Color {
+    fn at(&self, t: f32) -> Color {
         self.start
             .interpolate(&self.end, t.clamp(0.0, 1.0))
             .to_color()
@@ -187,7 +187,7 @@ pub fn rainbow() -> RainbowGradient {
 }
 
 impl Gradient for RainbowGradient {
-    fn at(&self, t: f64) -> Color {
+    fn at(&self, t: f32) -> Color {
         let t = t.clamp(0.0, 1.0);
         let ts = (t - 0.5).abs();
         Cubehelix {

@@ -7,15 +7,15 @@ use crate::{convert_colors, BlendMode, Color, Gradient, GradientBuilder, Gradien
 
 #[derive(Debug, Clone)]
 pub struct CatmullRomGradient {
-    segments: Vec<[[f64; 4]; 4]>,
-    positions: Vec<f64>,
-    domain: (f64, f64),
+    segments: Vec<[[f32; 4]; 4]>,
+    positions: Vec<f32>,
+    domain: (f32, f32),
     mode: BlendMode,
     first_color: Color,
     last_color: Color,
 }
 
-fn to_catmull_segments(values: &[f64]) -> Vec<[f64; 4]> {
+fn to_catmull_segments(values: &[f32]) -> Vec<[f32; 4]> {
     let alpha = 0.5;
     let tension = 0.0;
     let n = values.len();
@@ -60,7 +60,7 @@ fn to_catmull_segments(values: &[f64]) -> Vec<[f64; 4]> {
 }
 
 impl CatmullRomGradient {
-    pub(crate) fn new(colors: Vec<Color>, positions: Vec<f64>, mode: BlendMode) -> Self {
+    pub(crate) fn new(colors: Vec<Color>, positions: Vec<f32>, mode: BlendMode) -> Self {
         let n = colors.len();
         let mut a = Vec::with_capacity(n);
         let mut b = Vec::with_capacity(n);
@@ -102,7 +102,7 @@ impl CatmullRomGradient {
 }
 
 impl Gradient for CatmullRomGradient {
-    fn at(&self, t: f64) -> Color {
+    fn at(&self, t: f32) -> Color {
         if t <= self.domain.0 {
             return self.first_color.clone();
         }
@@ -154,7 +154,7 @@ impl Gradient for CatmullRomGradient {
         }
     }
 
-    fn domain(&self) -> (f64, f64) {
+    fn domain(&self) -> (f32, f32) {
         self.domain
     }
 }

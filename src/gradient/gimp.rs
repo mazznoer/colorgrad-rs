@@ -7,7 +7,7 @@ use crate::{Color, Gradient};
 
 use std::{
     error,
-    f64::consts::{FRAC_PI_2, LN_2, PI},
+    f32::consts::{FRAC_PI_2, LN_2, PI},
     fmt,
     io::BufRead,
 };
@@ -50,11 +50,11 @@ struct GimpSegment {
     // Right endpoint color
     rcolor: Color,
     // Left endpoint coordinate
-    lpos: f64,
+    lpos: f32,
     // Midpoint coordinate
-    mpos: f64,
+    mpos: f32,
     // Right endpoint coordinate
-    rpos: f64,
+    rpos: f32,
     // Blending function type
     blending_type: BlendingType,
     // Coloring type
@@ -65,8 +65,8 @@ struct GimpSegment {
 pub struct GimpGradient {
     name: String,
     segments: Vec<GimpSegment>,
-    dmin: f64,
-    dmax: f64,
+    dmin: f32,
+    dmax: f32,
 }
 
 impl GimpGradient {
@@ -83,7 +83,7 @@ impl GimpGradient {
 }
 
 impl Gradient for GimpGradient {
-    fn at(&self, t: f64) -> Color {
+    fn at(&self, t: f32) -> Color {
         if t <= self.dmin {
             return self.segments[0].lcolor.clone();
         }
@@ -117,7 +117,7 @@ impl Gradient for GimpGradient {
         let seg = &self.segments[mid];
         let seg_len = seg.rpos - seg.lpos;
 
-        let (middle, pos) = if seg_len < f64::EPSILON {
+        let (middle, pos) = if seg_len < f32::EPSILON {
             (0.5, 0.5)
         } else {
             ((seg.mpos - seg.lpos) / seg_len, (t - seg.lpos) / seg_len)
@@ -126,9 +126,9 @@ impl Gradient for GimpGradient {
         let f = match seg.blending_type {
             BlendingType::Linear => calc_linear_factor(middle, pos),
             BlendingType::Curved => {
-                if middle < f64::EPSILON {
+                if middle < f32::EPSILON {
                     return seg.rcolor.clone();
-                } else if (1.0 - middle).abs() < f64::EPSILON {
+                } else if (1.0 - middle).abs() < f32::EPSILON {
                     return seg.lcolor.clone();
                 } else {
                     (-LN_2 * pos.log10() / middle.log10()).exp()
@@ -164,9 +164,9 @@ impl Gradient for GimpGradient {
 }
 
 #[inline]
-fn calc_linear_factor(middle: f64, pos: f64) -> f64 {
+fn calc_linear_factor(middle: f32, pos: f32) -> f32 {
     if pos <= middle {
-        if middle < f64::EPSILON {
+        if middle < f32::EPSILON {
             0.0
         } else {
             0.5 * pos / middle
@@ -175,7 +175,7 @@ fn calc_linear_factor(middle: f64, pos: f64) -> f64 {
         let pos = pos - middle;
         let middle = 1.0 - middle;
 
-        if middle < f64::EPSILON {
+        if middle < f32::EPSILON {
             1.0
         } else {
             0.5 + 0.5 * pos / middle
@@ -288,7 +288,7 @@ fn parse_ggr<R: BufRead>(
 }
 
 fn parse_segment(s: &str, foreground: &Color, background: &Color) -> Option<GimpSegment> {
-    let d: Result<Vec<_>, _> = s.split_whitespace().map(|x| x.parse::<f64>()).collect();
+    let d: Result<Vec<_>, _> = s.split_whitespace().map(|x| x.parse::<f32>()).collect();
 
     let d = if let Ok(t) = d {
         t
@@ -361,7 +361,7 @@ fn parse_segment(s: &str, foreground: &Color, background: &Color) -> Option<Gimp
     })
 }
 
-fn blend_hsv_ccw(c1: &Color, c2: &Color, t: f64) -> Color {
+fn blend_hsv_ccw(c1: &Color, c2: &Color, t: f32) -> Color {
     let (h1, s1, v1, a1) = c1.to_hsva();
     let (h2, s2, v2, a2) = c2.to_hsva();
 
@@ -385,7 +385,7 @@ fn blend_hsv_ccw(c1: &Color, c2: &Color, t: f64) -> Color {
     )
 }
 
-fn blend_hsv_cw(c1: &Color, c2: &Color, t: f64) -> Color {
+fn blend_hsv_cw(c1: &Color, c2: &Color, t: f32) -> Color {
     let (h1, s1, v1, a1) = c1.to_hsva();
     let (h2, s2, v2, a2) = c2.to_hsva();
 

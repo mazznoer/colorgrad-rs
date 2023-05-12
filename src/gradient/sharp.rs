@@ -2,14 +2,14 @@ use crate::{linspace, Color, Gradient};
 
 #[derive(Debug, Clone)]
 pub struct SharpGradient {
-    stops: Vec<(f64, Color)>,
-    domain: (f64, f64),
+    stops: Vec<(f32, Color)>,
+    domain: (f32, f32),
     first_color: Color,
     last_color: Color,
 }
 
 impl SharpGradient {
-    pub(crate) fn new(colors_in: &[Color], domain: (f64, f64), t: f64) -> Self {
+    pub(crate) fn new(colors_in: &[Color], domain: (f32, f32), t: f32) -> Self {
         let n = colors_in.len();
         let mut colors = Vec::with_capacity(n * 2);
 
@@ -18,7 +18,7 @@ impl SharpGradient {
             colors.push(c.clone());
         }
 
-        let t = t.clamp(0.0, 1.0) * (domain.1 - domain.0) / n as f64 / 4.0;
+        let t = t.clamp(0.0, 1.0) * (domain.1 - domain.0) / n as f32 / 4.0;
         let p = linspace(domain.0, domain.1, n + 1);
         let mut positions = Vec::with_capacity(n * 2);
         let mut j = 0;
@@ -57,7 +57,7 @@ impl SharpGradient {
 }
 
 impl Gradient for SharpGradient {
-    fn at(&self, t: f64) -> Color {
+    fn at(&self, t: f32) -> Color {
         if t <= self.domain.0 {
             return self.first_color.clone();
         }
@@ -101,7 +101,7 @@ impl Gradient for SharpGradient {
         col_0.interpolate_rgb(col_1, t)
     }
 
-    fn domain(&self) -> (f64, f64) {
+    fn domain(&self) -> (f32, f32) {
         self.domain
     }
 }

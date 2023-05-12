@@ -48,7 +48,7 @@
 //!     let mut imgbuf = image::ImageBuffer::new(width, height);
 //!
 //!     for (x, _, pixel) in imgbuf.enumerate_pixels_mut() {
-//!         let rgba = grad.at(x as f64 / width as f64).to_rgba8();
+//!         let rgba = grad.at(x as f32 / width as f32).to_rgba8();
 //!         *pixel = image::Rgba(rgba);
 //!     }
 //!
@@ -74,7 +74,7 @@
 //!     let mut imgbuf = image::ImageBuffer::new(600, 350);
 //!
 //!     for (x, y, pixel) in imgbuf.enumerate_pixels_mut() {
-//!         let t = ns.get([x as f64 * scale, y as f64 * scale]);
+//!         let t = ns.get([x as f32 * scale, y as f32 * scale]);
 //!         let rgba = grad.at(remap(t, -0.5, 0.5, 0.0, 1.0)).to_rgba8();
 //!         *pixel = image::Rgba(rgba);
 //!     }
@@ -83,7 +83,7 @@
 //! }
 //!
 //! // Map t which is in range [a, b] to range [c, d]
-//! fn remap(t: f64, a: f64, b: f64, c: f64, d: f64) -> f64 {
+//! fn remap(t: f32, a: f32, b: f32, c: f32, d: f32) -> f32 {
 //!     (t - a) * ((d - c) / (b - a)) + c
 //! }
 //! ```
@@ -145,24 +145,24 @@ pub enum BlendMode {
 
 pub trait Gradient {
     /// Get color at certain position
-    fn at(&self, t: f64) -> Color;
+    fn at(&self, t: f32) -> Color;
 
     /// Get color at certain position
-    fn repeat_at(&self, t: f64) -> Color {
+    fn repeat_at(&self, t: f32) -> Color {
         let (dmin, dmax) = self.domain();
         let t = norm(t, dmin, dmax);
         self.at(dmin + modulo(t, 1.0) * (dmax - dmin))
     }
 
     /// Get color at certain position
-    fn reflect_at(&self, t: f64) -> Color {
+    fn reflect_at(&self, t: f32) -> Color {
         let (dmin, dmax) = self.domain();
         let t = norm(t, dmin, dmax);
         self.at(dmin + (modulo(1.0 + t, 2.0) - 1.0).abs() * (dmax - dmin))
     }
 
     /// Get the gradient's domain min and max
-    fn domain(&self) -> (f64, f64) {
+    fn domain(&self) -> (f32, f32) {
         (0.0, 1.0)
     }
 
@@ -187,7 +187,7 @@ pub trait Gradient {
     /// let g = colorgrad::rainbow().sharp(11, 0.);
     /// ```
     /// ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/rainbow-sharp.png)
-    fn sharp(&self, segment: u16, smoothness: f64) -> SharpGradient {
+    fn sharp(&self, segment: u16, smoothness: f32) -> SharpGradient {
         let colors = if segment > 1 {
             self.colors(segment.into())
         } else {
@@ -197,7 +197,7 @@ pub trait Gradient {
     }
 }
 
-fn convert_colors(colors: &[Color], mode: BlendMode) -> Vec<[f64; 4]> {
+fn convert_colors(colors: &[Color], mode: BlendMode) -> Vec<[f32; 4]> {
     let mut result = Vec::with_capacity(colors.len());
     for col in colors.iter() {
         let (a, b, c, d) = match mode {
@@ -211,24 +211,24 @@ fn convert_colors(colors: &[Color], mode: BlendMode) -> Vec<[f64; 4]> {
     result
 }
 
-fn linspace(min: f64, max: f64, n: usize) -> Vec<f64> {
+fn linspace(min: f32, max: f32, n: usize) -> Vec<f32> {
     if n == 1 {
         return vec![min];
     }
 
     let d = max - min;
-    let l = n as f64 - 1.0;
-    (0..n).map(|i| min + (i as f64 * d) / l).collect()
+    let l = n as f32 - 1.0;
+    (0..n).map(|i| min + (i as f32 * d) / l).collect()
 }
 
 #[inline]
-fn modulo(x: f64, y: f64) -> f64 {
+fn modulo(x: f32, y: f32) -> f32 {
     (x % y + y) % y
 }
 
 #[inline]
 // Map t from range [a, b] to range [0, 1]
-fn norm(t: f64, a: f64, b: f64) -> f64 {
+fn norm(t: f32, a: f32, b: f32) -> f32 {
     (t - a) * (1.0 / (b - a))
 }
 

@@ -13,9 +13,13 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Build
       run: cargo build --verbose --all-features
@@ -27,15 +31,16 @@ jobs:
       run: cargo fmt --all -- --check
 
     - name: Run cargo clippy
-      run: cargo clippy -- -D warnings
+      run: cargo clippy --all-features -- -D warnings
 
     - name: Tarpaulin code coverage
       id: coverage
-      uses: actions-rs/tarpaulin@v0.1
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        cargo install cargo-tarpaulin
+        cargo tarpaulin -o xml
 
     - name: Upload to codecov.io
-      if: github.triggering_actor == 'mazznoer'
-      uses: codecov/codecov-action@v1.0.2
-      with:
-        token: ${{secrets.CODECOV_TOKEN}}
+      if: matrix.os == 'ubuntu-latest'
+      uses: codecov/codecov-action@v3
 

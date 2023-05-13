@@ -94,16 +94,6 @@ fn custom_gradient_blend_mode() {
     assert_eq!(g.at(0.5).to_rgba8(), [255, 255, 0, 255]);
     assert_eq!(g.at(1.0).to_rgba8(), [0, 0, 255, 255]);
 
-    // Blend mode HSV
-    let g = GradientBuilder::new()
-        .html_colors(&["#f00", "#ff0", "#00f"])
-        .mode(BlendMode::Hsv)
-        .build::<LinearGradient>()
-        .unwrap();
-    assert_eq!(g.at(0.0).to_rgba8(), [255, 0, 0, 255]);
-    assert_eq!(g.at(0.5).to_rgba8(), [255, 255, 0, 255]);
-    assert_eq!(g.at(1.0).to_rgba8(), [0, 0, 255, 255]);
-
     // Blend mode Oklab
     let g = GradientBuilder::new()
         .html_colors(&["#f00", "#ff0", "#00f"])

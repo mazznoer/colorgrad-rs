@@ -139,7 +139,6 @@ pub use gradient::gimp::{GimpGradient, ParseGgrError};
 pub enum BlendMode {
     Rgb,
     LinearRgb,
-    Hsv,
     Oklab,
 }
 
@@ -204,7 +203,6 @@ fn convert_colors(colors: &[Color], mode: BlendMode) -> Vec<[f32; 4]> {
             BlendMode::Rgb => c.to_array(),
             BlendMode::LinearRgb => c.to_linear_rgba(),
             BlendMode::Oklab => c.to_oklaba(),
-            BlendMode::Hsv => c.to_hsva(),
         })
         .collect()
 }

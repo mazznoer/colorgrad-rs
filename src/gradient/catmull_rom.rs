@@ -148,9 +148,9 @@ impl Gradient for CatmullRomGradient {
         let c3 = seg_d[0] * t3 + seg_d[1] * t2 + seg_d[2] * t1 + seg_d[3];
 
         match self.mode {
+            BlendMode::Rgb => Color::new(c0, c1, c2, c3),
             BlendMode::LinearRgb => Color::from_linear_rgba(c0, c1, c2, c3),
             BlendMode::Oklab => Color::from_oklaba(c0, c1, c2, c3),
-            _ => Color::new(c0, c1, c2, c3),
         }
     }
 

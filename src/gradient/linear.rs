@@ -74,10 +74,6 @@ impl Gradient for LinearGradient {
             BlendMode::Rgb => Color::new(a, b, c, d),
             BlendMode::LinearRgb => Color::from_linear_rgba(a, b, c, d),
             BlendMode::Oklab => Color::from_oklaba(a, b, c, d),
-            BlendMode::Hsv => {
-                let hue = interp_angle(col_0[0], col_1[0], t);
-                Color::from_hsva(hue, b, c, d)
-            }
         }
     }
 
@@ -103,10 +99,4 @@ pub(crate) fn linear_interpolation(a: &[f32; 4], b: &[f32; 4], t: f32) -> [f32; 
         a[2] + t * (b[2] - a[2]),
         a[3] + t * (b[3] - a[3]),
     ]
-}
-
-#[inline]
-fn interp_angle(a0: f32, a1: f32, t: f32) -> f32 {
-    let delta = (((a1 - a0) % 360.0) + 540.0) % 360.0 - 180.0;
-    (a0 + t * delta + 360.0) % 360.0
 }

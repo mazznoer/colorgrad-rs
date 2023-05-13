@@ -20,7 +20,7 @@ fn parse_gimp_gradients() {
     assert_eq!(grad.at(0.0).to_rgba8(), [0, 0, 0, 255]);
     assert_eq!(grad.at(1.0).to_rgba8(), [255, 255, 255, 255]);
     assert_eq!(grad.at(-0.5).to_rgba8(), [0, 0, 0, 255]);
-    assert_eq!(grad.at(1.5).to_rgba8(), [255, 255, 255, 255]);
+    assert_eq!(grad.at(1.5).to_rgba8(), [0, 0, 0, 255]);
     assert_eq!(grad.at(f32::NAN).to_rgba8(), [0, 0, 0, 255]);
 
     // Foreground to background

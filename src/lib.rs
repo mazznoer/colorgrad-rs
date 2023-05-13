@@ -198,17 +198,15 @@ pub trait Gradient {
 }
 
 fn convert_colors(colors: &[Color], mode: BlendMode) -> Vec<[f32; 4]> {
-    let mut result = Vec::with_capacity(colors.len());
-    for col in colors.iter() {
-        let (a, b, c, d) = match mode {
-            BlendMode::Rgb => (col.r, col.g, col.b, col.a),
-            BlendMode::LinearRgb => col.to_linear_rgba(),
-            BlendMode::Oklab => col.to_oklaba(),
-            BlendMode::Hsv => col.to_hsva(),
-        };
-        result.push([a, b, c, d]);
-    }
-    result
+    colors
+        .iter()
+        .map(|c| match mode {
+            BlendMode::Rgb => c.to_array(),
+            BlendMode::LinearRgb => c.to_linear_rgba(),
+            BlendMode::Oklab => c.to_oklaba(),
+            BlendMode::Hsv => c.to_hsva(),
+        })
+        .collect()
 }
 
 fn linspace(min: f32, max: f32, n: usize) -> Vec<f32> {

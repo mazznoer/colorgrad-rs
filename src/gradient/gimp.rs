@@ -3,6 +3,7 @@
 // https://gitlab.gnome.org/GNOME/gimp/-/blob/master/app/core/gimpgradient.c
 // https://gitlab.gnome.org/GNOME/gimp/-/blob/master/app/core/gimpgradient-load.c
 
+use crate::gradient::linear::linear_interpolation;
 use crate::{Color, Gradient};
 
 use std::{
@@ -46,9 +47,9 @@ enum ColoringType {
 #[derive(Debug, Clone)]
 struct GimpSegment {
     // Left endpoint color
-    lcolor: Color,
+    lcolor: [f32; 4],
     // Right endpoint color
-    rcolor: Color,
+    rcolor: [f32; 4],
     // Left endpoint coordinate
     lpos: f32,
     // Midpoint coordinate
@@ -84,15 +85,7 @@ impl GimpGradient {
 
 impl Gradient for GimpGradient {
     fn at(&self, t: f32) -> Color {
-        if t <= self.dmin {
-            return self.segments[0].lcolor.clone();
-        }
-
-        if t >= self.dmax {
-            return self.segments[self.segments.len() - 1].rcolor.clone();
-        }
-
-        if t.is_nan() {
+        if t < self.dmin || t > self.dmax || t.is_nan() {
             return Color::new(0.0, 0.0, 0.0, 1.0);
         }
 
@@ -127,9 +120,27 @@ impl Gradient for GimpGradient {
             BlendingType::Linear => calc_linear_factor(middle, pos),
             BlendingType::Curved => {
                 if middle < f32::EPSILON {
-                    return seg.rcolor.clone();
+                    match seg.coloring_type {
+                        ColoringType::Rgb => {
+                            let [r, g, b, a] = seg.rcolor;
+                            return Color::new(r, g, b, a);
+                        }
+                        _ => {
+                            let [h, s, v, a] = seg.rcolor;
+                            return Color::from_hsva(h, s, v, a);
+                        }
+                    }
                 } else if (1.0 - middle).abs() < f32::EPSILON {
-                    return seg.lcolor.clone();
+                    match seg.coloring_type {
+                        ColoringType::Rgb => {
+                            let [r, g, b, a] = seg.lcolor;
+                            return Color::new(r, g, b, a);
+                        }
+                        _ => {
+                            let [h, s, v, a] = seg.lcolor;
+                            return Color::from_hsva(h, s, v, a);
+                        }
+                    }
                 } else {
                     (-LN_2 * pos.log10() / middle.log10()).exp()
                 }
@@ -148,15 +159,33 @@ impl Gradient for GimpGradient {
             }
             BlendingType::Step => {
                 if pos >= middle {
-                    return seg.rcolor.clone();
+                    match seg.coloring_type {
+                        ColoringType::Rgb => {
+                            let [r, g, b, a] = seg.rcolor;
+                            return Color::new(r, g, b, a);
+                        }
+                        _ => {
+                            let [h, s, v, a] = seg.rcolor;
+                            return Color::from_hsva(h, s, v, a);
+                        }
+                    }
                 } else {
-                    return seg.lcolor.clone();
+                    match seg.coloring_type {
+                        ColoringType::Rgb => {
+                            let [r, g, b, a] = seg.lcolor;
+                            return Color::new(r, g, b, a);
+                        }
+                        _ => {
+                            let [h, s, v, a] = seg.lcolor;
+                            return Color::from_hsva(h, s, v, a);
+                        }
+                    }
                 }
             }
         };
 
         match seg.coloring_type {
-            ColoringType::Rgb => seg.lcolor.interpolate_rgb(&seg.rcolor, f),
+            ColoringType::Rgb => Color::from(linear_interpolation(&seg.lcolor, &seg.rcolor, f)),
             ColoringType::HsvCcw => blend_hsv_ccw(&seg.lcolor, &seg.rcolor, f),
             ColoringType::HsvCw => blend_hsv_cw(&seg.lcolor, &seg.rcolor, f),
         }
@@ -350,6 +379,16 @@ fn parse_segment(s: &str, foreground: &Color, background: &Color) -> Option<Gimp
         _ => return None,
     };
 
+    let lcolor = match coloring_type {
+        ColoringType::Rgb => lcolor.to_array(),
+        _ => lcolor.to_hsva(),
+    };
+
+    let rcolor = match coloring_type {
+        ColoringType::Rgb => rcolor.to_array(),
+        _ => rcolor.to_hsva(),
+    };
+
     Some(GimpSegment {
         lcolor,
         rcolor,
@@ -361,9 +400,9 @@ fn parse_segment(s: &str, foreground: &Color, background: &Color) -> Option<Gimp
     })
 }
 
-fn blend_hsv_ccw(c1: &Color, c2: &Color, t: f32) -> Color {
-    let (h1, s1, v1, a1) = c1.to_hsva();
-    let (h2, s2, v2, a2) = c2.to_hsva();
+fn blend_hsv_ccw(c1: &[f32; 4], c2: &[f32; 4], t: f32) -> Color {
+    let [h1, s1, v1, a1] = c1;
+    let [h2, s2, v2, a2] = c2;
 
     let hue = if h1 < h2 {
         h1 + ((h2 - h1) * t)
@@ -385,9 +424,9 @@ fn blend_hsv_ccw(c1: &Color, c2: &Color, t: f32) -> Color {
     )
 }
 
-fn blend_hsv_cw(c1: &Color, c2: &Color, t: f32) -> Color {
-    let (h1, s1, v1, a1) = c1.to_hsva();
-    let (h2, s2, v2, a2) = c2.to_hsva();
+fn blend_hsv_cw(c1: &[f32; 4], c2: &[f32; 4], t: f32) -> Color {
+    let [h1, s1, v1, a1] = c1;
+    let [h2, s2, v2, a2] = c2;
 
     let hue = if h2 < h1 {
         h1 - ((h1 - h2) * t)

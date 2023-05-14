@@ -107,6 +107,8 @@ impl Gradient for BasisGradient {
             BlendMode::Rgb => Color::new(c0, c1, c2, c3),
             BlendMode::LinearRgb => Color::from_linear_rgba(c0, c1, c2, c3),
             BlendMode::Oklab => Color::from_oklaba(c0, c1, c2, c3),
+            #[cfg(feature = "lab")]
+            BlendMode::Lab => Color::from_laba(c0, c1, c2, c3),
         }
     }
 

@@ -140,6 +140,8 @@ pub enum BlendMode {
     Rgb,
     LinearRgb,
     Oklab,
+    #[cfg(feature = "lab")]
+    Lab,
 }
 
 pub trait Gradient {
@@ -203,6 +205,8 @@ fn convert_colors(colors: &[Color], mode: BlendMode) -> Vec<[f32; 4]> {
             BlendMode::Rgb => c.to_array(),
             BlendMode::LinearRgb => c.to_linear_rgba(),
             BlendMode::Oklab => c.to_oklaba(),
+            #[cfg(feature = "lab")]
+            BlendMode::Lab => c.to_laba(),
         })
         .collect()
 }

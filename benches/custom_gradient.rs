@@ -18,7 +18,12 @@ const COLORS: [&'static str; 104] = [
     "#f9c0b3", "#9890db", "#d01be8", "#20870e", "#f4426b", "#def260", "#521efc", "#ffbcc6",
     "#e285b9", "#0ed6f9", "#7825ed", "#f2c6ff", "#cdb2f4", "#5fd374", "#fc838d", "#27bec6",
 ];
-const MODES: [BlendMode; 3] = [BlendMode::Rgb, BlendMode::LinearRgb, BlendMode::Oklab];
+const MODES: [BlendMode; 4] = [
+    BlendMode::Rgb,
+    BlendMode::LinearRgb,
+    BlendMode::Oklab,
+    BlendMode::Lab,
+];
 const POSITIONS: [f32; 3] = [0.03, 0.5, 0.97];
 
 fn bench_linear_gradient(c: &mut Criterion) {

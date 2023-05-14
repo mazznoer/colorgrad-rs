@@ -27,6 +27,7 @@ csscolorparser = { git = "https://github.com/mazznoer/csscolorparser-rs.git", de
 [features]
 default = ["named-colors"]
 named-colors = ["csscolorparser/named-colors"]
+lab = ["csscolorparser/lab"]
 preset = []
 ggr = []
 
@@ -37,6 +38,7 @@ image = { version = "0.24.3", default-features = false, features = ["png"] }
 [[bench]]
 name = "custom_gradient"
 harness = false
+required-features = ["lab"]
 
 [[bench]]
 name = "preset"

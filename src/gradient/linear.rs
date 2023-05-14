@@ -74,6 +74,8 @@ impl Gradient for LinearGradient {
             BlendMode::Rgb => Color::new(a, b, c, d),
             BlendMode::LinearRgb => Color::from_linear_rgba(a, b, c, d),
             BlendMode::Oklab => Color::from_oklaba(a, b, c, d),
+            #[cfg(feature = "lab")]
+            BlendMode::Lab => Color::from_laba(a, b, c, d),
         }
     }
 

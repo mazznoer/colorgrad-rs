@@ -62,6 +62,26 @@ struct GimpSegment {
     coloring_type: ColoringType,
 }
 
+/// Parse GIMP gradient (ggr)
+///
+/// # Example
+///
+/// ```
+/// use colorgrad::{Color, Gradient};
+/// use std::fs::File;
+/// use std::io::BufReader;
+///
+/// # fn main() -> Result<(), Box<dyn std::error::Error>> {
+/// let input = File::open("examples/ggr/Abstract_1.ggr")?;
+/// let buf = BufReader::new(input);
+/// let col = Color::default();
+/// let grad = colorgrad::GimpGradient::new(buf, &col, &col)?;
+///
+/// assert_eq!(grad.name(), "Abstract 1");
+/// # Ok(())
+/// # }
+/// ```
+/// ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/ggr_abstract_1.png)
 #[derive(Debug, Clone)]
 pub struct GimpGradient {
     name: String,
@@ -212,27 +232,6 @@ fn calc_linear_factor(middle: f32, pos: f32) -> f32 {
     }
 }
 
-/// Parse GIMP gradient (ggr)
-///
-/// # Example
-///
-/// ```ignore
-/// use colorgrad::Color;
-/// use std::fs::File;
-/// use std::io::BufReader;
-///
-/// # fn main() -> Result<(), Box<dyn std::error::Error>> {
-/// let input = File::open("examples/ggr/Abstract_1.ggr")?;
-/// let buf = BufReader::new(input);
-/// let fg = Color::new(0.0, 0.0, 0.0, 1.0);
-/// let bg = Color::new(1.0, 1.0, 1.0, 1.0);
-/// let (grad, name) = colorgrad::parse_ggr(buf, &fg, &bg)?;
-///
-/// assert_eq!(name, "Abstract 1");
-/// # Ok(())
-/// # }
-/// ```
-/// ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/ggr_abstract_1.png)
 fn parse_ggr<R: BufRead>(
     r: R,
     foreground: &Color,

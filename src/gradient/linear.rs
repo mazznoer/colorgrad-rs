@@ -2,6 +2,17 @@ use std::convert::TryFrom;
 
 use crate::{convert_colors, BlendMode, Color, Gradient, GradientBuilder, GradientBuilderError};
 
+/// ```
+/// # use std::error::Error;
+/// use colorgrad::Gradient;
+///
+/// # fn main() -> Result<(), Box<dyn Error>> {
+/// let grad = colorgrad::GradientBuilder::new()
+///     .html_colors(&["deeppink", "gold", "seagreen"])
+///     .build::<colorgrad::LinearGradient>()?;
+/// # Ok(())
+/// # }
+/// ```
 #[derive(Debug, Clone)]
 pub struct LinearGradient {
     stops: Vec<(f32, [f32; 4])>,

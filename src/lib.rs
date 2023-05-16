@@ -5,8 +5,9 @@
 //! ## Usage
 //!
 //! Using preset gradient:
-//! ```ignore
-//! let g = colorgrad::rainbow();
+//! ```
+//! use colorgrad::Gradient;
+//! let g = colorgrad::preset::rainbow();
 //!
 //! assert_eq!(g.domain(), (0.0, 1.0)); // all preset gradients are in the domain [0..1]
 //! assert_eq!(g.at(0.5).to_rgba8(), [175, 240, 91, 255]);
@@ -14,16 +15,16 @@
 //! ```
 //!
 //! Custom gradient:
-//! ```ignore
-//! use colorgrad::Color;
+//! ```
+//! use colorgrad::{Color, Gradient};
 //!
 //! # fn main() -> Result<(), Box<dyn std::error::Error>> {
-//! let g = colorgrad::CustomGradient::new()
+//! let g = colorgrad::GradientBuilder::new()
 //!     .colors(&[
 //!         Color::from_rgba8(255, 0, 0, 255),
 //!         Color::from_rgba8(0, 255, 0, 255),
 //!     ])
-//!     .build()?;
+//!     .build::<colorgrad::LinearGradient>()?;
 //!
 //! assert_eq!(g.at(0.0).to_rgba8(), [255, 0, 0, 255]);
 //! assert_eq!(g.at(0.0).to_hex_string(), "#ff0000");
@@ -36,11 +37,13 @@
 //!
 //! ### Gradient Image
 //!
-//! ```rust,ignore
+//! ```
+//! use colorgrad::Gradient;
+//!
 //! fn main() -> Result<(), Box<dyn std::error::Error>> {
-//!     let grad = colorgrad::CustomGradient::new()
+//!     let grad = colorgrad::GradientBuilder::new()
 //!         .html_colors(&["deeppink", "gold", "seagreen"])
-//!         .build()?;
+//!         .build::<colorgrad::CatmullRomGradient>()?;
 //!
 //!     let width = 1500;
 //!     let height = 70;
@@ -63,13 +66,14 @@
 //!
 //! ### Colored Noise
 //!
-//! ```rust,ignore
+//! ```ignore
+//! use colorgrad::Gradient;
 //! use noise::NoiseFn;
 //!
 //! fn main() {
 //!     let scale = 0.015;
 //!
-//!     let grad = colorgrad::rainbow().sharp(5, 0.15);
+//!     let grad = colorgrad::preset::rainbow().sharp(5, 0.15);
 //!     let ns = noise::OpenSimplex::new();
 //!     let mut imgbuf = image::ImageBuffer::new(600, 350);
 //!
@@ -94,25 +98,25 @@
 //!
 //! ## Preset Gradients
 //!
-//! [colorgrad::cubehelix_default()](fn.cubehelix_default.html)
+//! [colorgrad::preset::cubehelix_default()](preset)
 //! ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/cubehelix_default.png)
 //!
-//! [colorgrad::turbo()](fn.turbo.html)
+//! [colorgrad::preset::turbo()](preset)
 //! ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/turbo.png)
 //!
-//! [colorgrad::spectral()](fn.spectral.html)
+//! [colorgrad::preset::spectral()](preset)
 //! ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/spectral.png)
 //!
-//! [colorgrad::viridis()](fn.viridis.html)
+//! [colorgrad::preset::viridis()](preset)
 //! ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/viridis.png)
 //!
-//! [colorgrad::magma()](fn.magma.html)
+//! [colorgrad::preset::magma()](preset)
 //! ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/magma.png)
 //!
-//! [colorgrad::rainbow()](fn.rainbow.html)
+//! [colorgrad::preset::rainbow()](preset)
 //! ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/rainbow.png)
 //!
-//! [colorgrad::sinebow()](fn.sinebow.html)
+//! [colorgrad::preset::sinebow()](preset)
 //! ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/sinebow.png)
 //!
 //! See more complete gradient preview and examples at [Github](https://github.com/mazznoer/colorgrad-rs).
@@ -179,13 +183,14 @@ pub trait Gradient {
 
     /// Get new hard-edge gradient
     ///
-    /// ```ignore
-    /// let g = colorgrad::rainbow();
+    /// ```
+    /// let g = colorgrad::preset::rainbow();
     /// ```
     /// ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/rainbow.png)
     ///
-    /// ```ignore
-    /// let g = colorgrad::rainbow().sharp(11, 0.);
+    /// ```
+    /// use colorgrad::Gradient;
+    /// let g = colorgrad::preset::rainbow().sharp(11, 0.);
     /// ```
     /// ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/rainbow-sharp.png)
     fn sharp(&self, segment: u16, smoothness: f32) -> SharpGradient {

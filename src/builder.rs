@@ -36,17 +36,17 @@ impl error::Error for GradientBuilderError {}
 ///
 /// # Examples
 ///
-/// ```ignore
+/// ```
 /// # use std::error::Error;
-/// use colorgrad::Color;
+/// use colorgrad::{Color, Gradient};
 ///
 /// # fn main() -> Result<(), Box<dyn Error>> {
-/// let grad = colorgrad::CustomGradient::new()
+/// let grad = colorgrad::GradientBuilder::new()
 ///     .colors(&[
 ///         Color::from_rgba8(255, 0, 0, 255),
 ///         Color::new(0.0, 0.0, 1.0, 1.0),
 ///     ])
-///     .build()?;
+///     .build::<colorgrad::LinearGradient>()?;
 ///
 /// assert_eq!(grad.domain(), (0.0, 1.0)); // default domain
 /// assert_eq!(grad.at(0.0).to_rgba8(), [255, 0, 0, 255]);
@@ -57,14 +57,16 @@ impl error::Error for GradientBuilderError {}
 ///
 /// ## Using web color format string
 ///
-/// ```ignore
+/// ```
 /// # use std::error::Error;
+/// use colorgrad::Gradient;
+///
 /// # fn main() -> Result<(), Box<dyn Error>> {
-/// let grad = colorgrad::CustomGradient::new()
+/// let grad = colorgrad::GradientBuilder::new()
 ///     .html_colors(&["deeppink", "gold", "seagreen"])
 ///     .domain(&[0.0, 100.0])
 ///     .mode(colorgrad::BlendMode::Rgb)
-///     .build()?;
+///     .build::<colorgrad::LinearGradient>()?;
 ///
 /// assert_eq!(grad.at(0.0).to_rgba8(), [255, 20, 147, 255]);
 /// assert_eq!(grad.at(100.0).to_rgba8(), [46, 139, 87, 255]);

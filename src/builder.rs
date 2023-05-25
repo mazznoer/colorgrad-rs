@@ -132,8 +132,7 @@ impl GradientBuilder {
     }
 
     /// Set the color blending mode
-    #[allow(clippy::needless_lifetimes)]
-    pub fn mode<'a>(&'a mut self, mode: BlendMode) -> &'a mut Self {
+    pub fn mode(&mut self, mode: BlendMode) -> &mut Self {
         self.mode = mode;
         self
     }

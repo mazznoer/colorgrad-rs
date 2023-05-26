@@ -35,6 +35,10 @@ ggr = []
 criterion = { version = "0.4.0", features = ["html_reports"] }
 image = { version = "0.24.3", default-features = false, features = ["png"] }
 
+[[example]]
+name = "gradients"
+required-features = ["lab", "preset", "ggr", "named-colors"]
+
 [[bench]]
 name = "custom_gradient"
 harness = false

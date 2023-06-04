@@ -79,10 +79,7 @@ impl Gradient for SharpGradient {
         let mut low = 0;
         let mut high = self.stops.len();
 
-        loop {
-            if low >= high {
-                break;
-            }
+        while low < high {
             let mid = (low + high) / 2;
             if self.stops[mid].0 < t {
                 low = mid + 1;

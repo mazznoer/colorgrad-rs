@@ -113,10 +113,7 @@ impl Gradient for GimpGradient {
         let mut high = self.segments.len();
         let mut mid = 0;
 
-        loop {
-            if low >= high {
-                break;
-            }
+        while low < high {
             mid = (low + high) / 2;
             if t > self.segments[mid].rpos {
                 low = mid + 1;

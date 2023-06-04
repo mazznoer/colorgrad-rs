@@ -72,10 +72,7 @@ impl Gradient for BasisGradient {
         let mut high = self.positions.len();
         let n = high - 1;
 
-        loop {
-            if low >= high {
-                break;
-            }
+        while low < high {
             let mid = (low + high) / 2;
             if self.positions[mid] < t {
                 low = mid + 1;

@@ -129,10 +129,7 @@ impl Gradient for CatmullRomGradient {
         let mut low = 0;
         let mut high = self.positions.len();
 
-        loop {
-            if low >= high {
-                break;
-            }
+        while low < high {
             let mid = (low + high) / 2;
             if self.positions[mid] < t {
                 low = mid + 1;

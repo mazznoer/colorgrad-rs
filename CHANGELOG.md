@@ -5,6 +5,7 @@
 ### Added
 
 - `BlendMode::Lab`, optional feature, can be enabled using `features = ["lab"]` in Cargo.toml
+- `GradientBuilder` new method `css()` for parsing css gradient format
 
 ### Changed
 

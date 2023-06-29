@@ -126,6 +126,8 @@ pub use csscolorparser::{Color, ParseColorError};
 mod builder;
 pub use builder::{GradientBuilder, GradientBuilderError};
 
+mod css_gradient;
+
 mod gradient;
 pub use gradient::basis::BasisGradient;
 pub use gradient::catmull_rom::CatmullRomGradient;

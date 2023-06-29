@@ -1,11 +1,12 @@
 use std::convert::TryFrom;
 use std::{error, fmt};
 
-use crate::{linspace, BlendMode, Color};
+use crate::{css_gradient, linspace, BlendMode, Color};
 
 #[derive(Debug, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum GradientBuilderError {
     InvalidHtmlColor(Vec<String>),
+    InvalidCssGradient,
     WrongDomainCount,
     WrongDomain,
 }
@@ -24,6 +25,7 @@ impl fmt::Display for GradientBuilderError {
                         .join(", ")
                 )
             }
+            Self::InvalidCssGradient => f.write_str("invalid css gradient"),
             Self::WrongDomainCount => f.write_str("wrong domain count"),
             Self::WrongDomain => f.write_str("wrong domain"),
         }
@@ -77,6 +79,7 @@ impl error::Error for GradientBuilderError {}
 pub struct GradientBuilder {
     colors: Vec<Color>,
     pos: Vec<f32>,
+    css: Option<String>,
     pub(crate) mode: BlendMode,
     invalid_html_colors: Vec<String>,
 }
@@ -87,6 +90,7 @@ impl GradientBuilder {
         Self {
             colors: Vec::new(),
             pos: Vec::new(),
+            css: None,
             mode: BlendMode::Rgb,
             invalid_html_colors: Vec::new(),
         }
@@ -137,6 +141,11 @@ impl GradientBuilder {
         self
     }
 
+    pub fn css<'a>(&'a mut self, s: &str) -> &'a mut Self {
+        self.css = Some(s.to_owned());
+        self
+    }
+
     pub fn build<'a, T>(&'a self) -> Result<T, T::Error>
     where
         T: TryFrom<&'a Self, Error = GradientBuilderError>,
@@ -179,6 +188,16 @@ impl GradientBuilder {
             linspace(self.pos[0], self.pos[1], colors.len())
         } else {
             return Err(GradientBuilderError::WrongDomainCount);
+        };
+
+        let (colors, pos) = if let Some(css) = &self.css {
+            if let Some((colors, pos)) = css_gradient::parse(css, self.mode) {
+                (colors, pos)
+            } else {
+                return Err(GradientBuilderError::InvalidCssGradient);
+            }
+        } else {
+            (colors, pos)
         };
 
         Ok((colors, pos))

@@ -1,4 +1,4 @@
-use colorgrad::{GradientBuilder, LinearGradient};
+use colorgrad::{BlendMode, Color, Gradient, GradientBuilder, LinearGradient};
 
 #[test]
 fn builder() {

@@ -168,6 +168,65 @@ fn domain() {
 }
 
 #[test]
+fn css_gradient() {
+    let test_data = [
+        (
+            "red, lime 75%, blue",
+            (0.0, 1.0),
+            vec![
+                (0.0, [255, 0, 0, 255]),
+                (0.75, [0, 255, 0, 255]),
+                (1.0, [0, 0, 255, 255]),
+            ],
+        ),
+        (
+            "red 13%, lime, blue",
+            (0.0, 1.0),
+            vec![
+                (0.0, [255, 0, 0, 255]),
+                (0.13, [255, 0, 0, 255]),
+                (0.565, [0, 255, 0, 255]),
+                (1.0, [0, 0, 255, 255]),
+            ],
+        ),
+        (
+            "red, lime, blue 100",
+            (0.0, 100.0),
+            vec![
+                (0.0, [255, 0, 0, 255]),
+                (50.0, [0, 255, 0, 255]),
+                (100.0, [0, 0, 255, 255]),
+            ],
+        ),
+        (
+            "red -100, lime, blue 100",
+            (-100.0, 100.0),
+            vec![
+                (-100.0, [255, 0, 0, 255]),
+                (0.0, [0, 255, 0, 255]),
+                (100.0, [0, 0, 255, 255]),
+            ],
+        ),
+        (
+            "red, lime -10, blue 15, gold",
+            (0.0, 15.0),
+            vec![(0.0, [255, 0, 0, 255]), (15.0, [255, 215, 0, 255])],
+        ),
+    ];
+
+    for (s, domain, samples) in test_data {
+        let g = GradientBuilder::new()
+            .css(s)
+            .build::<LinearGradient>()
+            .unwrap();
+        assert_eq!(g.domain(), domain);
+        for (pos, rgba8) in samples {
+            assert_eq!(g.at(pos).to_rgba8(), rgba8);
+        }
+    }
+}
+
+#[test]
 fn colors() {
     let g = GradientBuilder::new()
         .html_colors(&["#f00", "#0f0", "#00f"])

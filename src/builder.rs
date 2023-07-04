@@ -79,9 +79,9 @@ impl error::Error for GradientBuilderError {}
 pub struct GradientBuilder {
     colors: Vec<Color>,
     pos: Vec<f32>,
-    css: Option<String>,
     pub(crate) mode: BlendMode,
     invalid_html_colors: Vec<String>,
+    invalid_css_gradient: bool,
 }
 
 impl GradientBuilder {
@@ -90,9 +90,9 @@ impl GradientBuilder {
         Self {
             colors: Vec::new(),
             pos: Vec::new(),
-            css: None,
             mode: BlendMode::Rgb,
             invalid_html_colors: Vec::new(),
+            invalid_css_gradient: false,
         }
     }
 
@@ -141,8 +141,25 @@ impl GradientBuilder {
         self
     }
 
+    /// Parse [CSS gradient](https://developer.mozilla.org/en-US/docs/Web/CSS/gradient/linear-gradient) format
+    ///
+    /// ```
+    /// # use std::error::Error;
+    /// # fn main() -> Result<(), Box<dyn Error>> {
+    /// let grad = colorgrad::GradientBuilder::new()
+    ///     .css("#fff, 75%, blue")
+    ///     .build::<colorgrad::LinearGradient>()?;
+    /// # Ok(())
+    /// # }
+    /// ```
     pub fn css<'a>(&'a mut self, s: &str) -> &'a mut Self {
-        self.css = Some(s.to_owned());
+        if let Some((colors, pos)) = css_gradient::parse(s, self.mode) {
+            self.invalid_css_gradient = false;
+            self.colors = colors;
+            self.pos = pos;
+        } else {
+            self.invalid_css_gradient = true;
+        }
         self
     }
 
@@ -159,6 +176,10 @@ impl GradientBuilder {
             return Err(GradientBuilderError::InvalidHtmlColor(
                 self.invalid_html_colors.clone(),
             ));
+        }
+
+        if self.invalid_css_gradient {
+            return Err(GradientBuilderError::InvalidCssGradient);
         }
 
         let colors = if self.colors.is_empty() {
@@ -188,16 +209,6 @@ impl GradientBuilder {
             linspace(self.pos[0], self.pos[1], colors.len())
         } else {
             return Err(GradientBuilderError::WrongDomainCount);
-        };
-
-        let (colors, pos) = if let Some(css) = &self.css {
-            if let Some((colors, pos)) = css_gradient::parse(css, self.mode) {
-                (colors, pos)
-            } else {
-                return Err(GradientBuilderError::InvalidCssGradient);
-            }
-        } else {
-            (colors, pos)
         };
 
         Ok((colors, pos))

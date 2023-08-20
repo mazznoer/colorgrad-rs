@@ -95,6 +95,15 @@ let g = colorgrad::GradientBuilder::new()
 ```
 ![img](docs/images/custom-css-colors.png)
 
+### Using CSS Gradient Format
+
+```rust
+let g = colorgrad::GradientBuilder::new()
+    .css("blue, cyan, gold, purple 70%, tomato 70%, 90%, #ff0")
+    .build::<colorgrad::CatmullRomGradient>()?;
+```
+![img](docs/images/css-gradient.png)
+
 ### Domain & Color Position
 
 Default domain is [0..1].
@@ -162,7 +171,7 @@ assert_eq!(g.domain(), (15.0, 80.0));
 let g = colorgrad::GradientBuilder::new()
     .html_colors(&["#FFF", "#00F"])
     .mode(colorgrad::BlendMode::Rgb)
-    .build::<LinearGradient>()?;
+    .build::<colorgrad::LinearGradient>()?;
 ```
 
 ![Blending Modes](docs/images/blend-modes.png)
@@ -172,7 +181,7 @@ let g = colorgrad::GradientBuilder::new()
 ```rust
 let g = colorgrad::GradientBuilder::new()
     .html_colors(&["#C41189", "#00BFFF", "#FFD700"])
-    .build::<BasisGradient>()?;
+    .build::<colorgrad::BasisGradient>()?;
 ```
 
 ![Interpolation Modes](docs/images/interpolation-modes.png)

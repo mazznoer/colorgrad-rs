@@ -174,7 +174,7 @@ let g = colorgrad::GradientBuilder::new()
     .build::<colorgrad::LinearGradient>()?;
 ```
 
-![Blending Modes](docs/images/blend-modes.png)
+![Blending Modes](docs/images/blend-modes-v0.7.png)
 
 ### Interpolation Mode
 

@@ -257,6 +257,7 @@ preset!(&["#440154", "#482777", "#3f4a8a", "#31678e", "#26838f", "#1f9d8a", "#6c
 preset!(&["#000004", "#170b3a", "#420a68", "#6b176e", "#932667", "#bb3654", "#dd513a", "#f3771a", "#fca50a", "#f6d644", "#fcffa4"]; inferno);
 preset!(&["#000004", "#140e37", "#3b0f70", "#641a80", "#8c2981", "#b63679", "#de4968", "#f66f5c", "#fe9f6d", "#fece91", "#fcfdbf"]; magma);
 preset!(&["#0d0887", "#42039d", "#6a00a8", "#900da3", "#b12a90", "#cb4678", "#e16462", "#f1834b", "#fca636", "#fccd25", "#f0f921"]; plasma);
+preset!(&["#ff3800", "#ffad5e", "#ffbb78", "#ffd5ad", "#ffe1c6", "#ffeee3", "#fff8fb", "#cfddff", "#9fbfff"]; blackbody);
 preset!(&["#f7fcfd", "#e5f5f9", "#ccece6", "#99d8c9", "#66c2a4", "#41ae76", "#238b45", "#006d2c", "#00441b"]; bu_gn);
 preset!(&["#f7fcfd", "#e0ecf4", "#bfd3e6", "#9ebcda", "#8c96c6", "#8c6bb1", "#88419d", "#810f7c", "#4d004b"]; bu_pu);
 preset!(&["#f7fcf0", "#e0f3db", "#ccebc5", "#a8ddb5", "#7bccc4", "#4eb3d3", "#2b8cbe", "#0868ac", "#084081"]; gn_bu);

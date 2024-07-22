@@ -224,6 +224,19 @@ fn css_gradient() {
             assert_eq!(g.at(pos).to_rgba8(), rgba8);
         }
     }
+
+    let invalid_css = [
+        "",
+        " ",
+        "0, red, lime",
+        "red, lime, 100%",
+        "deeppink, 0.4, 0.9, pink",
+        "0%, 100%",
+    ];
+    for s in invalid_css {
+        let g = GradientBuilder::new().css(s).build::<LinearGradient>();
+        assert!(g.is_err());
+    }
 }
 
 #[test]

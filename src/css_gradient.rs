@@ -1,5 +1,6 @@
 use crate::{BlendMode, Color};
 
+#[allow(clippy::question_mark)]
 pub(crate) fn parse(s: &str, mode: BlendMode) -> Option<(Vec<Color>, Vec<f32>)> {
     let mut stops = Vec::new();
 
@@ -13,7 +14,9 @@ pub(crate) fn parse(s: &str, mode: BlendMode) -> Option<(Vec<Color>, Vec<f32>)> 
         return None;
     }
 
-    stops[0].0.as_ref()?;
+    if stops[0].0.is_none() {
+        return None;
+    }
 
     for i in 0..stops.len() {
         if i == 0 && stops[i].1.is_none() {
@@ -25,10 +28,13 @@ pub(crate) fn parse(s: &str, mode: BlendMode) -> Option<(Vec<Color>, Vec<f32>)> 
             if stops[i].1.is_none() {
                 stops[i].1 = Some(1.0);
             }
-            continue;
+            break;
         }
 
         if stops[i].0.is_none() {
+            if stops[i + 1].0.is_none() {
+                return None;
+            }
             let col1 = stops[i - 1].0.as_ref().unwrap();
             let col2 = stops[i + 1].0.as_ref().unwrap();
             let col = match mode {
@@ -63,6 +69,12 @@ pub(crate) fn parse(s: &str, mode: BlendMode) -> Option<(Vec<Color>, Vec<f32>)> 
 
         if i > 0 {
             stops[i].1 = Some(stops[i].1.unwrap().max(stops[i - 1].1.unwrap()));
+        }
+    }
+
+    for (col, pos) in &stops {
+        if col.is_none() || pos.is_none() {
+            return None;
         }
     }
 

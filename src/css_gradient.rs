@@ -1,5 +1,20 @@
 use crate::{BlendMode, Color};
 
+struct Stop {
+    col: Option<Color>,
+    pos: Option<f32>,
+}
+
+impl Stop {
+    fn new(col: Option<Color>, pos: Option<f32>) -> Self {
+        Self { col, pos }
+    }
+
+    fn valid(&self) -> bool {
+        self.col.is_some() && self.pos.is_some()
+    }
+}
+
 #[allow(clippy::question_mark)]
 pub(crate) fn parse(s: &str, mode: BlendMode) -> Option<(Vec<Color>, Vec<f32>)> {
     let mut stops = Vec::new();
@@ -14,29 +29,29 @@ pub(crate) fn parse(s: &str, mode: BlendMode) -> Option<(Vec<Color>, Vec<f32>)> 
         return None;
     }
 
-    if stops[0].0.is_none() {
+    if stops[0].col.is_none() {
         return None;
     }
 
     for i in 0..stops.len() {
-        if i == 0 && stops[i].1.is_none() {
-            stops[i].1 = Some(0.0);
+        if i == 0 && stops[i].pos.is_none() {
+            stops[i].pos = Some(0.0);
             continue;
         }
 
         if i == stops.len() - 1 {
-            if stops[i].1.is_none() {
-                stops[i].1 = Some(1.0);
+            if stops[i].pos.is_none() {
+                stops[i].pos = Some(1.0);
             }
             break;
         }
 
-        if stops[i].0.is_none() {
-            if stops[i + 1].0.is_none() {
+        if stops[i].col.is_none() {
+            if stops[i + 1].col.is_none() {
                 return None;
             }
-            let col1 = stops[i - 1].0.as_ref().unwrap();
-            let col2 = stops[i + 1].0.as_ref().unwrap();
+            let col1 = stops[i - 1].col.as_ref().unwrap();
+            let col2 = stops[i + 1].col.as_ref().unwrap();
             let col = match mode {
                 BlendMode::Rgb => col1.interpolate_rgb(col2, 0.5),
                 BlendMode::LinearRgb => col1.interpolate_linear_rgb(col2, 0.5),
@@ -44,55 +59,58 @@ pub(crate) fn parse(s: &str, mode: BlendMode) -> Option<(Vec<Color>, Vec<f32>)> 
                 #[cfg(feature = "lab")]
                 BlendMode::Lab => col1.interpolate_lab(col2, 0.5),
             };
-            stops[i].0 = Some(col);
+            stops[i].col = Some(col);
         }
     }
 
-    if stops[0].1.unwrap() > 0.0 {
-        stops.insert(0, (stops[0].0.clone(), Some(0.0)));
+    if stops[0].pos.unwrap() > 0.0 {
+        stops.insert(0, Stop::new(stops[0].col.clone(), Some(0.0)));
     }
 
-    if stops[stops.len() - 1].1.unwrap() < 1.0 {
-        stops.push((stops[stops.len() - 1].0.clone(), Some(1.0)));
+    if stops[stops.len() - 1].pos.unwrap() < 1.0 {
+        stops.push(Stop::new(stops[stops.len() - 1].col.clone(), Some(1.0)));
     }
 
     for i in 0..stops.len() {
-        if stops[i].1.is_none() {
+        if stops[i].pos.is_none() {
             for j in (i + 1)..stops.len() {
-                if let Some(next) = stops[j].1 {
-                    let prev = stops[i - 1].1.unwrap();
-                    stops[i].1 = Some(prev + (next - prev) / (j - i + 1) as f32);
+                if let Some(next) = stops[j].pos {
+                    let prev = stops[i - 1].pos.unwrap();
+                    stops[i].pos = Some(prev + (next - prev) / (j - i + 1) as f32);
                     break;
                 }
             }
         }
 
         if i > 0 {
-            stops[i].1 = Some(stops[i].1.unwrap().max(stops[i - 1].1.unwrap()));
+            stops[i].pos = Some(stops[i].pos.unwrap().max(stops[i - 1].pos.unwrap()));
         }
     }
 
-    for (col, pos) in &stops {
-        if col.is_none() || pos.is_none() {
+    for stop in &stops {
+        if !stop.valid() {
             return None;
         }
     }
 
     let colors = stops
         .iter()
-        .map(|(c, _)| c.clone().unwrap())
+        .map(|stop| stop.col.clone().unwrap())
         .collect::<Vec<_>>();
-    let pos = stops.iter().map(|(_, p)| p.unwrap()).collect::<Vec<_>>();
-    Some((colors, pos))
+    let positions = stops
+        .iter()
+        .map(|stop| stop.pos.unwrap())
+        .collect::<Vec<_>>();
+    Some((colors, positions))
 }
 
-fn parse_stop(stops: &mut Vec<(Option<Color>, Option<f32>)>, stop: &[&str]) -> bool {
+fn parse_stop(stops: &mut Vec<Stop>, stop: &[&str]) -> bool {
     match stop.len() {
         1 => {
             if let Ok(c) = stop[0].parse::<Color>() {
-                stops.push((Some(c), None));
+                stops.push(Stop::new(Some(c), None));
             } else if let Some(pos) = parse_pos(stop[0]) {
-                stops.push((None, Some(pos)));
+                stops.push(Stop::new(None, Some(pos)));
             } else {
                 return false;
             }
@@ -110,7 +128,7 @@ fn parse_stop(stops: &mut Vec<(Option<Color>, Option<f32>)>, stop: &[&str]) -> b
                 return false;
             };
 
-            stops.push((col, p));
+            stops.push(Stop::new(col, p));
         }
         3 => {
             let col = if let Ok(c) = stop[0].parse::<Color>() {
@@ -131,8 +149,8 @@ fn parse_stop(stops: &mut Vec<(Option<Color>, Option<f32>)>, stop: &[&str]) -> b
                 return false;
             };
 
-            stops.push((col.clone(), p1));
-            stops.push((col, p2));
+            stops.push(Stop::new(col.clone(), p1));
+            stops.push(Stop::new(col, p2));
         }
         _ => {
             return false;

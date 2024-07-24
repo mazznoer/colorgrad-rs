@@ -179,7 +179,7 @@ pub trait Gradient {
 
         linspace(dmin, dmax, n)
             .iter()
-            .map(|&t| self.at(t))
+            .map(|&t| self.at(t).clamp())
             .collect()
     }
 

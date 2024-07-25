@@ -25,10 +25,12 @@ fn custom_gradient() {
     assert_eq!(g.at(1.0).to_hex_string(), "#0000ff");
 
     // Custom colors #2
+    let cols1 = vec!["#00f", "#00ffff"];
+    let cols2 = vec!["lime".to_string()];
     let g = GradientBuilder::new()
-        .html_colors(&["#00f", "#00ffff"])
+        .html_colors(&cols1)
         .colors(&[Color::new(1.0, 1.0, 0.0, 0.5)])
-        .html_colors(&["lime"])
+        .html_colors(&cols2)
         .build::<LinearGradient>()
         .unwrap();
     let colors = g.colors(4);

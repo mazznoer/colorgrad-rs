@@ -118,9 +118,12 @@ impl GradientBuilder {
     /// * `hsl()` and `hsla()`
     /// * `hwb()`
     /// * `hsv()` - not in CSS standard.
-    pub fn html_colors<'a>(&'a mut self, html_colors: &[&str]) -> &'a mut Self {
+    pub fn html_colors<'a, S: AsRef<str> + ToString>(
+        &'a mut self,
+        html_colors: &[S],
+    ) -> &'a mut Self {
         for s in html_colors {
-            if let Ok(c) = csscolorparser::parse(s) {
+            if let Ok(c) = csscolorparser::parse(s.as_ref()) {
                 self.colors.push(c);
             } else {
                 self.invalid_html_colors.push(s.to_string());

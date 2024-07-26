@@ -237,8 +237,27 @@ impl GradientBuilder {
         self.colors.clear();
         self.positions.clear();
 
-        self.colors.extend(colors);
-        self.positions.extend(positions);
+        let mut prev = positions[0];
+        let last_idx = positions.len() - 1;
+
+        for (i, (pos, col)) in positions.iter().zip(colors.iter()).enumerate() {
+            let next = if i == last_idx {
+                positions[last_idx]
+            } else {
+                positions[i + 1]
+            };
+            if (pos - prev) + (next - pos) < f32::EPSILON {
+                // skip
+            } else {
+                self.positions.push(*pos);
+                self.colors.push(col.clone());
+            }
+            prev = *pos;
+        }
+
+        if self.colors.len() < 2 {
+            return Err(GradientBuilderError::WrongDomain);
+        }
 
         self.clean = true;
         Ok(())

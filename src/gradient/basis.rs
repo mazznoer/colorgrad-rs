@@ -38,13 +38,13 @@ pub struct BasisGradient {
 }
 
 impl BasisGradient {
-    pub(crate) fn new(colors: Vec<Color>, positions: Vec<f32>, mode: BlendMode) -> Self {
+    pub(crate) fn new(colors: &[Color], positions: Vec<f32>, mode: BlendMode) -> Self {
         let dmin = positions[0];
         let dmax = positions[positions.len() - 1];
         let first_color = colors[0].clone();
         let last_color = colors[colors.len() - 1].clone();
         Self {
-            values: convert_colors(&colors, mode),
+            values: convert_colors(colors, mode),
             positions,
             domain: (dmin, dmax),
             mode,
@@ -125,11 +125,11 @@ impl Gradient for BasisGradient {
     }
 }
 
-impl TryFrom<&GradientBuilder> for BasisGradient {
+impl TryFrom<&mut GradientBuilder> for BasisGradient {
     type Error = GradientBuilderError;
 
-    fn try_from(gb: &GradientBuilder) -> Result<Self, Self::Error> {
-        let (colors, positions) = gb.build_()?;
-        Ok(Self::new(colors, positions, gb.mode))
+    fn try_from(gb: &mut GradientBuilder) -> Result<Self, Self::Error> {
+        gb.prepare_build()?;
+        Ok(Self::new(&gb.colors, gb.positions.clone(), gb.mode))
     }
 }

@@ -71,14 +71,14 @@ fn to_catmull_segments(values: &[f32]) -> Vec<[f32; 4]> {
 }
 
 impl CatmullRomGradient {
-    pub(crate) fn new(colors: Vec<Color>, positions: Vec<f32>, mode: BlendMode) -> Self {
+    pub(crate) fn new(colors: &[Color], positions: Vec<f32>, mode: BlendMode) -> Self {
         let n = colors.len();
         let mut a = Vec::with_capacity(n);
         let mut b = Vec::with_capacity(n);
         let mut c = Vec::with_capacity(n);
         let mut d = Vec::with_capacity(n);
 
-        for col in convert_colors(&colors, mode) {
+        for col in convert_colors(colors, mode) {
             a.push(col[0]);
             b.push(col[1]);
             c.push(col[2]);
@@ -169,11 +169,11 @@ impl Gradient for CatmullRomGradient {
     }
 }
 
-impl TryFrom<&GradientBuilder> for CatmullRomGradient {
+impl TryFrom<&mut GradientBuilder> for CatmullRomGradient {
     type Error = GradientBuilderError;
 
-    fn try_from(gb: &GradientBuilder) -> Result<Self, Self::Error> {
-        let (colors, positions) = gb.build_()?;
-        Ok(Self::new(colors, positions, gb.mode))
+    fn try_from(gb: &mut GradientBuilder) -> Result<Self, Self::Error> {
+        gb.prepare_build()?;
+        Ok(Self::new(&gb.colors, gb.positions.clone(), gb.mode))
     }
 }

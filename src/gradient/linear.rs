@@ -23,12 +23,12 @@ pub struct LinearGradient {
 }
 
 impl LinearGradient {
-    pub(crate) fn new(colors: Vec<Color>, positions: Vec<f32>, mode: BlendMode) -> Self {
+    pub(crate) fn new(colors: &[Color], positions: &[f32], mode: BlendMode) -> Self {
         let dmin = positions[0];
         let dmax = positions[positions.len() - 1];
         let first_color = colors[0].clone();
         let last_color = colors[colors.len() - 1].clone();
-        let colors = convert_colors(&colors, mode);
+        let colors = convert_colors(colors, mode);
         Self {
             stops: positions
                 .iter()
@@ -92,12 +92,12 @@ impl Gradient for LinearGradient {
     }
 }
 
-impl TryFrom<&GradientBuilder> for LinearGradient {
+impl TryFrom<&mut GradientBuilder> for LinearGradient {
     type Error = GradientBuilderError;
 
-    fn try_from(gb: &GradientBuilder) -> Result<Self, Self::Error> {
-        let (colors, positions) = gb.build_()?;
-        Ok(Self::new(colors, positions, gb.mode))
+    fn try_from(gb: &mut GradientBuilder) -> Result<Self, Self::Error> {
+        gb.prepare_build()?;
+        Ok(Self::new(&gb.colors, &gb.positions, gb.mode))
     }
 }
 

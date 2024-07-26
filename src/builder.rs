@@ -77,11 +77,12 @@ impl error::Error for GradientBuilderError {}
 /// ```
 #[derive(Debug, Clone)]
 pub struct GradientBuilder {
-    colors: Vec<Color>,
-    pos: Vec<f32>,
+    pub(crate) colors: Vec<Color>,
+    pub(crate) positions: Vec<f32>,
     pub(crate) mode: BlendMode,
     invalid_html_colors: Vec<String>,
     invalid_css_gradient: bool,
+    clean: bool,
 }
 
 impl GradientBuilder {
@@ -89,10 +90,11 @@ impl GradientBuilder {
     pub fn new() -> Self {
         Self {
             colors: Vec::new(),
-            pos: Vec::new(),
+            positions: Vec::new(),
             mode: BlendMode::Rgb,
             invalid_html_colors: Vec::new(),
             invalid_css_gradient: false,
+            clean: false,
         }
     }
 
@@ -101,6 +103,7 @@ impl GradientBuilder {
         for c in colors {
             self.colors.push(c.clone());
         }
+        self.clean = false;
         self
     }
 
@@ -129,12 +132,14 @@ impl GradientBuilder {
                 self.invalid_html_colors.push(s.to_string());
             }
         }
+        self.clean = false;
         self
     }
 
     /// Set the gradient domain and/or color position.
-    pub fn domain<'a>(&'a mut self, pos: &[f32]) -> &'a mut Self {
-        self.pos = pos.to_vec();
+    pub fn domain<'a>(&'a mut self, positions: &[f32]) -> &'a mut Self {
+        self.positions = positions.to_vec();
+        self.clean = false;
         self
     }
 
@@ -156,25 +161,40 @@ impl GradientBuilder {
     /// # }
     /// ```
     pub fn css<'a>(&'a mut self, s: &str) -> &'a mut Self {
-        if let Some((colors, pos)) = css_gradient::parse(s, self.mode) {
+        if let Some((colors, positions)) = css_gradient::parse(s, self.mode) {
             self.invalid_css_gradient = false;
             self.colors = colors;
-            self.pos = pos;
+            self.positions = positions;
         } else {
             self.invalid_css_gradient = true;
         }
+        self.clean = false;
         self
     }
 
-    pub fn build<'a, T>(&'a self) -> Result<T, T::Error>
+    #[doc(hidden)]
+    pub fn get_colors(&self) -> &[Color] {
+        &self.colors
+    }
+
+    #[doc(hidden)]
+    pub fn get_positions(&self) -> &[f32] {
+        &self.positions
+    }
+
+    pub fn build<'a, T>(&'a mut self) -> Result<T, T::Error>
     where
-        T: TryFrom<&'a Self, Error = GradientBuilderError>,
+        T: TryFrom<&'a mut Self, Error = GradientBuilderError>,
     {
         T::try_from(self)
     }
 
     /// Build the gradient
-    pub(crate) fn build_(&self) -> Result<(Vec<Color>, Vec<f32>), GradientBuilderError> {
+    pub(crate) fn prepare_build(&mut self) -> Result<(), GradientBuilderError> {
+        if self.clean {
+            return Ok(());
+        }
+
         if !self.invalid_html_colors.is_empty() {
             return Err(GradientBuilderError::InvalidHtmlColor(
                 self.invalid_html_colors.clone(),
@@ -196,24 +216,31 @@ impl GradientBuilder {
             self.colors.to_vec()
         };
 
-        let pos = if self.pos.is_empty() {
+        let positions = if self.positions.is_empty() {
             linspace(0.0, 1.0, colors.len())
-        } else if self.pos.len() == colors.len() {
-            for p in self.pos.windows(2) {
+        } else if self.positions.len() == colors.len() {
+            for p in self.positions.windows(2) {
                 if p[0] > p[1] {
                     return Err(GradientBuilderError::WrongDomain);
                 }
             }
-            self.pos.to_vec()
-        } else if self.pos.len() == 2 {
-            if self.pos[0] >= self.pos[1] {
+            self.positions.to_vec()
+        } else if self.positions.len() == 2 {
+            if self.positions[0] >= self.positions[1] {
                 return Err(GradientBuilderError::WrongDomain);
             }
-            linspace(self.pos[0], self.pos[1], colors.len())
+            linspace(self.positions[0], self.positions[1], colors.len())
         } else {
             return Err(GradientBuilderError::WrongDomainCount);
         };
 
-        Ok((colors, pos))
+        self.colors.clear();
+        self.positions.clear();
+
+        self.colors.extend(colors);
+        self.positions.extend(positions);
+
+        self.clean = true;
+        Ok(())
     }
 }

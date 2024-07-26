@@ -219,7 +219,7 @@ fn build_preset(html_colors: &[&str]) -> BasisGradient {
         .map(|s| csscolorparser::parse(s).unwrap())
         .collect::<Vec<_>>();
     let pos = linspace(0.0, 1.0, colors.len());
-    BasisGradient::new(colors, pos, BlendMode::Rgb)
+    BasisGradient::new(&colors, pos, BlendMode::Rgb)
 }
 
 macro_rules! preset {

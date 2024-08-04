@@ -5,16 +5,16 @@ use crate::{css_gradient, linspace, BlendMode, Color};
 
 #[derive(Debug, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum GradientBuilderError {
-    InvalidHtmlColor(Vec<String>),
+    InvalidHtmlColors(Vec<String>),
     InvalidCssGradient,
-    WrongDomainCount,
-    WrongDomain,
+    InvalidDomain,
+    InvalidStops,
 }
 
 impl fmt::Display for GradientBuilderError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            Self::InvalidHtmlColor(ref colors) => {
+            Self::InvalidHtmlColors(ref colors) => {
                 write!(
                     f,
                     "invalid html colors: {}",
@@ -26,8 +26,8 @@ impl fmt::Display for GradientBuilderError {
                 )
             }
             Self::InvalidCssGradient => f.write_str("invalid css gradient"),
-            Self::WrongDomainCount => f.write_str("wrong domain count"),
-            Self::WrongDomain => f.write_str("wrong domain"),
+            Self::InvalidDomain => f.write_str("invalid domain"),
+            Self::InvalidStops => f.write_str("invalid stops"),
         }
     }
 }
@@ -196,7 +196,7 @@ impl GradientBuilder {
         }
 
         if !self.invalid_html_colors.is_empty() {
-            return Err(GradientBuilderError::InvalidHtmlColor(
+            return Err(GradientBuilderError::InvalidHtmlColors(
                 self.invalid_html_colors.clone(),
             ));
         }
@@ -221,17 +221,17 @@ impl GradientBuilder {
         } else if self.positions.len() == colors.len() {
             for p in self.positions.windows(2) {
                 if p[0] > p[1] {
-                    return Err(GradientBuilderError::WrongDomain);
+                    return Err(GradientBuilderError::InvalidDomain);
                 }
             }
             self.positions.to_vec()
         } else if self.positions.len() == 2 {
             if self.positions[0] >= self.positions[1] {
-                return Err(GradientBuilderError::WrongDomain);
+                return Err(GradientBuilderError::InvalidDomain);
             }
             linspace(self.positions[0], self.positions[1], colors.len())
         } else {
-            return Err(GradientBuilderError::WrongDomainCount);
+            return Err(GradientBuilderError::InvalidDomain);
         };
 
         self.colors.clear();
@@ -256,7 +256,7 @@ impl GradientBuilder {
         }
 
         if self.colors.len() < 2 {
-            return Err(GradientBuilderError::WrongDomain);
+            return Err(GradientBuilderError::InvalidStops);
         }
 
         self.clean = true;

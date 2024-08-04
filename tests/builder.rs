@@ -1,4 +1,6 @@
-use colorgrad::{BlendMode, Color, Gradient, GradientBuilder, LinearGradient};
+use colorgrad::{
+    BlendMode, Color, Gradient, GradientBuilder, GradientBuilderError, LinearGradient,
+};
 
 #[test]
 fn builder() {
@@ -35,28 +37,52 @@ fn builder_error() {
         .html_colors(&["#777", "bloodred", "#bbb", "#zzz"])
         .build::<LinearGradient>();
     assert_eq!(
+        g.as_ref().unwrap_err(),
+        &GradientBuilderError::InvalidHtmlColors(vec!["bloodred".to_string(), "#zzz".to_string()])
+    );
+    assert_eq!(
         g.unwrap_err().to_string(),
         "invalid html colors: 'bloodred', '#zzz'"
     );
 
-    // Wrong domain #1
+    // Invalid domain
     let g = GradientBuilder::new()
         .html_colors(&["#777", "gold", "#bbb", "#f0f"])
         .domain(&[0.0, 0.75, 1.0])
         .build::<LinearGradient>();
-    assert_eq!(g.unwrap_err().to_string(), "wrong domain count");
+    assert_eq!(g.unwrap_err(), GradientBuilderError::InvalidDomain);
 
-    // Wrong domain #2
+    // Invalid domain
     let g = GradientBuilder::new()
         .html_colors(&["#777", "gold", "#bbb", "#f0f"])
         .domain(&[0.0, 0.71, 0.7, 1.0])
         .build::<LinearGradient>();
-    assert_eq!(g.unwrap_err().to_string(), "wrong domain");
+    assert_eq!(g.unwrap_err(), GradientBuilderError::InvalidDomain);
 
-    // Wrong domain #3
+    // Invalid domain
     let g = GradientBuilder::new()
         .html_colors(&["#777", "gold", "#bbb", "#f0f"])
         .domain(&[1.0, 0.0])
         .build::<LinearGradient>();
-    assert_eq!(g.unwrap_err().to_string(), "wrong domain");
+    assert_eq!(g.unwrap_err(), GradientBuilderError::InvalidDomain);
+
+    // Invalid domain
+    let g = GradientBuilder::new()
+        .html_colors(&["#777", "#bbb"])
+        .domain(&[2.0, 1.0])
+        .build::<LinearGradient>();
+    assert_eq!(g.unwrap_err(), GradientBuilderError::InvalidDomain);
+
+    // Invalid CSS gradient
+    let g = GradientBuilder::new()
+        .css("#f00, 30%, 55%, #00f")
+        .build::<LinearGradient>();
+    assert_eq!(g.unwrap_err(), GradientBuilderError::InvalidCssGradient);
+
+    // Invalid stops
+    let g = GradientBuilder::new()
+        .html_colors(&["#777", "#f0f", "#f00"])
+        .domain(&[0.0, 0.0, 0.0])
+        .build::<LinearGradient>();
+    assert_eq!(g.unwrap_err(), GradientBuilderError::InvalidStops);
 }

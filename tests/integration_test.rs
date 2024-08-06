@@ -78,7 +78,7 @@ fn blend_modes() {
         .build::<LinearGradient>()
         .unwrap();
     assert_eq!(g.at(0.0).to_rgba8(), [255, 0, 0, 255]);
-    assert_eq!(g.at(0.5).to_rgba8(), [255, 255, 1, 255]);
+    assert_eq!(g.at(0.5).to_rgba8(), [255, 255, 0, 255]);
     assert_eq!(g.at(1.0).to_rgba8(), [0, 0, 255, 255]);
 }
 

@@ -21,8 +21,7 @@ exclude = [
 features = ["named-colors", "preset", "ggr", "lab"]
 
 [dependencies]
-#csscolorparser = { version = "0.6.2", default-features = false }
-csscolorparser = { git = "https://github.com/mazznoer/csscolorparser-rs.git", default-features = false }
+csscolorparser = { version = "0.7.0", default-features = false }
 
 [features]
 default = ["named-colors", "preset"]
@@ -32,8 +31,8 @@ preset = []
 ggr = []
 
 [dev-dependencies]
-criterion = { version = "0.4.0", features = ["html_reports"] }
-image = { version = "0.24.3", default-features = false, features = ["png"] }
+criterion = { version = "0.5.1", features = ["html_reports"] }
+image = { version = "0.25.2", default-features = false, features = ["png"] }
 
 [[example]]
 name = "gradients"

@@ -1,6 +1,8 @@
 # Changelog
 
-## [Unreleased](https://github.com/mazznoer/colorgrad-rs/compare/v0.6.2...HEAD)
+## [Unreleased](https://github.com/mazznoer/colorgrad-rs/compare/v0.7.0...HEAD)
+
+## [0.7.0](https://github.com/mazznoer/colorgrad-rs/compare/v0.6.2...v0.7.0)
 
 ### Added
 

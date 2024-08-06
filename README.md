@@ -5,13 +5,8 @@
 <a href="https://github.com/mazznoer/colorgrad-rs"><img alt="License" src="https://img.shields.io/crates/l/colorgrad"></a>
 <a href="https://crates.io/crates/colorgrad"><img alt="crates.io" src="https://img.shields.io/crates/v/colorgrad.svg"></a>
 <a href="https://docs.rs/colorgrad"><img alt="Documentation" src="https://docs.rs/colorgrad/badge.svg"></a>
-<a href="https://github.com/mazznoer/colorgrad-rs/actions"><img alt="Build Status" src="https://github.com/mazznoer/colorgrad-rs/workflows/Rust/badge.svg"></a>
-<a href="https://codecov.io/gh/mazznoer/colorgrad-rs"><img alt="codecov" src="https://codecov.io/gh/mazznoer/colorgrad-rs/branch/master/graph/badge.svg"></a>
+<a href="https://github.com/mazznoer/colorgrad-rs/actions"><img alt="Build Status" src="https://github.com/mazznoer/colorgrad-rs/actions/workflows/rust.yml/badge.svg"></a>
 <a href="https://crates.io/crates/colorgrad"><img alt="Total Downloads" src="https://img.shields.io/crates/d/colorgrad.svg"></a>
-</p>
-
-<p align="center">
-<strong style="color:#ff0000;">:bangbang: Documentation for colorgrad v0.7 (unreleased) :bangbang:</strong>
 </p>
 
 <p align="center">

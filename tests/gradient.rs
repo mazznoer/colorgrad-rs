@@ -1,5 +1,8 @@
 use colorgrad::{Gradient, GradientBuilder, LinearGradient};
 
+mod utils;
+use utils::*;
+
 #[test]
 fn spread_inside_domain() {
     let g = GradientBuilder::new()
@@ -90,4 +93,48 @@ fn spread_reflect() {
     assert_eq!(g.reflect_at(2.1).to_hex_string(), "#191919");
     assert_eq!(g.reflect_at(2.5).to_hex_string(), "#808080");
     assert_eq!(g.reflect_at(2.9).to_hex_string(), "#e6e6e6");
+}
+
+#[test]
+fn colors() {
+    let g = GradientBuilder::new()
+        .html_colors(&["#f00", "#0f0", "#00f"])
+        .build::<LinearGradient>()
+        .unwrap();
+
+    assert_eq!(g.domain(), (0.0, 1.0));
+
+    assert_eq!(g.colors(0).len(), 0);
+
+    assert_eq!(colors2hex(&g.colors(1)), &["#ff0000",]);
+
+    assert_eq!(colors2hex(&g.colors(2)), &["#ff0000", "#0000ff",]);
+
+    assert_eq!(
+        colors2hex(&g.colors(3)),
+        &["#ff0000", "#00ff00", "#0000ff",]
+    );
+
+    assert_eq!(
+        colors2hex(&g.colors(5)),
+        &["#ff0000", "#808000", "#00ff00", "#008080", "#0000ff",]
+    );
+
+    let g = GradientBuilder::new()
+        .html_colors(&["#f00", "#0f0", "#00f"])
+        .domain(&[-1.0, 1.0])
+        .build::<LinearGradient>()
+        .unwrap();
+
+    assert_eq!(g.domain(), (-1.0, 1.0));
+
+    assert_eq!(
+        colors2hex(&g.colors(3)),
+        &["#ff0000", "#00ff00", "#0000ff",]
+    );
+
+    assert_eq!(
+        colors2hex(&g.colors(5)),
+        &["#ff0000", "#808000", "#00ff00", "#008080", "#0000ff",]
+    );
 }

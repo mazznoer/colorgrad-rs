@@ -16,7 +16,7 @@ fn basis(t1: f32, v0: f32, v1: f32, v2: f32, v3: f32) -> f32 {
         / 6.0
 }
 
-/// ```
+/// ```ignore
 /// # use std::error::Error;
 /// use colorgrad::Gradient;
 ///

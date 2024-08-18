@@ -3,7 +3,7 @@ use colorgrad::{Gradient, GradientBuilder, LinearGradient};
 #[test]
 fn sharp_gradient() {
     let grad = GradientBuilder::new()
-        .html_colors(&["red", "lime", "blue"])
+        .html_colors(&["#f00", "#0f0", "#00f"])
         .build::<LinearGradient>()
         .unwrap();
 
@@ -33,7 +33,7 @@ fn sharp_gradient() {
     assert_eq!(g3.at(f32::NAN).to_rgba8(), [0, 0, 0, 255]);
 
     let grad = GradientBuilder::new()
-        .html_colors(&["red", "lime", "blue"])
+        .html_colors(&["#f00", "#0f0", "#00f"])
         .domain(&[-1.0, 1.0])
         .build::<LinearGradient>()
         .unwrap();

@@ -35,8 +35,20 @@ criterion = { version = "0.5.1", features = ["html_reports"] }
 image = { version = "0.25.2", default-features = false, features = ["png"] }
 
 [[example]]
+name = "basic"
+required-features = ["preset"]
+
+[[example]]
 name = "gradients"
 required-features = ["lab", "preset", "ggr", "named-colors"]
+
+[[test]]
+name = "gradient_preset"
+required-features = ["preset"]
+
+[[test]]
+name = "builder"
+required-features = ["named-colors"]
 
 [[bench]]
 name = "custom_gradient"

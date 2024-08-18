@@ -1,6 +1,5 @@
 use colorgrad::Gradient;
 
-#[cfg(feature = "preset")]
 #[test]
 fn preset() {
     let g = colorgrad::preset::viridis();
@@ -34,7 +33,6 @@ fn preset() {
     assert_eq!(g.at(1.0).to_hex_string(), "#aff05b");
 }
 
-#[cfg(feature = "preset")]
 #[test]
 fn cyclic() {
     let g = colorgrad::preset::rainbow();

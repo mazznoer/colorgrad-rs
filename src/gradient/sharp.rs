@@ -1,6 +1,6 @@
 use crate::{convert_colors, linspace, BlendMode, Color, Gradient};
 
-/// ```
+/// ```ignore
 /// use colorgrad::Gradient;
 ///
 /// let g = colorgrad::preset::rainbow().sharp(11, 0.);

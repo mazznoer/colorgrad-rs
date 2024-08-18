@@ -59,7 +59,7 @@ impl error::Error for GradientBuilderError {}
 ///
 /// ## Using web color format string
 ///
-/// ```
+/// ```ignore
 /// # use std::error::Error;
 /// use colorgrad::Gradient;
 ///
@@ -155,7 +155,7 @@ impl GradientBuilder {
     /// # use std::error::Error;
     /// # fn main() -> Result<(), Box<dyn Error>> {
     /// let grad = colorgrad::GradientBuilder::new()
-    ///     .css("#fff, 75%, blue")
+    ///     .css("#fff, 75%, #00f")
     ///     .build::<colorgrad::LinearGradient>()?;
     /// # Ok(())
     /// # }

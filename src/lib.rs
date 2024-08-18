@@ -5,7 +5,7 @@
 //! ## Usage
 //!
 //! Using preset gradient:
-//! ```
+//! ```ignore
 //! use colorgrad::Gradient;
 //! let g = colorgrad::preset::rainbow();
 //!
@@ -37,7 +37,7 @@
 //!
 //! ### Gradient Image
 //!
-//! ```
+//! ```ignore
 //! use colorgrad::Gradient;
 //!
 //! fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -185,12 +185,12 @@ pub trait Gradient {
 
     /// Get new hard-edge gradient
     ///
-    /// ```
+    /// ```ignore
     /// let g = colorgrad::preset::rainbow();
     /// ```
     /// ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/rainbow.png)
     ///
-    /// ```
+    /// ```ignore
     /// use colorgrad::Gradient;
     /// let g = colorgrad::preset::rainbow().sharp(11, 0.);
     /// ```

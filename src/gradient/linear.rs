@@ -2,7 +2,7 @@ use std::convert::TryFrom;
 
 use crate::{convert_colors, BlendMode, Color, Gradient, GradientBuilder, GradientBuilderError};
 
-/// ```
+/// ```ignore
 /// # use std::error::Error;
 /// use colorgrad::Gradient;
 ///

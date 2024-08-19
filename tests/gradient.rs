@@ -138,3 +138,9 @@ fn colors() {
         &["#ff0000", "#808000", "#00ff00", "#008080", "#0000ff",]
     );
 }
+
+#[test]
+fn box_clone() {
+    let g: Box<dyn Gradient> = Box::new(GradientBuilder::new().build::<LinearGradient>().unwrap());
+    let _: Box<dyn Gradient> = g.clone();
+}

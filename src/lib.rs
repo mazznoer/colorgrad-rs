@@ -150,7 +150,7 @@ pub enum BlendMode {
     Lab,
 }
 
-pub trait Gradient {
+pub trait Gradient: CloneGradient {
     /// Get color at certain position
     fn at(&self, t: f32) -> Color;
 
@@ -202,6 +202,25 @@ pub trait Gradient {
             vec![self.at(self.domain().0), self.at(self.domain().0)]
         };
         SharpGradient::new(&colors, self.domain(), smoothness)
+    }
+}
+
+pub trait CloneGradient {
+    fn clone_gradient(&self) -> Box<dyn Gradient>;
+}
+
+impl<T> CloneGradient for T
+where
+    T: Gradient + Clone + 'static,
+{
+    fn clone_gradient(&self) -> Box<dyn Gradient> {
+        Box::new(self.clone())
+    }
+}
+
+impl Clone for Box<dyn Gradient> {
+    fn clone(&self) -> Self {
+        self.clone_gradient()
     }
 }
 

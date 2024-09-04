@@ -4,15 +4,19 @@
 //!
 //! ## Usage
 //!
-//! Using preset gradient:
-//! ```ignore
-//! use colorgrad::Gradient;
-//! let g = colorgrad::preset::rainbow();
-//!
-//! assert_eq!(g.domain(), (0.0, 1.0)); // all preset gradients are in the domain [0..1]
-//! assert_eq!(g.at(0.5).to_rgba8(), [175, 240, 91, 255]);
-//! assert_eq!(g.at(0.5).to_hex_string(), "#aff05b");
-//! ```
+#![cfg_attr(
+    feature = "preset",
+    doc = r##"
+Using preset gradient:
+```
+use colorgrad::Gradient;
+let g = colorgrad::preset::rainbow();
+
+assert_eq!(g.domain(), (0.0, 1.0)); // all preset gradients are in the domain [0..1]
+assert_eq!(g.at(0.5).to_rgba8(), [175, 240, 91, 255]);
+assert_eq!(g.at(0.5).to_hex_string(), "#aff05b");
+```"##
+)]
 //!
 //! Custom gradient:
 //! ```
@@ -37,32 +41,37 @@
 //!
 //! ### Gradient Image
 //!
-//! ```ignore
-//! use colorgrad::Gradient;
-//!
-//! fn main() -> Result<(), Box<dyn std::error::Error>> {
-//!     let grad = colorgrad::GradientBuilder::new()
-//!         .html_colors(&["deeppink", "gold", "seagreen"])
-//!         .build::<colorgrad::CatmullRomGradient>()?;
-//!
-//!     let width = 1500;
-//!     let height = 70;
-//!
-//!     let mut imgbuf = image::ImageBuffer::new(width, height);
-//!
-//!     for (x, _, pixel) in imgbuf.enumerate_pixels_mut() {
-//!         let rgba = grad.at(x as f32 / width as f32).to_rgba8();
-//!         *pixel = image::Rgba(rgba);
-//!     }
-//!
-//!     imgbuf.save("gradient.png")?;
-//!     Ok(())
-//! }
-//! ```
-//!
-//! Example output:
-//!
-//! ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/example-gradient.png)
+#![cfg_attr(
+    feature = "named-colors",
+    doc = r##"
+```
+use colorgrad::Gradient;
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let grad = colorgrad::GradientBuilder::new()
+        .html_colors(&["deeppink", "gold", "seagreen"])
+        .build::<colorgrad::CatmullRomGradient>()?;
+
+    let width = 1500;
+    let height = 70;
+
+    let mut imgbuf = image::ImageBuffer::new(width, height);
+
+    for (x, _, pixel) in imgbuf.enumerate_pixels_mut() {
+        let rgba = grad.at(x as f32 / width as f32).to_rgba8();
+        *pixel = image::Rgba(rgba);
+    }
+
+    imgbuf.save("gradient.png")?;
+    Ok(())
+}
+```
+
+Example output:
+
+![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/example-gradient.png)
+"##
+)]
 //!
 //! ### Colored Noise
 //!
@@ -183,18 +192,23 @@ pub trait Gradient: CloneGradient {
             .collect()
     }
 
-    /// Get new hard-edge gradient
-    ///
-    /// ```ignore
-    /// let g = colorgrad::preset::rainbow();
-    /// ```
-    /// ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/rainbow.png)
-    ///
-    /// ```ignore
-    /// use colorgrad::Gradient;
-    /// let g = colorgrad::preset::rainbow().sharp(11, 0.);
-    /// ```
-    /// ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/rainbow-sharp.png)
+    #[cfg_attr(
+        feature = "preset",
+        doc = r##"
+    Get new hard-edge gradient
+
+    ```
+    let g = colorgrad::preset::rainbow();
+    ```
+    ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/preset/rainbow.png)
+
+    ```
+    use colorgrad::Gradient;
+    let g = colorgrad::preset::rainbow().sharp(11, 0.0);
+    ```
+    ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/rainbow-sharp.png)
+    "##
+    )]
     fn sharp(&self, segment: u16, smoothness: f32) -> SharpGradient {
         let colors = if segment > 1 {
             self.colors(segment.into())

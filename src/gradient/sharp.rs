@@ -1,10 +1,14 @@
 use crate::{convert_colors, linspace, BlendMode, Color, Gradient};
 
-/// ```ignore
-/// use colorgrad::Gradient;
-///
-/// let g = colorgrad::preset::rainbow().sharp(11, 0.);
-/// ```
+#[cfg_attr(
+    feature = "preset",
+    doc = r##"
+```
+use colorgrad::Gradient;
+
+let g = colorgrad::preset::rainbow().sharp(11, 0.0);
+```"##
+)]
 #[derive(Debug, Clone)]
 pub struct SharpGradient {
     stops: Vec<(f32, [f32; 4])>,

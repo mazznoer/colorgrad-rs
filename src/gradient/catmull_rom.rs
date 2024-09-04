@@ -5,17 +5,21 @@ use crate::{convert_colors, BlendMode, Color, Gradient, GradientBuilder, Gradien
 // Catmull-Rom spline algorithm adapted from:
 // https://qroph.github.io/2018/07/30/smooth-paths-using-catmull-rom-splines.html
 
-/// ```ignore
-/// # use std::error::Error;
-/// use colorgrad::Gradient;
-///
-/// # fn main() -> Result<(), Box<dyn Error>> {
-/// let grad = colorgrad::GradientBuilder::new()
-///     .html_colors(&["deeppink", "gold", "seagreen"])
-///     .build::<colorgrad::CatmullRomGradient>()?;
-/// # Ok(())
-/// # }
-/// ```
+#[cfg_attr(
+    feature = "named-colors",
+    doc = r##"
+```
+# use std::error::Error;
+use colorgrad::Gradient;
+
+# fn main() -> Result<(), Box<dyn Error>> {
+let grad = colorgrad::GradientBuilder::new()
+    .html_colors(&["deeppink", "gold", "seagreen"])
+    .build::<colorgrad::CatmullRomGradient>()?;
+# Ok(())
+# }
+```"##
+)]
 #[derive(Debug, Clone)]
 pub struct CatmullRomGradient {
     segments: Vec<[[f32; 4]; 4]>,

@@ -57,24 +57,28 @@ impl error::Error for GradientBuilderError {}
 /// # }
 /// ```
 ///
-/// ## Using web color format string
-///
-/// ```ignore
-/// # use std::error::Error;
-/// use colorgrad::Gradient;
-///
-/// # fn main() -> Result<(), Box<dyn Error>> {
-/// let grad = colorgrad::GradientBuilder::new()
-///     .html_colors(&["deeppink", "gold", "seagreen"])
-///     .domain(&[0.0, 100.0])
-///     .mode(colorgrad::BlendMode::Rgb)
-///     .build::<colorgrad::LinearGradient>()?;
-///
-/// assert_eq!(grad.at(0.0).to_rgba8(), [255, 20, 147, 255]);
-/// assert_eq!(grad.at(100.0).to_rgba8(), [46, 139, 87, 255]);
-/// # Ok(())
-/// # }
-/// ```
+#[cfg_attr(
+    feature = "named-colors",
+    doc = r##"
+## Using web color format string
+
+```
+# use std::error::Error;
+use colorgrad::Gradient;
+
+# fn main() -> Result<(), Box<dyn Error>> {
+let grad = colorgrad::GradientBuilder::new()
+    .html_colors(&["deeppink", "gold", "seagreen"])
+    .domain(&[0.0, 100.0])
+    .mode(colorgrad::BlendMode::Rgb)
+    .build::<colorgrad::LinearGradient>()?;
+
+assert_eq!(grad.at(0.0).to_rgba8(), [255, 20, 147, 255]);
+assert_eq!(grad.at(100.0).to_rgba8(), [46, 139, 87, 255]);
+# Ok(())
+# }
+```"##
+)]
 #[derive(Debug, Clone)]
 pub struct GradientBuilder {
     pub(crate) colors: Vec<Color>,

@@ -16,17 +16,21 @@ fn basis(t1: f32, v0: f32, v1: f32, v2: f32, v3: f32) -> f32 {
         / 6.0
 }
 
-/// ```ignore
-/// # use std::error::Error;
-/// use colorgrad::Gradient;
-///
-/// # fn main() -> Result<(), Box<dyn Error>> {
-/// let grad = colorgrad::GradientBuilder::new()
-///     .html_colors(&["deeppink", "gold", "seagreen"])
-///     .build::<colorgrad::BasisGradient>()?;
-/// # Ok(())
-/// # }
-/// ```
+#[cfg_attr(
+    feature = "named-colors",
+    doc = r##"
+```
+# use std::error::Error;
+use colorgrad::Gradient;
+
+# fn main() -> Result<(), Box<dyn Error>> {
+let grad = colorgrad::GradientBuilder::new()
+    .html_colors(&["deeppink", "gold", "seagreen"])
+    .build::<colorgrad::BasisGradient>()?;
+# Ok(())
+# }
+```"##
+)]
 #[derive(Debug, Clone)]
 pub struct BasisGradient {
     values: Vec<[f32; 4]>,

@@ -26,6 +26,9 @@ jobs:
         cargo build --verbose --no-default-features
         cargo build --verbose --all-features
         cargo build --examples
+    - uses: taiki-e/install-action@cargo-hack
+    - run: |
+        cargo hack build --no-private --feature-powerset --no-dev-deps
 
     - name: Run tests
       run: |

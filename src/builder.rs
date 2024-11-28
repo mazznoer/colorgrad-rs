@@ -176,6 +176,16 @@ impl GradientBuilder {
         self
     }
 
+    pub fn reset(&mut self) -> &mut Self {
+        self.colors.clear();
+        self.positions.clear();
+        self.mode = BlendMode::Rgb;
+        self.invalid_html_colors.clear();
+        self.invalid_css_gradient = false;
+        self.clean = false;
+        self
+    }
+
     #[doc(hidden)]
     pub fn get_colors(&self) -> &[Color] {
         &self.colors

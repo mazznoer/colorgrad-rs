@@ -115,6 +115,16 @@ fn builder() {
     assert_eq!(g.at(0.0).to_rgba8(), [255, 0, 0, 255]);
     assert_eq!(g.at(35.0).to_rgba8(), [0, 0, 255, 255]);
     assert_eq!(g.at(100.0).to_rgba8(), [0, 255, 0, 255]);
+
+    // Reset
+    gb.reset();
+    gb.colors(&[
+        Color::from_rgba8(127, 0, 100, 255),
+        Color::from_rgba8(50, 255, 0, 255),
+    ]);
+    gb.build::<LinearGradient>().unwrap();
+    assert_eq!(gb.get_positions(), &[0.0, 1.0]);
+    assert_eq!(&colors2hex(gb.get_colors()), &["#7f0064", "#32ff00"]);
 }
 
 #[test]

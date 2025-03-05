@@ -217,6 +217,27 @@ pub trait Gradient: CloneGradient {
         };
         SharpGradient::new(&colors, self.domain(), smoothness)
     }
+
+    /// Convert gradient to boxed trait object
+    ///
+    /// This is a convenience function, which is useful when you want to store gradients with
+    /// different types in a collection, or when you want to return a gradient from a function but
+    /// the type is not known at compile time.
+    ///
+    /// ```
+    /// # let is_rainbow = true;
+    /// let g = if is_rainbow {
+    ///     colorgrad::preset::rainbow().boxed()
+    /// } else {
+    ///     colorgrad::preset::sinebow().boxed()
+    /// };
+    /// ```
+    fn boxed(self) -> Box<dyn Gradient>
+    where
+        Self: Sized + 'static,
+    {
+        Box::new(self)
+    }
 }
 
 pub trait CloneGradient {

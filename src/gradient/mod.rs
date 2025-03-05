@@ -1,4 +1,5 @@
 pub(crate) mod basis;
+pub(crate) mod boxed;
 pub(crate) mod catmull_rom;
 pub(crate) mod linear;
 pub(crate) mod sharp;

@@ -228,8 +228,13 @@ pub trait Gradient: CloneGradient {
     ///
     /// ```
     /// use colorgrad::Gradient;
-    /// let rainbow = colorgrad::preset::rainbow();
-    /// let inverse = rainbow.inverse();
+    ///
+    /// let grad = colorgrad::GradientBuilder::new()
+    ///     .html_colors(&["#fff", "#000"])
+    ///     .build::<colorgrad::LinearGradient>()
+    ///     .unwrap();
+    ///
+    /// let inverse = grad.inverse();
     /// ```
     fn inverse(&self) -> InverseGradient {
         InverseGradient::new(self.clone_gradient())
@@ -295,22 +300,12 @@ mod tests {
 
     #[test]
     fn test_linspace() {
-        assert_eq!(linspace(0.0, 1.0, 0), vec![]);
+        let empty: Vec<f32> = Vec::new();
+        assert_eq!(linspace(0.0, 1.0, 0), empty);
         assert_eq!(linspace(0.0, 1.0, 1), vec![0.0]);
         assert_eq!(linspace(0.0, 1.0, 2), vec![0.0, 1.0]);
         assert_eq!(linspace(0.0, 1.0, 3), vec![0.0, 0.5, 1.0]);
         assert_eq!(linspace(-1.0, 1.0, 5), vec![-1.0, -0.5, 0.0, 0.5, 1.0]);
         assert_eq!(linspace(0.0, 100.0, 5), vec![0.0, 25.0, 50.0, 75.0, 100.0]);
-    }
-
-    #[test]
-    fn inverse() {
-        let rainbow = preset::rainbow();
-        let inverse = rainbow.inverse();
-
-        // Note that this test is just to make sure the inverse trait method is working correctly.
-        // The values are properly tested in the inverse module tests.
-        assert_eq!(inverse.at(0.0), rainbow.at(1.0));
-        assert_eq!(inverse.at(1.0), rainbow.at(0.0));
     }
 }

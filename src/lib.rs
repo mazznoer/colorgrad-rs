@@ -140,6 +140,7 @@ mod css_gradient;
 mod gradient;
 pub use gradient::basis::BasisGradient;
 pub use gradient::catmull_rom::CatmullRomGradient;
+pub use gradient::inverse::InverseGradient;
 pub use gradient::linear::LinearGradient;
 pub use gradient::sharp::SharpGradient;
 
@@ -217,6 +218,22 @@ pub trait Gradient: CloneGradient {
         };
         SharpGradient::new(&colors, self.domain(), smoothness)
     }
+
+    /// Get a new gradient that inverts the gradient
+    ///
+    /// The minimum value of the inner gradient will be the maximum value of the inverse gradient and
+    /// vice versa.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use colorgrad::Gradient;
+    /// let rainbow = colorgrad::preset::rainbow();
+    /// let inverse = rainbow.inverse();
+    /// ```
+    fn inverse(&self) -> InverseGradient {
+        InverseGradient::new(self.clone_gradient())
+    }
 }
 
 pub trait CloneGradient {
@@ -284,5 +301,16 @@ mod tests {
         assert_eq!(linspace(0.0, 1.0, 3), vec![0.0, 0.5, 1.0]);
         assert_eq!(linspace(-1.0, 1.0, 5), vec![-1.0, -0.5, 0.0, 0.5, 1.0]);
         assert_eq!(linspace(0.0, 100.0, 5), vec![0.0, 25.0, 50.0, 75.0, 100.0]);
+    }
+
+    #[test]
+    fn inverse() {
+        let rainbow = preset::rainbow();
+        let inverse = rainbow.inverse();
+
+        // Note that this test is just to make sure the inverse trait method is working correctly.
+        // The values are properly tested in the inverse module tests.
+        assert_eq!(inverse.at(0.0), rainbow.at(1.0));
+        assert_eq!(inverse.at(1.0), rainbow.at(0.0));
     }
 }

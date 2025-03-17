@@ -1,4 +1,4 @@
-use crate::Gradient;
+use crate::{Color, Gradient};
 
 /// A gradient that inverts the gradient of another gradient.
 ///
@@ -16,8 +16,12 @@ impl InverseGradient {
 }
 
 impl Gradient for InverseGradient {
-    fn at(&self, t: f32) -> crate::Color {
+    fn at(&self, t: f32) -> Color {
         let (min, max) = self.inner.domain();
-        self.inner.at(max - t * (max - min))
+        self.inner.at(max - t + min)
+    }
+
+    fn domain(&self) -> (f32, f32) {
+        self.inner.domain()
     }
 }

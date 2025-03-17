@@ -140,6 +140,7 @@ mod css_gradient;
 mod gradient;
 pub use gradient::basis::BasisGradient;
 pub use gradient::catmull_rom::CatmullRomGradient;
+pub use gradient::inverse::InverseGradient;
 pub use gradient::linear::LinearGradient;
 pub use gradient::sharp::SharpGradient;
 
@@ -218,6 +219,7 @@ pub trait Gradient: CloneGradient {
         SharpGradient::new(&colors, self.domain(), smoothness)
     }
 
+
     /// Convert gradient to boxed trait object
     ///
     /// This is a convenience function, which is useful when you want to store gradients with
@@ -237,6 +239,28 @@ pub trait Gradient: CloneGradient {
         Self: Sized + 'static,
     {
         Box::new(self)
+    }
+
+    /// Get a new gradient that inverts the gradient
+    ///
+    /// The minimum value of the inner gradient will be the maximum value of the inverse gradient and
+    /// vice versa.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use colorgrad::Gradient;
+    ///
+    /// let grad = colorgrad::GradientBuilder::new()
+    ///     .html_colors(&["#fff", "#000"])
+    ///     .build::<colorgrad::LinearGradient>()
+    ///     .unwrap();
+    ///
+    /// let inverse = grad.inverse();
+    /// ```
+    fn inverse(&self) -> InverseGradient {
+        InverseGradient::new(self.clone_gradient())
+
     }
 }
 
@@ -299,7 +323,8 @@ mod tests {
 
     #[test]
     fn test_linspace() {
-        assert_eq!(linspace(0.0, 1.0, 0), vec![]);
+        let empty: Vec<f32> = Vec::new();
+        assert_eq!(linspace(0.0, 1.0, 0), empty);
         assert_eq!(linspace(0.0, 1.0, 1), vec![0.0]);
         assert_eq!(linspace(0.0, 1.0, 2), vec![0.0, 1.0]);
         assert_eq!(linspace(0.0, 1.0, 3), vec![0.0, 0.5, 1.0]);

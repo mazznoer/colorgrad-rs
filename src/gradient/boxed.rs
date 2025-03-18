@@ -1,6 +1,6 @@
 use crate::{Color, Gradient, SharpGradient};
 
-impl Gradient for Box<dyn Gradient> {
+impl Gradient for Box<dyn Gradient + '_> {
     fn at(&self, t: f32) -> Color {
         (**self).at(t)
     }
@@ -25,7 +25,7 @@ impl Gradient for Box<dyn Gradient> {
         (**self).sharp(segment, smoothness)
     }
 
-    fn boxed(self) -> Box<dyn Gradient>
+    fn boxed<'s>(self) -> Box<dyn Gradient + 's>
     where
         Self: 'static,
     {

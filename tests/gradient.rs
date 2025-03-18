@@ -142,5 +142,5 @@ fn colors() {
 #[test]
 fn box_clone() {
     let g: Box<dyn Gradient> = Box::new(GradientBuilder::new().build::<LinearGradient>().unwrap());
-    //let _: Box<dyn Gradient> = g.clone();
+    let _: Box<dyn Gradient> = g.clone();
 }

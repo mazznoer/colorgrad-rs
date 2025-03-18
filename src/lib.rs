@@ -236,7 +236,7 @@ pub trait Gradient: CloneGradient {
     };
     ```"##
     )]
-    fn boxed(self) -> Box<dyn Gradient>
+    fn boxed<'s>(self) -> Box<dyn Gradient + 's>
     where
         Self: Sized + 'static,
     {
@@ -260,27 +260,35 @@ pub trait Gradient: CloneGradient {
     ///
     /// let inverse = grad.inverse();
     /// ```
-    fn inverse(&self) -> InverseGradient {
+    fn inverse(&self) -> InverseGradient
+    where
+        Self: Sized + 'static,
+    {
         InverseGradient::new(self.clone_gradient())
     }
 }
 
 pub trait CloneGradient {
-    fn clone_gradient(&self) -> Box<dyn Gradient>;
+    fn clone_gradient<'s>(&self) -> Box<dyn Gradient + 's>
+    where
+        Self: 's;
 }
 
 impl<T> CloneGradient for T
 where
-    T: Gradient + Clone + 'static,
+    T: Gradient + Clone,
 {
-    fn clone_gradient(&self) -> Box<dyn Gradient> {
+    fn clone_gradient<'s>(&self) -> Box<dyn Gradient + 's>
+    where
+        Self: 's,
+    {
         Box::new(self.clone())
     }
 }
 
-impl Clone for Box<dyn Gradient> {
+impl Clone for Box<dyn Gradient + '_> {
     fn clone(&self) -> Self {
-        self.clone_gradient()
+        (**self).clone_gradient()
     }
 }
 

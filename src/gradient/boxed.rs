@@ -1,9 +1,7 @@
-use csscolorparser::Color;
-
-use crate::{Gradient, SharpGradient};
+use crate::{Color, Gradient, SharpGradient};
 
 impl Gradient for Box<dyn Gradient> {
-    fn at(&self, t: f32) -> crate::Color {
+    fn at(&self, t: f32) -> Color {
         (**self).at(t)
     }
 
@@ -37,16 +35,19 @@ impl Gradient for Box<dyn Gradient> {
 
 #[cfg(test)]
 mod tests {
-    use crate::preset;
-
-    use super::*;
+    use crate::{Gradient, GradientBuilder, LinearGradient};
 
     #[test]
     fn boxed_gradients() {
-        let gradient = preset::rainbow().boxed();
-        assert_eq!(gradient.at(0.0).to_rgba8(), [110, 64, 170, 255]);
-        assert_eq!(gradient.repeat_at(1.25).to_rgba8(), [255, 94, 99, 255]);
-        assert_eq!(gradient.reflect_at(1.25).to_rgba8(), [77, 199, 194, 255]);
+        let gradient = GradientBuilder::new()
+            .html_colors(&["#fff", "#000"])
+            .build::<LinearGradient>()
+            .unwrap()
+            .boxed();
+
+        assert_eq!(gradient.at(0.0).to_rgba8(), [255, 255, 255, 255]);
+        assert_eq!(gradient.repeat_at(1.25).to_rgba8(), [191, 191, 191, 255]);
+        assert_eq!(gradient.reflect_at(1.25).to_rgba8(), [64, 64, 64, 255]);
         assert_eq!(gradient.domain(), (0.0, 1.0));
         assert_eq!(gradient.colors(3).len(), 3);
         assert_eq!(gradient.sharp(3, 0.0).colors(3).len(), 3);

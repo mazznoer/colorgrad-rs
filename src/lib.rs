@@ -219,7 +219,6 @@ pub trait Gradient: CloneGradient {
         SharpGradient::new(&colors, self.domain(), smoothness)
     }
 
-
     /// Convert gradient to boxed trait object
     ///
     /// This is a convenience function, which is useful when you want to store gradients with
@@ -260,7 +259,6 @@ pub trait Gradient: CloneGradient {
     /// ```
     fn inverse(&self) -> InverseGradient {
         InverseGradient::new(self.clone_gradient())
-
     }
 }
 

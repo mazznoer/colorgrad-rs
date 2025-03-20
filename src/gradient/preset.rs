@@ -6,7 +6,7 @@
 //!
 //! assert_eq!(grad.domain(), (0.0, 1.0)); // all preset gradients are in the domain [0..1]
 //! assert_eq!(grad.at(0.25).to_rgba8(), [255, 94, 99, 255]);
-//! assert_eq!(grad.at(0.75).to_rgba8(), [77, 199, 194, 255]);
+//! assert_eq!(grad.at(0.75).to_rgba8(), [26, 199, 194, 255]);
 //! assert_eq!(grad.at(0.37).to_hex_string(), "#f2a42f");
 //! ```
 
@@ -112,8 +112,8 @@ impl Cubehelix {
         let cosh = h.cos();
         let sinh = h.sin();
 
-        let r = l - a * (0.14861 * cosh - 1.78277 * sinh).min(1.0);
-        let g = l - a * (0.29227 * cosh + 0.90649 * sinh).min(1.0);
+        let r = l - a * (0.14861 * cosh - 1.78277 * sinh);
+        let g = l - a * (0.29227 * cosh + 0.90649 * sinh);
         let b = l + a * (1.97294 * cosh);
 
         Color::new(r.clamp(0.0, 1.0), g.clamp(0.0, 1.0), b.clamp(0.0, 1.0), 1.0)

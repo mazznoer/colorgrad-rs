@@ -25,9 +25,9 @@ impl Gradient for Box<dyn Gradient + '_> {
         (**self).sharp(segment, smoothness)
     }
 
-    fn boxed<'s>(self) -> Box<dyn Gradient + 's>
+    fn boxed<'a>(self) -> Box<dyn Gradient + 'a>
     where
-        Self: 'static,
+        Self: 'a,
     {
         Box::new(self)
     }

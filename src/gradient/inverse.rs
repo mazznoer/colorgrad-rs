@@ -5,17 +5,17 @@ use crate::{Color, Gradient};
 /// The minimum value of the inner gradient will be the maximum value of the inverse gradient and
 /// vice versa.
 #[derive(Clone)]
-pub struct InverseGradient {
-    inner: Box<dyn Gradient>,
+pub struct InverseGradient<'a> {
+    inner: Box<dyn Gradient + 'a>,
 }
 
-impl InverseGradient {
-    pub fn new(inner: Box<dyn Gradient>) -> Self {
+impl<'a> InverseGradient<'a> {
+    pub fn new(inner: Box<dyn Gradient + 'a>) -> Self {
         Self { inner }
     }
 }
 
-impl Gradient for InverseGradient {
+impl Gradient for InverseGradient<'_> {
     fn at(&self, t: f32) -> Color {
         let (min, max) = self.inner.domain();
         self.inner.at(max - t + min)

@@ -262,9 +262,9 @@ pub trait Gradient: CloneGradient {
     /// ```
     fn inverse<'a>(&self) -> InverseGradient
     where
-        Self: 'a,
+        Self: Sized + 'a,
     {
-        InverseGradient::new(self.clone_gradient())
+        InverseGradient::new(self)
     }
 }
 

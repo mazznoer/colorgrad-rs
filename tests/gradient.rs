@@ -142,12 +142,14 @@ fn colors() {
 #[test]
 fn others() {
     let gd: Box<dyn Gradient> = Box::new(GradientBuilder::new().build::<LinearGradient>().unwrap());
-    let _a: Box<dyn Gradient> = gd.clone();
-    let _b = gd.clone().boxed();
-    let _c = gd.inverse();
-    let _d = gd.inverse().boxed();
+    let _: Box<dyn Gradient> = gd.clone();
+    let _ = gd.clone().boxed();
+    let _ = gd.inverse();
+    let _ = gd.inverse().boxed();
+    let _ = gd.clone_boxed();
 
     let gd: &dyn Gradient = &GradientBuilder::new().build::<LinearGradient>().unwrap();
-    let _a = gd.inverse();
-    let _b = gd.inverse().boxed();
+    let _ = gd.inverse();
+    let _ = gd.inverse().boxed();
+    let _ = gd.clone_boxed();
 }

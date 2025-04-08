@@ -1,6 +1,20 @@
 # Changelog
 
-## [Unreleased](https://github.com/mazznoer/colorgrad-rs/compare/v0.7.0...HEAD)
+## [Unreleased](https://github.com/mazznoer/colorgrad-rs/compare/v0.7.1...HEAD)
+
+## [0.7.1](https://github.com/mazznoer/colorgrad-rs/compare/v0.7.0...v0.7.1)
+
+### Added
+
+- New methods for `Gradient`: `inverse()` and `boxed()`.
+- impl `Gradient` for `Box<dyn Gradient>`.
+- impl `Clone` for `Box<dyn Gradient>`.
+- `GradientBuilder` new method `reset()`.
+- `InverseGradient`.
+
+### Fixed
+
+- `CubehelixGradient`
 
 ## [0.7.0](https://github.com/mazznoer/colorgrad-rs/compare/v0.6.2...v0.7.0)
 

@@ -147,9 +147,7 @@ fn others() {
     let _c = gd.inverse();
     let _d = gd.inverse().boxed();
 
-    /*
     let gd: &dyn Gradient = &GradientBuilder::new().build::<LinearGradient>().unwrap();
     let _a = gd.inverse();
     let _b = gd.inverse().boxed();
-    */
 }

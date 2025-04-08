@@ -6,11 +6,11 @@ use crate::{Color, Gradient};
 /// vice versa.
 #[derive(Clone)]
 pub struct InverseGradient<'a> {
-    inner: &'a dyn Gradient,
+    inner: Box<dyn Gradient + 'a>,
 }
 
 impl<'a> InverseGradient<'a> {
-    pub fn new(inner: &'a dyn Gradient) -> Self {
+    pub fn new(inner: Box<dyn Gradient + 'a>) -> Self {
         Self { inner }
     }
 }

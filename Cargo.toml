@@ -1,6 +1,6 @@
 [package]
 name = "colorgrad"
-version = "0.7.0"
+version = "0.7.1"
 authors = ["Nor Khasyatillah <mazznoer@ymail.com>"]
 edition = "2018"
 description = "Color scales library for data visualization, charts, games, generative art and others."

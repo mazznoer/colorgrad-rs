@@ -1,5 +1,6 @@
 use crate::{BlendMode, Color};
 
+#[derive(Debug, PartialEq)]
 struct Stop {
     col: Option<Color>,
     pos: Option<f32>,
@@ -93,14 +94,8 @@ pub(crate) fn parse(s: &str, mode: BlendMode) -> Option<(Vec<Color>, Vec<f32>)> 
         }
     }
 
-    let colors = stops
-        .iter()
-        .map(|stop| stop.col.clone().unwrap())
-        .collect::<Vec<_>>();
-    let positions = stops
-        .iter()
-        .map(|stop| stop.pos.unwrap())
-        .collect::<Vec<_>>();
+    let positions: Vec<_> = stops.iter().map(|s| s.pos.unwrap()).collect();
+    let colors: Vec<_> = stops.into_iter().map(|s| s.col.unwrap()).collect();
     Some((colors, positions))
 }
 
@@ -205,4 +200,91 @@ fn split_by_space(s: &str) -> Vec<&str> {
         res.push(&s[start..]);
     }
     res
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn utils() {
+        assert_eq!(parse_pos("0.5"), Some(0.5));
+        assert_eq!(parse_pos("50%"), Some(0.5));
+        assert_eq!(parse_pos("1.1"), Some(1.1));
+        assert_eq!(parse_pos("100%"), Some(1.0));
+
+        assert_eq!(parse_pos(""), None);
+        assert_eq!(parse_pos("50x%"), None);
+        assert_eq!(parse_pos("y"), None);
+
+        assert_eq!(split_by_comma("red, #fff, lime"), ["red", " #fff", " lime"]);
+        assert_eq!(
+            split_by_comma("#ff0000, rgb(255, 0, 0), hsv(120, 50%, 50%) 75%, blue"),
+            [
+                "#ff0000",
+                " rgb(255, 0, 0)",
+                " hsv(120, 50%, 50%) 75%",
+                " blue"
+            ]
+        );
+
+        assert_eq!(
+            split_by_space("rgb(0, 0, 150) 0.75 1"),
+            ["rgb(0, 0, 150)", "0.75", "1"]
+        );
+        assert_eq!(
+            split_by_space("hsv(360, 50%, 30%) 0% 35%"),
+            ["hsv(360, 50%, 30%)", "0%", "35%"]
+        );
+    }
+
+    #[test]
+    fn test_parse_stop() {
+        fn c(s: &str) -> Color {
+            s.parse::<Color>().unwrap()
+        }
+        assert_eq!(c("#ff0000"), Color::new(1.0, 0.0, 0.0, 1.0));
+        assert_ne!(c("#ff0001"), Color::new(1.0, 0.0, 0.0, 1.0));
+
+        let mut stops = Vec::new();
+
+        // color only
+        let dt = vec!["#f00"];
+        assert!(parse_stop(&mut stops, &dt));
+        assert_eq!(stops[0], Stop::new(Some(c("#f00")), None));
+
+        // position only
+        let dt = vec!["75%"];
+        assert!(parse_stop(&mut stops, &dt));
+        assert_eq!(stops[1], Stop::new(None, Some(0.75)));
+
+        // color & position
+        let dt = vec!["#f00", "10%"];
+        assert!(parse_stop(&mut stops, &dt));
+        assert_eq!(stops[2], Stop::new(Some(c("#f00")), Some(0.1)));
+
+        // color & double positions
+        let dt = vec!["#ff0", "0%", "50%"];
+        assert!(parse_stop(&mut stops, &dt));
+        assert_eq!(stops[3], Stop::new(Some(c("#ff0")), Some(0.0)));
+        assert_eq!(stops[4], Stop::new(Some(c("#ff0")), Some(0.5)));
+
+        assert_eq!(stops.len(), 5);
+
+        // invalid
+        assert!(!parse_stop(&mut stops, &[""]));
+        assert!(!parse_stop(&mut stops, &["#zbb"]));
+        assert!(!parse_stop(&mut stops, &["0x%"]));
+
+        assert!(!parse_stop(&mut stops, &["#000", "x"]));
+        assert!(!parse_stop(&mut stops, &["#xyz", "10%"]));
+
+        assert!(!parse_stop(&mut stops, &["#f00", "50%", "x"]));
+        assert!(!parse_stop(&mut stops, &["#f00", "x", "0%"]));
+        assert!(!parse_stop(&mut stops, &["#ffm", "20%", "30%"]));
+
+        assert!(!parse_stop(&mut stops, &[]));
+        assert!(!parse_stop(&mut stops, &["#f00", "20%", "30%", "50%"]));
+        assert_eq!(stops.len(), 5);
+    }
 }

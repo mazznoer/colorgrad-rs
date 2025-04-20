@@ -186,10 +186,11 @@ pub trait Gradient: CloneGradient {
     /// Get n colors evenly spaced across gradient
     fn colors(&self, n: usize) -> Vec<Color> {
         let (dmin, dmax) = self.domain();
-
-        linspace(dmin, dmax, n)
-            .iter()
-            .map(|&t| self.at(t).clamp())
+        if n == 1 {
+            return vec![self.at(dmin)];
+        }
+        (0..n)
+            .map(|i| self.at(dmin + (i as f32 * (dmax - dmin)) / (n - 1) as f32))
             .collect()
     }
 

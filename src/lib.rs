@@ -345,6 +345,12 @@ impl DoubleEndedIterator for GradientColors<'_> {
     }
 }
 
+impl ExactSizeIterator for GradientColors<'_> {
+    fn len(&self) -> usize {
+        self.b_idx - self.a_idx
+    }
+}
+
 fn convert_colors(colors: &[Color], mode: BlendMode) -> Vec<[f32; 4]> {
     colors
         .iter()

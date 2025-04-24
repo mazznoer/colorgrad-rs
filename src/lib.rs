@@ -194,6 +194,14 @@ pub trait Gradient: CloneGradient {
             .collect()
     }
 
+    /// Returns iterator for n colors evenly spaced across gradient
+    fn colors_iter(&self, n: usize) -> GradientColors
+    where
+        Self: Sized,
+    {
+        GradientColors::new(self, n)
+    }
+
     #[cfg_attr(
         feature = "preset",
         doc = r##"
@@ -290,6 +298,50 @@ where
 impl Clone for Box<dyn Gradient + '_> {
     fn clone(&self) -> Self {
         (**self).clone_boxed()
+    }
+}
+
+pub struct GradientColors<'a> {
+    gradient: &'a dyn Gradient,
+    a_idx: usize,
+    b_idx: usize,
+    max: f32,
+}
+
+impl<'a> GradientColors<'a> {
+    pub fn new(gradient: &'a dyn Gradient, total: usize) -> Self {
+        Self {
+            gradient,
+            a_idx: 0,
+            b_idx: total,
+            max: if total == 0 { 0.0 } else { (total - 1) as f32 },
+        }
+    }
+}
+
+impl Iterator for GradientColors<'_> {
+    type Item = Color;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.a_idx == self.b_idx {
+            return None;
+        }
+        let (dmin, dmax) = self.gradient.domain();
+        let t = dmin + (self.a_idx as f32 * (dmax - dmin)) / self.max;
+        self.a_idx += 1;
+        Some(self.gradient.at(t))
+    }
+}
+
+impl DoubleEndedIterator for GradientColors<'_> {
+    fn next_back(&mut self) -> Option<Self::Item> {
+        if self.a_idx == self.b_idx {
+            return None;
+        }
+        let (dmin, dmax) = self.gradient.domain();
+        self.b_idx -= 1;
+        let t = dmin + (self.b_idx as f32 * (dmax - dmin)) / self.max;
+        Some(self.gradient.at(t))
     }
 }
 

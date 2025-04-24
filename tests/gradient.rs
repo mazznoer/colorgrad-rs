@@ -1,4 +1,4 @@
-use colorgrad::{Gradient, GradientBuilder, LinearGradient};
+use colorgrad::{BlendMode, Color, Gradient, GradientBuilder, LinearGradient};
 
 mod utils;
 use utils::*;
@@ -137,6 +137,87 @@ fn colors() {
         colors2hex(&g.colors(5)),
         &["#ff0000", "#808000", "#00ff00", "#008080", "#0000ff",]
     );
+}
+
+#[test]
+fn colors_iter() {
+    fn hex(c: Color) -> String {
+        c.to_hex_string()
+    }
+
+    macro_rules! cmp {
+        ($a:expr, $b:expr) => {
+            assert_eq!($a.map(hex).as_deref(), Some($b));
+        };
+    }
+
+    let g = GradientBuilder::new()
+        .html_colors(&["#000", "#f00", "#ff0", "#fff"])
+        .mode(BlendMode::Rgb)
+        .build::<LinearGradient>()
+        .unwrap();
+
+    let mut it = g.colors_iter(0);
+    assert_eq!(it.next(), None);
+    assert_eq!(it.next_back(), None);
+
+    let mut it = g.colors_iter(1);
+    cmp!(it.next(), "#000000");
+    assert_eq!(it.next(), None);
+    assert_eq!(it.next_back(), None);
+
+    let mut it = g.colors_iter(1);
+    cmp!(it.next_back(), "#000000");
+    assert_eq!(it.next(), None);
+    assert_eq!(it.next_back(), None);
+
+    let mut it = g.colors_iter(2);
+    cmp!(it.next(), "#000000");
+    cmp!(it.next(), "#ffffff");
+    assert_eq!(it.next(), None);
+    assert_eq!(it.next_back(), None);
+
+    let mut it = g.colors_iter(4);
+    cmp!(it.next(), "#000000");
+    cmp!(it.next(), "#ff0000");
+    cmp!(it.next(), "#ffff00");
+    cmp!(it.next(), "#ffffff");
+    assert_eq!(it.next(), None);
+    assert_eq!(it.next_back(), None);
+
+    let mut it = g.colors_iter(4);
+    cmp!(it.next_back(), "#ffffff");
+    cmp!(it.next_back(), "#ffff00");
+    cmp!(it.next_back(), "#ff0000");
+    cmp!(it.next_back(), "#000000");
+    assert_eq!(it.next(), None);
+    assert_eq!(it.next_back(), None);
+
+    let mut it = g.colors_iter(4);
+    cmp!(it.next(), "#000000");
+    cmp!(it.next_back(), "#ffffff");
+    cmp!(it.next(), "#ff0000");
+    cmp!(it.next_back(), "#ffff00");
+    assert_eq!(it.next(), None);
+    assert_eq!(it.next_back(), None);
+
+    let mut it = g.colors_iter(999);
+    cmp!(it.next(), "#000000");
+    cmp!(it.next_back(), "#ffffff");
+
+    let colors: Vec<_> = g.colors_iter(73).collect();
+    assert_eq!(colors.len(), 73);
+
+    // reverse
+    let colors: Vec<_> = g.colors_iter(4).rev().collect();
+    assert_eq!(
+        colors2hex(&colors),
+        ["#ffffff", "#ffff00", "#ff0000", "#000000"],
+    );
+
+    // compare with Gradient::colors()
+    let colors: Vec<_> = g.colors_iter(27).collect();
+    assert_eq!(g.colors(27), colors);
 }
 
 #[test]

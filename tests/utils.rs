@@ -7,3 +7,10 @@ pub fn colors2hex(colors: &[Color]) -> Vec<String> {
     }
     res
 }
+
+#[macro_export]
+macro_rules! cmp_hex {
+    ($color:expr, $hex:expr) => {
+        assert_eq!($color.to_hex_string(), $hex);
+    };
+}

@@ -5,28 +5,34 @@ use utils::*;
 
 #[test]
 fn spread_inside_domain() {
+    macro_rules! cmp_rgba8 {
+        ($a:expr, $b:expr) => {
+            assert_eq!($a.to_rgba8(), $b.to_rgba8());
+        };
+    }
+
     let g = GradientBuilder::new()
         .html_colors(&["#00f", "#fff"])
         .build::<LinearGradient>()
         .unwrap();
 
-    assert_eq!(g.at(0.0).to_rgba8(), g.repeat_at(0.0).to_rgba8());
-    assert_eq!(g.at(0.0).to_rgba8(), g.reflect_at(0.0).to_rgba8());
+    cmp_rgba8!(g.at(0.0), g.repeat_at(0.0));
+    cmp_rgba8!(g.at(0.0), g.reflect_at(0.0));
 
-    assert_eq!(g.at(0.01).to_rgba8(), g.repeat_at(0.01).to_rgba8());
-    assert_eq!(g.at(0.01).to_rgba8(), g.reflect_at(0.01).to_rgba8());
+    cmp_rgba8!(g.at(0.01), g.repeat_at(0.01));
+    cmp_rgba8!(g.at(0.01), g.reflect_at(0.01));
 
-    assert_eq!(g.at(0.25).to_rgba8(), g.repeat_at(0.25).to_rgba8());
-    assert_eq!(g.at(0.25).to_rgba8(), g.reflect_at(0.25).to_rgba8());
+    cmp_rgba8!(g.at(0.25), g.repeat_at(0.25));
+    cmp_rgba8!(g.at(0.25), g.reflect_at(0.25));
 
-    assert_eq!(g.at(0.5).to_rgba8(), g.repeat_at(0.5).to_rgba8());
-    assert_eq!(g.at(0.5).to_rgba8(), g.reflect_at(0.5).to_rgba8());
+    cmp_rgba8!(g.at(0.5), g.repeat_at(0.5));
+    cmp_rgba8!(g.at(0.5), g.reflect_at(0.5));
 
-    assert_eq!(g.at(0.75).to_rgba8(), g.repeat_at(0.75).to_rgba8());
-    assert_eq!(g.at(0.75).to_rgba8(), g.reflect_at(0.75).to_rgba8());
+    cmp_rgba8!(g.at(0.75), g.repeat_at(0.75));
+    cmp_rgba8!(g.at(0.75), g.reflect_at(0.75));
 
-    assert_eq!(g.at(0.999).to_rgba8(), g.repeat_at(0.999).to_rgba8());
-    assert_eq!(g.at(0.999).to_rgba8(), g.reflect_at(0.999).to_rgba8());
+    cmp_rgba8!(g.at(0.999), g.repeat_at(0.999));
+    cmp_rgba8!(g.at(0.999), g.reflect_at(0.999));
 }
 
 #[test]
@@ -36,30 +42,30 @@ fn spread_repeat() {
         .build::<LinearGradient>()
         .unwrap();
 
-    assert_eq!(g.repeat_at(-2.0).to_hex_string(), "#000000");
-    assert_eq!(g.repeat_at(-1.9).to_hex_string(), "#1a1a1a");
-    assert_eq!(g.repeat_at(-1.5).to_hex_string(), "#808080");
-    assert_eq!(g.repeat_at(-1.1).to_hex_string(), "#e6e6e6");
+    cmp_hex!(g.repeat_at(-2.0), "#000000");
+    cmp_hex!(g.repeat_at(-1.9), "#1a1a1a");
+    cmp_hex!(g.repeat_at(-1.5), "#808080");
+    cmp_hex!(g.repeat_at(-1.1), "#e6e6e6");
 
-    assert_eq!(g.repeat_at(-1.0).to_hex_string(), "#000000");
-    assert_eq!(g.repeat_at(-0.9).to_hex_string(), "#1a1a1a");
-    assert_eq!(g.repeat_at(-0.5).to_hex_string(), "#808080");
-    assert_eq!(g.repeat_at(-0.1).to_hex_string(), "#e6e6e6");
+    cmp_hex!(g.repeat_at(-1.0), "#000000");
+    cmp_hex!(g.repeat_at(-0.9), "#1a1a1a");
+    cmp_hex!(g.repeat_at(-0.5), "#808080");
+    cmp_hex!(g.repeat_at(-0.1), "#e6e6e6");
 
-    assert_eq!(g.repeat_at(0.0).to_hex_string(), "#000000");
-    assert_eq!(g.repeat_at(0.1).to_hex_string(), "#1a1a1a");
-    assert_eq!(g.repeat_at(0.5).to_hex_string(), "#808080");
-    assert_eq!(g.repeat_at(0.9).to_hex_string(), "#e6e6e6");
+    cmp_hex!(g.repeat_at(0.0), "#000000");
+    cmp_hex!(g.repeat_at(0.1), "#1a1a1a");
+    cmp_hex!(g.repeat_at(0.5), "#808080");
+    cmp_hex!(g.repeat_at(0.9), "#e6e6e6");
 
-    assert_eq!(g.repeat_at(1.0).to_hex_string(), "#000000");
-    assert_eq!(g.repeat_at(1.1).to_hex_string(), "#1a1a1a");
-    assert_eq!(g.repeat_at(1.5).to_hex_string(), "#808080");
-    assert_eq!(g.repeat_at(1.9).to_hex_string(), "#e6e6e6");
+    cmp_hex!(g.repeat_at(1.0), "#000000");
+    cmp_hex!(g.repeat_at(1.1), "#1a1a1a");
+    cmp_hex!(g.repeat_at(1.5), "#808080");
+    cmp_hex!(g.repeat_at(1.9), "#e6e6e6");
 
-    assert_eq!(g.repeat_at(2.0).to_hex_string(), "#000000");
-    assert_eq!(g.repeat_at(2.1).to_hex_string(), "#191919");
-    assert_eq!(g.repeat_at(2.5).to_hex_string(), "#808080");
-    assert_eq!(g.repeat_at(2.9).to_hex_string(), "#e6e6e6");
+    cmp_hex!(g.repeat_at(2.0), "#000000");
+    cmp_hex!(g.repeat_at(2.1), "#191919");
+    cmp_hex!(g.repeat_at(2.5), "#808080");
+    cmp_hex!(g.repeat_at(2.9), "#e6e6e6");
 }
 
 #[test]
@@ -69,30 +75,30 @@ fn spread_reflect() {
         .build::<LinearGradient>()
         .unwrap();
 
-    assert_eq!(g.reflect_at(-2.0).to_hex_string(), "#000000");
-    assert_eq!(g.reflect_at(-1.9).to_hex_string(), "#1a1a1a");
-    assert_eq!(g.reflect_at(-1.5).to_hex_string(), "#808080");
-    assert_eq!(g.reflect_at(-1.1).to_hex_string(), "#e6e6e6");
+    cmp_hex!(g.reflect_at(-2.0), "#000000");
+    cmp_hex!(g.reflect_at(-1.9), "#1a1a1a");
+    cmp_hex!(g.reflect_at(-1.5), "#808080");
+    cmp_hex!(g.reflect_at(-1.1), "#e6e6e6");
 
-    assert_eq!(g.reflect_at(-1.0).to_hex_string(), "#ffffff");
-    assert_eq!(g.reflect_at(-0.9).to_hex_string(), "#e6e6e6");
-    assert_eq!(g.reflect_at(-0.5).to_hex_string(), "#808080");
-    assert_eq!(g.reflect_at(-0.1).to_hex_string(), "#191919");
+    cmp_hex!(g.reflect_at(-1.0), "#ffffff");
+    cmp_hex!(g.reflect_at(-0.9), "#e6e6e6");
+    cmp_hex!(g.reflect_at(-0.5), "#808080");
+    cmp_hex!(g.reflect_at(-0.1), "#191919");
 
-    assert_eq!(g.reflect_at(0.0).to_hex_string(), "#000000");
-    assert_eq!(g.reflect_at(0.1).to_hex_string(), "#191919");
-    assert_eq!(g.reflect_at(0.5).to_hex_string(), "#808080");
-    assert_eq!(g.reflect_at(0.9).to_hex_string(), "#e6e6e6");
+    cmp_hex!(g.reflect_at(0.0), "#000000");
+    cmp_hex!(g.reflect_at(0.1), "#191919");
+    cmp_hex!(g.reflect_at(0.5), "#808080");
+    cmp_hex!(g.reflect_at(0.9), "#e6e6e6");
 
-    assert_eq!(g.reflect_at(1.0).to_hex_string(), "#ffffff");
-    assert_eq!(g.reflect_at(1.1).to_hex_string(), "#e6e6e6");
-    assert_eq!(g.reflect_at(1.5).to_hex_string(), "#808080");
-    assert_eq!(g.reflect_at(1.9).to_hex_string(), "#191919");
+    cmp_hex!(g.reflect_at(1.0), "#ffffff");
+    cmp_hex!(g.reflect_at(1.1), "#e6e6e6");
+    cmp_hex!(g.reflect_at(1.5), "#808080");
+    cmp_hex!(g.reflect_at(1.9), "#191919");
 
-    assert_eq!(g.reflect_at(2.0).to_hex_string(), "#000000");
-    assert_eq!(g.reflect_at(2.1).to_hex_string(), "#191919");
-    assert_eq!(g.reflect_at(2.5).to_hex_string(), "#808080");
-    assert_eq!(g.reflect_at(2.9).to_hex_string(), "#e6e6e6");
+    cmp_hex!(g.reflect_at(2.0), "#000000");
+    cmp_hex!(g.reflect_at(2.1), "#191919");
+    cmp_hex!(g.reflect_at(2.5), "#808080");
+    cmp_hex!(g.reflect_at(2.9), "#e6e6e6");
 }
 
 #[test]

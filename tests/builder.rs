@@ -11,8 +11,8 @@ fn builder() {
 
     let g = GradientBuilder::new().build::<LinearGradient>().unwrap();
     assert_eq!(g.domain(), (0.0, 1.0));
-    assert_eq!(g.at(0.0).to_hex_string(), "#000000");
-    assert_eq!(g.at(1.0).to_hex_string(), "#ffffff");
+    cmp_hex!(g.at(0.0), "#000000");
+    cmp_hex!(g.at(1.0), "#ffffff");
 
     // Single color
 
@@ -30,9 +30,9 @@ fn builder() {
         .html_colors(&["#f00", "#0f0", "#00f"])
         .build::<LinearGradient>()
         .unwrap();
-    assert_eq!(g.at(0.0).to_hex_string(), "#ff0000");
-    assert_eq!(g.at(0.5).to_hex_string(), "#00ff00");
-    assert_eq!(g.at(1.0).to_hex_string(), "#0000ff");
+    cmp_hex!(g.at(0.0), "#ff0000");
+    cmp_hex!(g.at(0.5), "#00ff00");
+    cmp_hex!(g.at(1.0), "#0000ff");
 
     // Custom domain
 
@@ -41,9 +41,9 @@ fn builder() {
         .domain(&[-100.0, 100.0])
         .build::<LinearGradient>()
         .unwrap();
-    assert_eq!(g.at(-100.0).to_hex_string(), "#ff0000");
-    assert_eq!(g.at(0.0).to_hex_string(), "#00ff00");
-    assert_eq!(g.at(100.0).to_hex_string(), "#0000ff");
+    cmp_hex!(g.at(-100.0), "#ff0000");
+    cmp_hex!(g.at(0.0), "#00ff00");
+    cmp_hex!(g.at(100.0), "#0000ff");
 
     // Color position
 
@@ -52,10 +52,10 @@ fn builder() {
         .domain(&[13.0, 27.3, 90.0, 97.5])
         .build::<LinearGradient>()
         .unwrap();
-    assert_eq!(g.at(13.0).to_hex_string(), "#ff0000");
-    assert_eq!(g.at(27.3).to_hex_string(), "#00ff00");
-    assert_eq!(g.at(90.0).to_hex_string(), "#0000ff");
-    assert_eq!(g.at(97.5).to_hex_string(), "#ff00ff");
+    cmp_hex!(g.at(13.0), "#ff0000");
+    cmp_hex!(g.at(27.3), "#00ff00");
+    cmp_hex!(g.at(90.0), "#0000ff");
+    cmp_hex!(g.at(97.5), "#ff00ff");
 
     // Multiple colors, custom domain
 

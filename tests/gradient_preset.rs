@@ -1,36 +1,38 @@
 use colorgrad::Gradient;
 
+mod utils;
+
 #[test]
 fn preset() {
     let g = colorgrad::preset::viridis();
-    assert_eq!(g.at(0.0).to_hex_string(), "#440154");
-    assert_eq!(g.at(0.5).to_hex_string(), "#27838e");
-    assert_eq!(g.at(1.0).to_hex_string(), "#fee825");
-    assert_eq!(g.at(f32::NAN).to_hex_string(), "#000000");
+    cmp_hex!(g.at(0.0), "#440154");
+    cmp_hex!(g.at(0.5), "#27838e");
+    cmp_hex!(g.at(1.0), "#fee825");
+    cmp_hex!(g.at(f32::NAN), "#000000");
 
     let g = colorgrad::preset::greys();
-    assert_eq!(g.at(0.0).to_hex_string(), "#ffffff");
-    assert_eq!(g.at(1.0).to_hex_string(), "#000000");
+    cmp_hex!(g.at(0.0), "#ffffff");
+    cmp_hex!(g.at(1.0), "#000000");
 
     let g = colorgrad::preset::turbo();
-    assert_eq!(g.at(0.0).to_hex_string(), "#23171b");
-    assert_eq!(g.at(1.0).to_hex_string(), "#900c00");
+    cmp_hex!(g.at(0.0), "#23171b");
+    cmp_hex!(g.at(1.0), "#900c00");
 
     let g = colorgrad::preset::cividis();
-    assert_eq!(g.at(0.0).to_hex_string(), "#002051");
-    assert_eq!(g.at(1.0).to_hex_string(), "#fdea45");
+    cmp_hex!(g.at(0.0), "#002051");
+    cmp_hex!(g.at(1.0), "#fdea45");
 
     let g = colorgrad::preset::cubehelix_default();
-    assert_eq!(g.at(0.0).to_hex_string(), "#000000");
-    assert_eq!(g.at(1.0).to_hex_string(), "#ffffff");
+    cmp_hex!(g.at(0.0), "#000000");
+    cmp_hex!(g.at(1.0), "#ffffff");
 
     let g = colorgrad::preset::warm();
-    assert_eq!(g.at(0.0).to_hex_string(), "#6e40aa");
-    assert_eq!(g.at(1.0).to_hex_string(), "#aff05b");
+    cmp_hex!(g.at(0.0), "#6e40aa");
+    cmp_hex!(g.at(1.0), "#aff05b");
 
     let g = colorgrad::preset::cool();
-    assert_eq!(g.at(0.0).to_hex_string(), "#6e40aa");
-    assert_eq!(g.at(1.0).to_hex_string(), "#aff05b");
+    cmp_hex!(g.at(0.0), "#6e40aa");
+    cmp_hex!(g.at(1.0), "#aff05b");
 }
 
 #[test]

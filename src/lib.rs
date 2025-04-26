@@ -294,6 +294,39 @@ impl Clone for Box<dyn Gradient + '_> {
     }
 }
 
+impl Gradient for Box<dyn Gradient + '_> {
+    fn at(&self, t: f32) -> Color {
+        (**self).at(t)
+    }
+
+    fn repeat_at(&self, t: f32) -> Color {
+        (**self).repeat_at(t)
+    }
+
+    fn reflect_at(&self, t: f32) -> Color {
+        (**self).reflect_at(t)
+    }
+
+    fn domain(&self) -> (f32, f32) {
+        (**self).domain()
+    }
+
+    fn colors(&self, n: usize) -> Vec<Color> {
+        (**self).colors(n)
+    }
+
+    fn sharp(&self, segment: u16, smoothness: f32) -> SharpGradient {
+        (**self).sharp(segment, smoothness)
+    }
+
+    fn boxed<'a>(self) -> Box<dyn Gradient + 'a>
+    where
+        Self: 'a,
+    {
+        Box::new(self)
+    }
+}
+
 pub struct GradientColors<'a> {
     gradient: &'a dyn Gradient,
     a_idx: usize,

@@ -263,6 +263,22 @@ fn colors_iter() {
 }
 
 #[test]
+fn boxed_gradients() {
+    let gradient = GradientBuilder::new()
+        .html_colors(&["#fff", "#000"])
+        .build::<LinearGradient>()
+        .unwrap()
+        .boxed();
+
+    assert_eq!(gradient.at(0.0).to_rgba8(), [255, 255, 255, 255]);
+    assert_eq!(gradient.repeat_at(1.25).to_rgba8(), [191, 191, 191, 255]);
+    assert_eq!(gradient.reflect_at(1.25).to_rgba8(), [64, 64, 64, 255]);
+    assert_eq!(gradient.domain(), (0.0, 1.0));
+    assert_eq!(gradient.colors(3).len(), 3);
+    assert_eq!(gradient.sharp(3, 0.0).colors(3).len(), 3);
+}
+
+#[test]
 fn others() {
     let gd: Box<dyn Gradient> = Box::new(GradientBuilder::new().build::<LinearGradient>().unwrap());
     let _: Box<dyn Gradient> = gd.clone();

@@ -1,5 +1,4 @@
 mod basis;
-mod boxed;
 mod catmull_rom;
 mod inverse;
 mod linear;

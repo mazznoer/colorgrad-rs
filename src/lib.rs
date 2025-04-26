@@ -138,17 +138,10 @@ pub use builder::{GradientBuilder, GradientBuilderError};
 mod css_gradient;
 
 mod gradient;
-pub use gradient::basis::BasisGradient;
-pub use gradient::catmull_rom::CatmullRomGradient;
-pub use gradient::inverse::InverseGradient;
-pub use gradient::linear::LinearGradient;
-pub use gradient::sharp::SharpGradient;
+pub use gradient::*;
 
 #[cfg(feature = "preset")]
-pub use gradient::preset;
-
-#[cfg(feature = "ggr")]
-pub use gradient::gimp::{GimpGradient, ParseGgrError};
+pub mod preset;
 
 /// Color blending mode
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]

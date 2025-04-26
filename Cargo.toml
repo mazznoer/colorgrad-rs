@@ -43,7 +43,7 @@ name = "gradients"
 required-features = ["lab", "preset", "ggr", "named-colors"]
 
 [[test]]
-name = "gradient_preset"
+name = "preset"
 required-features = ["preset"]
 
 [[test]]

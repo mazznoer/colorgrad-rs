@@ -129,21 +129,47 @@ fn builder() {
 
 #[test]
 fn css_gradient() {
+    #[rustfmt::skip]
     let test_data = [
+        (
+            "blue",
+            vec![0.0, 1.0],
+            vec!["#0000ff", "#0000ff"],
+        ),
+        (
+            "red, blue",
+            vec![0.0, 1.0],
+            vec!["#ff0000", "#0000ff"],
+        ),
+        (
+            "red, lime, blue",
+            vec![0.0, 0.5, 1.0],
+            vec!["#ff0000", "#00ff00", "#0000ff"],
+        ),
         (
             "red, lime 75%, blue",
             vec![0.0, 0.75, 1.0],
             vec!["#ff0000", "#00ff00", "#0000ff"],
         ),
         (
-            "red 13%, lime, blue",
-            vec![0.0, 0.13, 0.565, 1.0],
+            "red 70%, lime, blue",
+            vec![0.0, 0.7, 0.85, 1.0],
             vec!["#ff0000", "#ff0000", "#00ff00", "#0000ff"],
         ),
         (
             "red, lime, blue 100",
             vec![0.0, 50.0, 100.0],
             vec!["#ff0000", "#00ff00", "#0000ff"],
+        ),
+        (
+            "#00f, #ff0 10% 35%, #f00",
+            vec![0.0, 0.1, 0.35, 1.0],
+            vec!["#0000ff", "#ffff00", "#ffff00", "#ff0000"],
+        ),
+        (
+            "red, 75%, #ff0",
+            vec![0.0, 0.75, 1.0],
+            vec!["#ff0000", "#ff8000", "#ffff00"],
         ),
         (
             "red -100, lime, blue 100",
@@ -186,6 +212,7 @@ fn css_gradient() {
         "0, red, lime",
         "red, lime, 100%",
         "deeppink, 0.4, 0.9, pink",
+        "50%",
         "0%, 100%",
     ];
 

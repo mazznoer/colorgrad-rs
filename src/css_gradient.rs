@@ -73,12 +73,11 @@ impl CSSGradientParser {
             return None;
         }
 
-        for i in 0..stops.len() {
-            if i == 0 && stops[i].pos.is_none() {
-                stops[i].pos = Some(self.dmin);
-                continue;
-            }
+        if stops[0].pos.is_none() {
+            stops[0].pos = Some(self.dmin);
+        }
 
+        for i in 0..stops.len() {
             if i == stops.len() - 1 {
                 if stops[i].pos.is_none() {
                     stops[i].pos = Some(self.dmax);
@@ -141,55 +140,44 @@ impl CSSGradientParser {
         Some((colors, positions))
     }
 
+    #[rustfmt::skip]
     pub fn parse_stop(&mut self, s: &str) -> bool {
-        let stop = split_by_space(s);
-
-        match stop.len() {
-            1 => {
-                if let Ok(c) = stop[0].parse::<Color>() {
-                    self.stops.push(Stop::new(Some(c), None));
-                } else if let Some(pos) = self.parse_pos(stop[0]) {
-                    self.stops.push(Stop::new(None, Some(pos)));
+        match split_by_space(s)[..] {
+            [s] => {
+                if let Ok(color) = s.parse::<Color>() {
+                    self.stops.push(Stop::new(Some(color), None));
+                } else if let Some(position) = self.parse_pos(s) {
+                    self.stops.push(Stop::new(None, Some(position)));
                 } else {
                     return false;
                 }
             }
-            2 => {
-                let col = if let Ok(c) = stop[0].parse::<Color>() {
-                    Some(c)
-                } else {
+            [color, position] => {
+                let (
+                    Ok(color),
+                    Some(position),
+                ) = (
+                    color.parse::<Color>(),
+                    self.parse_pos(position),
+                ) else {
                     return false;
                 };
-
-                let p = if let Some(pos) = self.parse_pos(stop[1]) {
-                    Some(pos)
-                } else {
-                    return false;
-                };
-
-                self.stops.push(Stop::new(col, p));
+                self.stops.push(Stop::new(Some(color), Some(position)));
             }
-            3 => {
-                let col = if let Ok(c) = stop[0].parse::<Color>() {
-                    Some(c)
-                } else {
+            [color, position1, position2] => {
+                let (
+                    Ok(color),
+                    Some(position1),
+                    Some(position2),
+                ) = (
+                    color.parse::<Color>(),
+                    self.parse_pos(position1),
+                    self.parse_pos(position2),
+                ) else {
                     return false;
                 };
-
-                let p1 = if let Some(pos) = self.parse_pos(stop[1]) {
-                    Some(pos)
-                } else {
-                    return false;
-                };
-
-                let p2 = if let Some(pos) = self.parse_pos(stop[2]) {
-                    Some(pos)
-                } else {
-                    return false;
-                };
-
-                self.stops.push(Stop::new(col.clone(), p1));
-                self.stops.push(Stop::new(col, p2));
+                self.stops.push(Stop::new(Some(color.clone()), Some(position1)));
+                self.stops.push(Stop::new(Some(color), Some(position2)));
             }
             _ => {
                 return false;
@@ -198,12 +186,12 @@ impl CSSGradientParser {
         true
     }
 
+    #[rustfmt::skip]
     pub fn parse_pos(&self, s: &str) -> Option<f32> {
         s.strip_suffix('%')
             .and_then(|s| {
                 s.parse().ok().map(|t: f32| {
-                    let t = t / 100.0;
-                    t * (self.dmax - self.dmin) + self.dmin
+                    t / 100.0 * (self.dmax - self.dmin) + self.dmin
                 })
             })
             .or_else(|| s.parse().ok())

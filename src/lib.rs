@@ -136,6 +136,7 @@ mod builder;
 pub use builder::{GradientBuilder, GradientBuilderError};
 
 mod css_gradient;
+use css_gradient::CSSGradientParser;
 
 mod gradient;
 pub use gradient::*;

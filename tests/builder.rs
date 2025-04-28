@@ -164,6 +164,20 @@ fn css_gradient() {
         assert_eq!(&colors2hex(gb.get_colors()), &colors);
     }
 
+    // Custom domain
+
+    let mut gb = GradientBuilder::new();
+    gb.domain(&[0.0, 50.0]);
+    gb.css("#f00, #0f0 50%, #00f");
+    let g: LinearGradient = gb.build().unwrap();
+
+    assert_eq!(gb.get_positions(), [0.0, 25.0, 50.0]);
+    assert_eq!(
+        colors2hex(gb.get_colors()),
+        ["#ff0000", "#00ff00", "#0000ff"]
+    );
+    assert_eq!(g.domain(), (0.0, 50.0));
+
     // Invalid format
 
     let invalid_css = [

@@ -1,7 +1,7 @@
 use std::convert::TryFrom;
 use std::{error, fmt};
 
-use crate::{css_gradient, linspace, BlendMode, Color};
+use crate::{linspace, BlendMode, CSSGradientParser, Color};
 
 #[derive(Debug, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum GradientBuilderError {
@@ -165,7 +165,16 @@ impl GradientBuilder {
     /// # }
     /// ```
     pub fn css<'a>(&'a mut self, s: &str) -> &'a mut Self {
-        if let Some((colors, positions)) = css_gradient::parse(s, self.mode) {
+        let [dmin, dmax] = if self.positions.len() == 2 && self.positions[0] < self.positions[1] {
+            [self.positions[0], self.positions[1]]
+        } else {
+            [0.0, 1.0]
+        };
+        let mut cgp = CSSGradientParser::new();
+        cgp.set_domain(dmin, dmax);
+        cgp.set_mode(self.mode);
+
+        if let Some((colors, positions)) = cgp.parse(s) {
             self.invalid_css_gradient = false;
             self.colors = colors;
             self.positions = positions;

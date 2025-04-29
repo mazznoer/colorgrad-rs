@@ -33,6 +33,56 @@ fn preset() {
     let g = colorgrad::preset::cool();
     cmp_hex!(g.at(0.0), "#6e40aa");
     cmp_hex!(g.at(1.0), "#aff05b");
+
+    macro_rules! presets {
+        ($($name:ident),+ $(,)?) => {
+            $({
+                let g = colorgrad::preset::$name();
+                assert_eq!(g.domain(), (0.0, 1.0));
+            })*
+        }
+    }
+
+    presets!(
+        blues,
+        br_bg,
+        bu_gn,
+        bu_pu,
+        cividis,
+        cool,
+        cubehelix_default,
+        gn_bu,
+        greens,
+        greys,
+        inferno,
+        magma,
+        or_rd,
+        oranges,
+        pi_yg,
+        plasma,
+        pr_gn,
+        pu_bu,
+        pu_bu_gn,
+        pu_or,
+        pu_rd,
+        purples,
+        rainbow,
+        rd_bu,
+        rd_gy,
+        rd_pu,
+        rd_yl_bu,
+        rd_yl_gn,
+        reds,
+        sinebow,
+        spectral,
+        turbo,
+        viridis,
+        warm,
+        yl_gn,
+        yl_gn_bu,
+        yl_or_br,
+        yl_or_rd,
+    );
 }
 
 #[test]

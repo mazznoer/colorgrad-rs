@@ -1,9 +1,27 @@
 use crate::{Color, Gradient};
 
-/// A gradient that inverts the gradient of another gradient.
-///
-/// The minimum value of the inner gradient will be the maximum value of the inverse gradient and
-/// vice versa.
+#[cfg_attr(
+    feature = "preset",
+    doc = r##"
+A special gradient that inverts the inner gradient.
+
+The minimum value of the inner gradient will be the maximum value of the inverse gradient and
+vice versa.
+
+```
+use colorgrad::Gradient;
+
+let gradient = colorgrad::preset::magma();
+let inverted = gradient.inverse();
+
+assert_eq!(gradient.at(0.9).to_rgba8(), inverted.at(0.1).to_rgba8());
+
+for color in inverted.colors_iter(15) {
+    println!("{}", color.to_hex_string());
+}
+```
+"##
+)]
 #[derive(Clone)]
 pub struct InverseGradient<'a> {
     inner: Box<dyn Gradient + 'a>,

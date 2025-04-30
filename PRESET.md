@@ -4,6 +4,20 @@ All preset gradients are in the domain [0..1]. Uniform B-splines is used to inte
 
 ![img](docs/images/rgb-plot.png)
 
+```rust
+use colorgrad::Gradient;
+
+let g = colorgrad::preset::viridis();
+
+assert_eq!(g.domain(), (0.0, 1.0));
+
+println!("{}", g.at(0.27).to_hex_string());
+
+for color in g.colors_iter(35) {
+    println!("{:?}", color.to_rgba8());
+}
+```
+
 ## Diverging
 
 `colorgrad::preset::br_bg()`

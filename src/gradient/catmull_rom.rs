@@ -9,16 +9,17 @@ use crate::{convert_colors, BlendMode, Color, Gradient, GradientBuilder, Gradien
     feature = "named-colors",
     doc = r##"
 ```
-# use std::error::Error;
+# fn main() -> Result<(), Box<dyn std::error::Error>> {
+# use colorgrad::{GradientBuilder, CatmullRomGradient};
 use colorgrad::Gradient;
 
-# fn main() -> Result<(), Box<dyn Error>> {
-let grad = colorgrad::GradientBuilder::new()
+let grad = GradientBuilder::new()
     .html_colors(&["deeppink", "gold", "seagreen"])
-    .build::<colorgrad::CatmullRomGradient>()?;
+    .build::<CatmullRomGradient>()?;
 # Ok(())
 # }
-```"##
+```
+"##
 )]
 #[derive(Debug, Clone)]
 pub struct CatmullRomGradient {

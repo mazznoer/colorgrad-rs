@@ -7,16 +7,18 @@ use crate::{BlendMode, Color, Gradient, GradientBuilder, GradientBuilderError};
     feature = "named-colors",
     doc = r##"
 ```
-# use std::error::Error;
+# fn main() -> Result<(), Box<dyn std::error::Error>> {
+# use colorgrad::{BlendMode, GradientBuilder, LinearGradient};
 use colorgrad::Gradient;
 
-# fn main() -> Result<(), Box<dyn Error>> {
-let grad = colorgrad::GradientBuilder::new()
+let grad = GradientBuilder::new()
     .html_colors(&["deeppink", "gold", "seagreen"])
-    .build::<colorgrad::LinearGradient>()?;
+    .mode(BlendMode::Oklab)
+    .build::<LinearGradient>()?;
 # Ok(())
 # }
-```"##
+```
+"##
 )]
 #[derive(Debug, Clone)]
 pub struct LinearGradient {

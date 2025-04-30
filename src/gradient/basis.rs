@@ -20,16 +20,17 @@ fn basis(t1: f32, v0: f32, v1: f32, v2: f32, v3: f32) -> f32 {
     feature = "named-colors",
     doc = r##"
 ```
-# use std::error::Error;
+# fn main() -> Result<(), Box<dyn std::error::Error>> {
+# use colorgrad::{GradientBuilder, BasisGradient};
 use colorgrad::Gradient;
 
-# fn main() -> Result<(), Box<dyn Error>> {
-let grad = colorgrad::GradientBuilder::new()
+let grad = GradientBuilder::new()
     .html_colors(&["deeppink", "gold", "seagreen"])
-    .build::<colorgrad::BasisGradient>()?;
+    .build::<BasisGradient>()?;
 # Ok(())
 # }
-```"##
+```
+"##
 )]
 #[derive(Debug, Clone)]
 pub struct BasisGradient {

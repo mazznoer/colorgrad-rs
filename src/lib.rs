@@ -135,14 +135,17 @@ pub use csscolorparser::{Color, ParseColorError};
 mod builder;
 pub use builder::{GradientBuilder, GradientBuilderError};
 
-mod css_gradient;
-use css_gradient::CSSGradientParser;
-
 mod gradient;
 pub use gradient::*;
 
 #[cfg(feature = "preset")]
 pub mod preset;
+
+mod utils;
+use utils::*;
+
+mod css_gradient;
+use css_gradient::CSSGradientParser;
 
 /// Color blending mode
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
@@ -375,55 +378,5 @@ impl DoubleEndedIterator for GradientColors<'_> {
 impl ExactSizeIterator for GradientColors<'_> {
     fn len(&self) -> usize {
         self.b_idx - self.a_idx
-    }
-}
-
-fn convert_colors(colors: &[Color], mode: BlendMode) -> Vec<[f32; 4]> {
-    colors
-        .iter()
-        .map(|c| match mode {
-            BlendMode::Rgb => c.to_array(),
-            BlendMode::LinearRgb => c.to_linear_rgba(),
-            BlendMode::Oklab => c.to_oklaba(),
-            #[cfg(feature = "lab")]
-            BlendMode::Lab => c.to_laba(),
-        })
-        .collect()
-}
-
-fn linspace(min: f32, max: f32, n: usize) -> Vec<f32> {
-    if n == 1 {
-        return vec![min];
-    }
-
-    let d = max - min;
-    let l = n as f32 - 1.0;
-    (0..n).map(|i| min + (i as f32 * d) / l).collect()
-}
-
-#[inline]
-fn modulo(x: f32, y: f32) -> f32 {
-    (x % y + y) % y
-}
-
-#[inline]
-// Map t from range [a, b] to range [0, 1]
-fn norm(t: f32, a: f32, b: f32) -> f32 {
-    (t - a) * (1.0 / (b - a))
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_linspace() {
-        let empty: Vec<f32> = Vec::new();
-        assert_eq!(linspace(0.0, 1.0, 0), empty);
-        assert_eq!(linspace(0.0, 1.0, 1), vec![0.0]);
-        assert_eq!(linspace(0.0, 1.0, 2), vec![0.0, 1.0]);
-        assert_eq!(linspace(0.0, 1.0, 3), vec![0.0, 0.5, 1.0]);
-        assert_eq!(linspace(-1.0, 1.0, 5), vec![-1.0, -0.5, 0.0, 0.5, 1.0]);
-        assert_eq!(linspace(0.0, 100.0, 5), vec![0.0, 25.0, 50.0, 75.0, 100.0]);
     }
 }

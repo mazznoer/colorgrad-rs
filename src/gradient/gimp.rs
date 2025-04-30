@@ -3,7 +3,7 @@
 // https://gitlab.gnome.org/GNOME/gimp/-/blob/master/app/core/gimpgradient.c
 // https://gitlab.gnome.org/GNOME/gimp/-/blob/master/app/core/gimpgradient-load.c
 
-use crate::gradient::linear::linear_interpolation;
+use crate::interpolate_linear;
 use crate::{Color, Gradient};
 
 use std::{
@@ -202,7 +202,7 @@ impl Gradient for GimpGradient {
         };
 
         match seg.coloring_type {
-            ColoringType::Rgb => Color::from(linear_interpolation(&seg.lcolor, &seg.rcolor, f)),
+            ColoringType::Rgb => Color::from(interpolate_linear(&seg.lcolor, &seg.rcolor, f)),
             ColoringType::HsvCcw => blend_hsv_ccw(&seg.lcolor, &seg.rcolor, f),
             ColoringType::HsvCw => blend_hsv_cw(&seg.lcolor, &seg.rcolor, f),
         }

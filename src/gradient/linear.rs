@@ -1,6 +1,7 @@
 use std::convert::TryFrom;
 
-use crate::{convert_colors, BlendMode, Color, Gradient, GradientBuilder, GradientBuilderError};
+use crate::{convert_colors, interpolate_linear};
+use crate::{BlendMode, Color, Gradient, GradientBuilder, GradientBuilderError};
 
 #[cfg_attr(
     feature = "named-colors",
@@ -80,7 +81,7 @@ impl Gradient for LinearGradient {
         let (pos_0, col_0) = self.stops[low - 1];
         let (pos_1, col_1) = self.stops[low];
         let t = (t - pos_0) / (pos_1 - pos_0);
-        let [a, b, c, d] = linear_interpolation(&col_0, &col_1, t);
+        let [a, b, c, d] = interpolate_linear(&col_0, &col_1, t);
 
         match self.mode {
             BlendMode::Rgb => Color::new(a, b, c, d),
@@ -103,14 +104,4 @@ impl TryFrom<&mut GradientBuilder> for LinearGradient {
         gb.prepare_build()?;
         Ok(Self::new(&gb.colors, &gb.positions, gb.mode))
     }
-}
-
-#[inline]
-pub(crate) fn linear_interpolation(a: &[f32; 4], b: &[f32; 4], t: f32) -> [f32; 4] {
-    [
-        a[0] + t * (b[0] - a[0]),
-        a[1] + t * (b[1] - a[1]),
-        a[2] + t * (b[2] - a[2]),
-        a[3] + t * (b[3] - a[3]),
-    ]
 }

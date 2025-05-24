@@ -130,7 +130,6 @@ Example output:
 
 "##
 )]
-
 #![forbid(unsafe_code)]
 
 pub use csscolorparser::{Color, ParseColorError};

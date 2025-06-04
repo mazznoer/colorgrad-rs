@@ -335,7 +335,7 @@ mod tests {
     }
 
     fn colors2hex(colors: Vec<Color>) -> Vec<String> {
-        colors.iter().map(|c| c.to_hex_string()).collect()
+        colors.iter().map(|c| c.to_css_hex()).collect()
     }
 
     #[test]

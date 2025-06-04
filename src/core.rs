@@ -29,7 +29,7 @@ pub enum BlendMode {
 ///
 /// let g = MyRedGradient{};
 /// assert_eq!(g.domain(), (0.0, 1.0));
-/// assert_eq!(g.at(0.1).to_hex_string(), "#ff0000");
+/// assert_eq!(g.at(0.1).to_css_hex(), "#ff0000");
 ///
 /// for color in g.colors_iter(25) {
 ///     println!("{:?}", color.to_rgba8());

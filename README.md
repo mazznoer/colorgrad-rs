@@ -242,7 +242,7 @@ use colorgrad::Gradient;
 let grad = colorgrad::preset::rainbow();
 
 for c in grad.colors(10) {
-    println!("{}", c.to_hex_string());
+    println!("{}", c.to_css_hex());
 }
 ```
 

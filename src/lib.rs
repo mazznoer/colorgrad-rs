@@ -16,7 +16,7 @@ let g = colorgrad::preset::rainbow();
 
 assert_eq!(g.domain(), (0.0, 1.0)); // all preset gradients are in the domain [0..1]
 assert_eq!(g.at(0.5).to_rgba8(), [175, 240, 91, 255]);
-assert_eq!(g.at(0.5).to_hex_string(), "#aff05b");
+assert_eq!(g.at(0.5).to_css_hex(), "#aff05b");
 
 for color in g.colors_iter(20) {
     println!("{:?}", color.to_rgba8());

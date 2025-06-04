@@ -11,7 +11,7 @@ let g = colorgrad::preset::viridis();
 
 assert_eq!(g.domain(), (0.0, 1.0));
 
-println!("{}", g.at(0.27).to_hex_string());
+println!("{}", g.at(0.27).to_css_hex());
 
 for color in g.colors_iter(35) {
     println!("{:?}", color.to_rgba8());

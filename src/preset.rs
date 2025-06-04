@@ -7,7 +7,7 @@
 //! assert_eq!(grad.domain(), (0.0, 1.0)); // all preset gradients are in the domain [0..1]
 //! assert_eq!(grad.at(0.25).to_rgba8(), [255, 94, 99, 255]);
 //! assert_eq!(grad.at(0.75).to_rgba8(), [26, 199, 194, 255]);
-//! assert_eq!(grad.at(0.37).to_hex_string(), "#f2a42f");
+//! assert_eq!(grad.at(0.37).to_css_hex(), "#f2a42f");
 //! ```
 
 use std::f32::consts::{FRAC_PI_3, PI};

@@ -292,3 +292,58 @@ fn others() {
     let _ = gd.inverse().boxed();
     let _ = gd.clone_boxed();
 }
+
+#[test]
+fn impl_gradient() {
+    // Default domain
+
+    #[derive(Clone)]
+    struct MyGradient1 {}
+
+    impl Gradient for MyGradient1 {
+        fn at(&self, t: f32) -> Color {
+            if t < 0.5 {
+                Color::new(0.0, 0.0, 1.0, 1.0)
+            } else {
+                Color::new(1.0, 0.0, 0.0, 1.0)
+            }
+        }
+    }
+
+    let g = MyGradient1 {};
+    assert_eq!(g.domain(), (0.0, 1.0));
+    cmp_hex!(g.at(0.00), "#0000ff");
+    cmp_hex!(g.at(0.49), "#0000ff");
+    cmp_hex!(g.at(0.51), "#ff0000");
+    cmp_hex!(g.at(1.00), "#ff0000");
+
+    // Custom domain
+
+    #[derive(Clone)]
+    struct MyGradient2 {}
+
+    impl Gradient for MyGradient2 {
+        fn at(&self, t: f32) -> Color {
+            if (t as usize / 10) & 1 == 0 {
+                Color::new(0.0, 0.0, 1.0, 1.0)
+            } else {
+                Color::new(1.0, 0.0, 0.0, 1.0)
+            }
+        }
+
+        fn domain(&self) -> (f32, f32) {
+            (1.0, 99.0)
+        }
+    }
+
+    let g = MyGradient2 {};
+    assert_eq!(g.domain(), (1.0, 99.0));
+    cmp_hex!(g.at(25.0), "#0000ff");
+    assert_eq!(
+        colors2hex(&g.colors(10)),
+        &[
+            "#0000ff", "#ff0000", "#0000ff", "#ff0000", "#0000ff", "#ff0000", "#0000ff", "#ff0000",
+            "#0000ff", "#ff0000",
+        ]
+    );
+}

@@ -1,6 +1,13 @@
 # Changelog
 
-## [Unreleased](https://github.com/mazznoer/colorgrad-rs/compare/v0.7.1...HEAD)
+## [Unreleased](https://github.com/mazznoer/colorgrad-rs/compare/v0.7.2...HEAD)
+
+## [0.7.2](https://github.com/mazznoer/colorgrad-rs/compare/v0.7.1...v0.7.2)
+
+### Added
+
+- `Gradient::colors_iter()`
+- `GradientColors`
 
 ## [0.7.1](https://github.com/mazznoer/colorgrad-rs/compare/v0.7.0...v0.7.1)
 

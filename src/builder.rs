@@ -20,7 +20,7 @@ impl fmt::Display for GradientBuilderError {
                     "invalid html colors: {}",
                     colors
                         .iter()
-                        .map(|x| format!("'{}'", x))
+                        .map(|x| format!("'{x}'"))
                         .collect::<Vec<String>>()
                         .join(", ")
                 )

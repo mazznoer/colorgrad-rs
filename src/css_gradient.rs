@@ -203,7 +203,7 @@ fn split_by_comma(s: &str) -> Vec<&str> {
     let mut start = 0;
     let mut inside = false;
 
-    for (i, c) in s.chars().enumerate() {
+    for (i, c) in s.char_indices() {
         if c == ',' && !inside {
             res.push(&s[start..i]);
             start = i + 1;
@@ -222,7 +222,7 @@ fn split_by_space(s: &str) -> Vec<&str> {
     let mut start = 0;
     let mut inside = false;
 
-    for (i, c) in s.chars().enumerate() {
+    for (i, c) in s.char_indices() {
         if c == ' ' && !inside {
             if !s[start..i].is_empty() {
                 res.push(&s[start..i]);

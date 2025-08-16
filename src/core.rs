@@ -70,7 +70,7 @@ pub trait Gradient: CloneGradient {
     }
 
     /// Returns iterator for n colors evenly spaced across gradient
-    fn colors_iter(&self, n: usize) -> GradientColors
+    fn colors_iter(&self, n: usize) -> GradientColors<'_>
     where
         Self: Sized,
     {
@@ -168,7 +168,7 @@ let gradients = vec![
     ///
     /// let inverse = grad.inverse();
     /// ```
-    fn inverse<'a>(&self) -> InverseGradient
+    fn inverse<'a>(&self) -> InverseGradient<'_>
     where
         Self: 'a,
     {

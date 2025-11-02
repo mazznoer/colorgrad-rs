@@ -240,7 +240,7 @@ impl GradientBuilder {
         };
 
         let positions = if self.positions.is_empty() {
-            linspace(0.0, 1.0, colors.len())
+            linspace(0.0, 1.0, colors.len()).collect()
         } else if self.positions.len() == colors.len() {
             for p in self.positions.windows(2) {
                 if p[0] > p[1] {
@@ -252,7 +252,7 @@ impl GradientBuilder {
             if self.positions[0] >= self.positions[1] {
                 return Err(GradientBuilderError::InvalidDomain);
             }
-            linspace(self.positions[0], self.positions[1], colors.len())
+            linspace(self.positions[0], self.positions[1], colors.len()).collect()
         } else {
             return Err(GradientBuilderError::InvalidDomain);
         };

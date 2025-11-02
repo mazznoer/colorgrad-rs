@@ -49,7 +49,7 @@ impl BasisGradient {
         let first_color = colors[0].clone();
         let last_color = colors[colors.len() - 1].clone();
         Self {
-            values: convert_colors(colors, mode),
+            values: convert_colors(colors, mode).collect(),
             positions,
             domain: (dmin, dmax),
             mode,

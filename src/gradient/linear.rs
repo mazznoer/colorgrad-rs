@@ -37,11 +37,7 @@ impl LinearGradient {
         let last_color = colors[colors.len() - 1].clone();
         let colors = convert_colors(colors, mode);
         Self {
-            stops: positions
-                .iter()
-                .zip(colors.iter())
-                .map(|(p, c)| (*p, *c))
-                .collect(),
+            stops: positions.iter().zip(colors).map(|(p, c)| (*p, c)).collect(),
             domain: (dmin, dmax),
             mode,
             first_color,

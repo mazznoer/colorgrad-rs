@@ -28,7 +28,7 @@ impl SharpGradient {
         }
 
         let t = t.clamp(0.0, 1.0) * (domain.1 - domain.0) / n as f32 / 4.0;
-        let p = linspace(domain.0, domain.1, n + 1);
+        let p: Vec<_> = linspace(domain.0, domain.1, n + 1).collect();
         let mut positions = Vec::with_capacity(n * 2);
         let mut j = 0;
 
@@ -54,11 +54,7 @@ impl SharpGradient {
         let last_color = colors_in[n - 1].clone();
 
         Self {
-            stops: positions
-                .iter()
-                .zip(colors.iter())
-                .map(|(p, c)| (*p, *c))
-                .collect(),
+            stops: positions.iter().zip(colors).map(|(p, c)| (*p, c)).collect(),
             domain,
             first_color,
             last_color,

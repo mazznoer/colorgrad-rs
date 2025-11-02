@@ -223,7 +223,7 @@ fn build_preset(colors: &[u32]) -> BasisGradient {
         )
     }
     let colors = colors.iter().map(to_color).collect::<Vec<_>>();
-    let pos = linspace(0.0, 1.0, colors.len());
+    let pos = linspace(0.0, 1.0, colors.len()).collect();
     BasisGradient::new(&colors, pos, BlendMode::Rgb)
 }
 

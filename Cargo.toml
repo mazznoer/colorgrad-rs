@@ -21,12 +21,12 @@ exclude = [
 features = ["named-colors", "preset", "ggr", "lab"]
 
 [dependencies]
-csscolorparser = { version = "0.7.2", default-features = false }
+csscolorparser = { version = "0.8.0", default-features = false }
 
 [features]
 default = ["named-colors", "preset"]
 named-colors = ["csscolorparser/named-colors"]
-lab = ["csscolorparser/lab"]
+lab = []
 preset = []
 ggr = []
 

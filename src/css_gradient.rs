@@ -142,8 +142,9 @@ impl CSSGradientParser {
 
     #[rustfmt::skip]
     pub fn parse_stop(&mut self, s: &str) -> bool {
-        match split_by_space(s)[..] {
-            [s] => {
+        let mut it = split_by_space(s);
+        match (it.next(), it.next(), it.next()) {
+            (Some(s), None, None) => {
                 if let Ok(color) = s.parse::<Color>() {
                     self.stops.push(Stop::new(Some(color), None));
                 } else if let Some(position) = self.parse_pos(s) {
@@ -152,7 +153,7 @@ impl CSSGradientParser {
                     return false;
                 }
             }
-            [color, position] => {
+            (Some(color), Some(position), None) => {
                 let (
                     Ok(color),
                     Some(position),
@@ -164,7 +165,10 @@ impl CSSGradientParser {
                 };
                 self.stops.push(Stop::new(Some(color), Some(position)));
             }
-            [color, position1, position2] => {
+            (Some(color), Some(position1), Some(position2)) => {
+                if it.next().is_some() {
+                    return false;
+                }
                 let (
                     Ok(color),
                     Some(position1),
@@ -198,46 +202,67 @@ impl CSSGradientParser {
     }
 }
 
-fn split_by_comma(s: &str) -> Vec<&str> {
-    let mut res = Vec::new();
-    let mut start = 0;
-    let mut inside = false;
-
-    for (i, c) in s.char_indices() {
-        if c == ',' && !inside {
-            res.push(&s[start..i]);
-            start = i + 1;
-        } else if c == '(' {
-            inside = true;
-        } else if c == ')' {
-            inside = false;
+fn split_by_comma(s: &str) -> impl Iterator<Item = &str> {
+    std::iter::from_fn({
+        let mut pos = 0;
+        let mut inside = false;
+        move || {
+            if pos > s.len() {
+                return None;
+            }
+            let start = pos;
+            for (i, c) in s[pos..].char_indices() {
+                if c == ',' && !inside {
+                    pos = pos + i + 1;
+                    return Some(&s[start..pos - 1]);
+                } else if c == '(' {
+                    inside = true;
+                } else if c == ')' {
+                    inside = false;
+                }
+            }
+            pos = s.len() + 1;
+            Some(&s[start..])
         }
-    }
-    res.push(&s[start..]);
-    res
+    })
 }
 
-fn split_by_space(s: &str) -> Vec<&str> {
-    let mut res = Vec::new();
-    let mut start = 0;
+fn split_by_space(s: &str) -> impl Iterator<Item = &str> {
+    let mut pos = 0;
     let mut inside = false;
 
-    for (i, c) in s.char_indices() {
-        if c == ' ' && !inside {
-            if !s[start..i].is_empty() {
-                res.push(&s[start..i]);
-            }
-            start = i + 1;
-        } else if c == '(' {
-            inside = true;
-        } else if c == ')' {
-            inside = false;
+    std::iter::from_fn(move || {
+        // Skip leading whitespace
+        while pos < s.len() && s.as_bytes()[pos] == b' ' && !inside {
+            pos += 1;
         }
-    }
-    if !s[start..].is_empty() {
-        res.push(&s[start..]);
-    }
-    res
+
+        if pos >= s.len() {
+            return None;
+        }
+
+        let start = pos;
+
+        // Scan until we hit a space outside parentheses
+        while pos < s.len() {
+            let byte = s.as_bytes()[pos];
+            match byte {
+                b'(' => inside = true,
+                b')' => inside = false,
+                b' ' if !inside => break,
+                _ => {}
+            }
+            pos += 1;
+        }
+
+        let end = pos;
+        // Move pos past the space (if we stopped on one)
+        if pos < s.len() && s.as_bytes()[pos] == b' ' {
+            pos += 1;
+        }
+
+        Some(&s[start..end])
+    })
 }
 
 #[cfg(test)]
@@ -246,25 +271,40 @@ mod tests {
 
     #[test]
     fn utils() {
-        assert_eq!(split_by_comma("red, #fff, lime"), ["red", " #fff", " lime"]);
-        assert_eq!(
-            split_by_comma("#ff0000, rgb(255, 0, 0), hsv(120, 50%, 50%) 75%, blue"),
-            [
-                "#ff0000",
-                " rgb(255, 0, 0)",
-                " hsv(120, 50%, 50%) 75%",
-                " blue"
-            ]
-        );
+        let s = "red, #fff, lime";
+        let mut it = split_by_comma(s);
+        assert_eq!(it.next(), Some("red"));
+        assert_eq!(it.next(), Some(" #fff"));
+        assert_eq!(it.next(), Some(" lime"));
+        assert_eq!(it.next(), None);
 
-        assert_eq!(
-            split_by_space("rgb(0, 0, 150) 0.75 1"),
-            ["rgb(0, 0, 150)", "0.75", "1"]
-        );
-        assert_eq!(
-            split_by_space("hsv(360, 50%, 30%) 0% 35%"),
-            ["hsv(360, 50%, 30%)", "0%", "35%"]
-        );
+        let s = "#ff0000, rgb(255, 0, 0), hsv(120, 50%, 50%) 75%, blue";
+        let mut it = split_by_comma(s);
+        assert_eq!(it.next(), Some("#ff0000"));
+        assert_eq!(it.next(), Some(" rgb(255, 0, 0)"));
+        assert_eq!(it.next(), Some(" hsv(120, 50%, 50%) 75%"));
+        assert_eq!(it.next(), Some(" blue"));
+        assert_eq!(it.next(), None);
+
+        let s = "rgb(0, 0, 150) 0.75 1";
+        let mut it = split_by_space(s);
+        assert_eq!(it.next(), Some("rgb(0, 0, 150)"));
+        assert_eq!(it.next(), Some("0.75"));
+        assert_eq!(it.next(), Some("1"));
+        assert_eq!(it.next(), None);
+
+        let s = "hsv(360, 50%, 30%) 0% 35%";
+        let mut it = split_by_space(s);
+        assert_eq!(it.next(), Some("hsv(360, 50%, 30%)"));
+        assert_eq!(it.next(), Some("0%"));
+        assert_eq!(it.next(), Some("35%"));
+        assert_eq!(it.next(), None);
+
+        let s = " #00f 75%";
+        let mut it = split_by_space(s);
+        assert_eq!(it.next(), Some("#00f"));
+        assert_eq!(it.next(), Some("75%"));
+        assert_eq!(it.next(), None);
     }
 
     #[test]

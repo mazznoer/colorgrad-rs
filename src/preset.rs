@@ -10,7 +10,9 @@
 //! assert_eq!(grad.at(0.37).to_css_hex(), "#f2a42f");
 //! ```
 
-use std::f32::consts::{FRAC_PI_3, PI};
+use alloc::vec::Vec;
+use core::f32::consts::{FRAC_PI_3, PI};
+use libm::{cosf, roundf, sinf};
 
 use crate::{linspace, BasisGradient, BlendMode, Color, Gradient};
 
@@ -28,10 +30,13 @@ pub fn sinebow() -> SinebowGradient {
 impl Gradient for SinebowGradient {
     fn at(&self, t: f32) -> Color {
         let t = (0.5 - t) * PI;
+        let r = sinf(t);
+        let g = sinf(t + FRAC_PI_3);
+        let b = sinf(t + PI2_3);
         Color::new(
-            t.sin().powi(2).clamp(0.0, 1.0),
-            (t + FRAC_PI_3).sin().powi(2).clamp(0.0, 1.0),
-            (t + PI2_3).sin().powi(2).clamp(0.0, 1.0),
+            (r * r).clamp(0.0, 1.0),
+            (g * g).clamp(0.0, 1.0),
+            (b * b).clamp(0.0, 1.0),
             1.0,
         )
     }
@@ -49,14 +54,15 @@ pub fn turbo() -> TurboGradient {
 impl Gradient for TurboGradient {
     fn at(&self, t: f32) -> Color {
         let t = t.clamp(0.0, 1.0);
-        let r = (34.61
-            + t * (1172.33 - t * (10793.56 - t * (33300.12 - t * (38394.49 - t * 14825.05)))))
-            .round();
-        let g = (23.31 + t * (557.33 + t * (1225.33 - t * (3574.96 - t * (1073.77 + t * 707.56)))))
-            .round();
-        let b = (27.2
-            + t * (3211.1 - t * (15327.97 - t * (27814.0 - t * (22569.18 - t * 6838.66)))))
-            .round();
+        let r = roundf(
+            34.61 + t * (1172.33 - t * (10793.56 - t * (33300.12 - t * (38394.49 - t * 14825.05)))),
+        );
+        let g = roundf(
+            23.31 + t * (557.33 + t * (1225.33 - t * (3574.96 - t * (1073.77 + t * 707.56)))),
+        );
+        let b = roundf(
+            27.2 + t * (3211.1 - t * (15327.97 - t * (27814.0 - t * (22569.18 - t * 6838.66)))),
+        );
         Color::new(
             (r / 255.0).clamp(0.0, 1.0),
             (g / 255.0).clamp(0.0, 1.0),
@@ -78,13 +84,14 @@ pub fn cividis() -> CividisGradient {
 impl Gradient for CividisGradient {
     fn at(&self, t: f32) -> Color {
         let t = t.clamp(0.0, 1.0);
-        let r = (-4.54 - t * (35.34 - t * (2381.73 - t * (6402.7 - t * (7024.72 - t * 2710.57)))))
-            .round();
+        let r = roundf(
+            -4.54 - t * (35.34 - t * (2381.73 - t * (6402.7 - t * (7024.72 - t * 2710.57)))),
+        );
         let g =
-            (32.49 + t * (170.73 + t * (52.82 - t * (131.46 - t * (176.58 - t * 67.37))))).round();
-        let b = (81.24
-            + t * (442.36 - t * (2482.43 - t * (6167.24 - t * (6614.94 - t * 2475.67)))))
-            .round();
+            roundf(32.49 + t * (170.73 + t * (52.82 - t * (131.46 - t * (176.58 - t * 67.37)))));
+        let b = roundf(
+            81.24 + t * (442.36 - t * (2482.43 - t * (6167.24 - t * (6614.94 - t * 2475.67)))),
+        );
         Color::new(
             (r / 255.0).clamp(0.0, 1.0),
             (g / 255.0).clamp(0.0, 1.0),
@@ -105,12 +112,12 @@ struct Cubehelix {
 
 impl Cubehelix {
     fn to_color(&self) -> Color {
-        let h = (self.h + 120.0).to_radians();
+        let h = (self.h + 120.0) * (PI / 180.0);
         let l = self.l;
         let a = self.s * l * (1.0 - l);
 
-        let cosh = h.cos();
-        let sinh = h.sin();
+        let cosh = cosf(h);
+        let sinh = sinf(h);
 
         let r = l - a * (0.14861 * cosh - 1.78277 * sinh);
         let g = l - a * (0.29227 * cosh + 0.90649 * sinh);

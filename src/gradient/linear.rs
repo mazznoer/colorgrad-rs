@@ -1,4 +1,5 @@
-use std::convert::TryFrom;
+use alloc::vec::Vec;
+use core::convert::TryFrom;
 
 use crate::{convert_colors, interpolate_linear};
 use crate::{BlendMode, Color, Gradient, GradientBuilder, GradientBuilderError};

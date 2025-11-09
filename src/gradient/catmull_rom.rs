@@ -1,4 +1,6 @@
-use std::convert::TryFrom;
+use alloc::vec::Vec;
+use core::convert::TryFrom;
+use libm::powf;
 
 use crate::{convert_colors, BlendMode, Color, Gradient, GradientBuilder, GradientBuilderError};
 
@@ -52,9 +54,9 @@ fn to_catmull_segments(values: &[f32]) -> Vec<[f32; 4]> {
         let v3 = vals[i + 2];
 
         let t0 = 0.0;
-        let t1 = t0 + (v0 - v1).abs().powf(alpha);
-        let t2 = t1 + (v1 - v2).abs().powf(alpha);
-        let t3 = t2 + (v2 - v3).abs().powf(alpha);
+        let t1 = t0 + powf((v0 - v1).abs(), alpha);
+        let t2 = t1 + powf((v1 - v2).abs(), alpha);
+        let t3 = t2 + powf((v2 - v3).abs(), alpha);
 
         let m1 = (1.0 - tension)
             * (t2 - t1)

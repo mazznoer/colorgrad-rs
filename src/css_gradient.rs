@@ -1,4 +1,5 @@
 use crate::{BlendMode, Color};
+use alloc::vec::Vec;
 
 #[derive(Debug, PartialEq)]
 struct Stop {
@@ -203,7 +204,7 @@ impl CSSGradientParser {
 }
 
 fn split_by_comma(s: &str) -> impl Iterator<Item = &str> {
-    std::iter::from_fn({
+    core::iter::from_fn({
         let mut pos = 0;
         let mut inside = false;
         move || {
@@ -231,7 +232,7 @@ fn split_by_space(s: &str) -> impl Iterator<Item = &str> {
     let mut pos = 0;
     let mut inside = false;
 
-    std::iter::from_fn(move || {
+    core::iter::from_fn(move || {
         // Skip leading whitespace
         while pos < s.len() && s.as_bytes()[pos] == b' ' && !inside {
             pos += 1;
@@ -268,6 +269,7 @@ fn split_by_space(s: &str) -> impl Iterator<Item = &str> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use alloc::string::String;
 
     #[test]
     fn utils() {

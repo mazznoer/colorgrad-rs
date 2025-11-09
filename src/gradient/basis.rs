@@ -1,4 +1,6 @@
-use std::convert::TryFrom;
+use core::convert::TryFrom;
+
+use alloc::vec::Vec;
 
 use crate::{convert_colors, BlendMode, Color, Gradient, GradientBuilder, GradientBuilderError};
 

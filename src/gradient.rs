@@ -10,8 +10,8 @@ pub use inverse::InverseGradient;
 pub use linear::LinearGradient;
 pub use sharp::SharpGradient;
 
-#[cfg(feature = "ggr")]
+#[cfg(all(feature = "ggr", feature = "std"))]
 mod gimp;
 
-#[cfg(feature = "ggr")]
+#[cfg(all(feature = "ggr", feature = "std"))]
 pub use gimp::{GimpGradient, ParseGgrError};

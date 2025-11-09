@@ -130,7 +130,13 @@ Example output:
 
 "##
 )]
+#![no_std]
 #![forbid(unsafe_code)]
+
+#[cfg(feature = "std")]
+extern crate std;
+
+extern crate alloc;
 
 pub use csscolorparser::{Color, ParseColorError};
 

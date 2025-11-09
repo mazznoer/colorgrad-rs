@@ -50,6 +50,7 @@ pub(crate) fn norm(t: f32, a: f32, b: f32) -> f32 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use alloc::vec::Vec;
 
     #[test]
     fn utils() {

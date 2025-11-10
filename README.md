@@ -36,7 +36,7 @@
 Add this to your `Cargo.toml`
 
 ```toml
-colorgrad = "0.7.0"
+colorgrad = "0.8.0"
 ```
 
 ## Custom Gradient
@@ -335,14 +335,15 @@ Example output:
 
 ### Default
 
-* __named-colors__: Enables parsing from [named colors](https://www.w3.org/TR/css-color-4/#named-colors). Requires [`phf`](https://crates.io/crates/phf).
-* __preset__: Preset gradients.
+* __std__: Using the standard library.
 
 Can be disabled using `default-features = false`.
 
 ### Optional
 
-* __lab__: Blending colors in Lab colorspace.
+* __named-colors__: Enables parsing from [named colors](https://www.w3.org/TR/css-color-4/#named-colors).
+* __preset__: Preset gradients.
+* __lab__: Blending colors in `Lab` colorspace.
 * __ggr__: Parsing GIMP gradient format.
 
 ## Similar Projects

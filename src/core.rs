@@ -1,5 +1,8 @@
 use crate::{modulo, norm};
 use crate::{Color, InverseGradient, SharpGradient};
+use alloc::boxed::Box;
+use alloc::vec;
+use alloc::vec::Vec;
 
 /// Color blending mode
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]

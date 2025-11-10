@@ -5,6 +5,8 @@
 
 use crate::interpolate_linear;
 use crate::{Color, Gradient};
+use alloc::string::{String, ToString};
+use alloc::vec::Vec;
 
 use std::{
     error,

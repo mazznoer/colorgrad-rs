@@ -22,13 +22,15 @@ features = ["named-colors", "preset", "ggr", "lab"]
 
 [dependencies]
 csscolorparser = { version = "0.8.0", default-features = false }
+libm = "0.2.15"
 
 [features]
-default = ["named-colors", "preset"]
+default = ["named-colors", "preset", "std"]
 named-colors = ["csscolorparser/named-colors"]
 lab = []
 preset = []
-ggr = []
+ggr = ["std"]
+std = ["csscolorparser/std"]
 
 [dev-dependencies]
 criterion = { version = "0.5.1", features = ["html_reports"] }

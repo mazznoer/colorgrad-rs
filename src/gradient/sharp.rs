@@ -1,4 +1,5 @@
 use crate::{convert_colors, linspace, BlendMode, Color, Gradient};
+use alloc::vec::Vec;
 
 #[cfg_attr(
     feature = "preset",

@@ -3,21 +3,20 @@
 // https://gitlab.gnome.org/GNOME/gimp/-/blob/master/app/core/gimpgradient.c
 // https://gitlab.gnome.org/GNOME/gimp/-/blob/master/app/core/gimpgradient-load.c
 
-use crate::interpolate_linear;
-use crate::{Color, Gradient};
-use alloc::string::{String, ToString};
-use alloc::vec::Vec;
+use std::error;
+use std::f32::consts::{FRAC_PI_2, LN_2, PI};
+use std::fmt;
+use std::io::BufRead;
+use std::string::{String, ToString};
+use std::vec::Vec;
 
-use std::{
-    error,
-    f32::consts::{FRAC_PI_2, LN_2, PI},
-    fmt,
-    io::BufRead,
-};
+use crate::interpolate_linear;
+use crate::Color;
+use crate::Gradient;
 
 #[derive(Debug)]
 pub struct ParseGgrError {
-    message: String,
+    message: &'static str,
     line: usize,
 }
 
@@ -25,7 +24,7 @@ impl error::Error for ParseGgrError {}
 
 impl fmt::Display for ParseGgrError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{} (line {})", &self.message, self.line)
+        write!(f, "{} (line {})", self.message, self.line)
     }
 }
 
@@ -247,7 +246,7 @@ fn parse_ggr<R: BufRead>(
                 let s = s.trim_start_matches('\u{feff}');
                 if s != "GIMP Gradient" {
                     return Err(ParseGgrError {
-                        message: "invalid header".to_string(),
+                        message: "invalid header",
                         line: 1,
                     });
                 }
@@ -256,7 +255,7 @@ fn parse_ggr<R: BufRead>(
             } else if line_no == 1 {
                 if !s.starts_with("Name:") {
                     return Err(ParseGgrError {
-                        message: "invalid header".to_string(),
+                        message: "invalid header",
                         line: 2,
                     });
                 }
@@ -268,7 +267,7 @@ fn parse_ggr<R: BufRead>(
                     seg_n = n;
                 } else {
                     return Err(ParseGgrError {
-                        message: "invalid header".to_string(),
+                        message: "invalid header",
                         line: 3,
                     });
                 }
@@ -285,7 +284,7 @@ fn parse_ggr<R: BufRead>(
                 segments.push(seg);
             } else {
                 return Err(ParseGgrError {
-                    message: "invalid segment".to_string(),
+                    message: "invalid segment",
                     line: line_no + 1,
                 });
             }
@@ -294,14 +293,14 @@ fn parse_ggr<R: BufRead>(
 
     if seg_x < seg_n {
         return Err(ParseGgrError {
-            message: "wrong segments count".to_string(),
+            message: "wrong segments count",
             line: 3,
         });
     }
 
     if segments.is_empty() {
         return Err(ParseGgrError {
-            message: "no segment".to_string(),
+            message: "no segment",
             line: 4,
         });
     }
@@ -315,11 +314,9 @@ fn parse_ggr<R: BufRead>(
 }
 
 fn parse_segment(s: &str, foreground: &Color, background: &Color) -> Option<GimpSegment> {
-    let d: Result<Vec<_>, _> = s.split_whitespace().map(|x| x.parse::<f32>()).collect();
+    let d: Result<Vec<f32>, _> = s.split_whitespace().map(|x| x.parse()).collect();
 
-    let d = if let Ok(t) = d {
-        t
-    } else {
+    let Ok(d) = d else {
         return None;
     };
 

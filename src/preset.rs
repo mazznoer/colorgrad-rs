@@ -12,9 +12,11 @@
 
 use alloc::vec::Vec;
 use core::f32::consts::{FRAC_PI_3, PI};
+
 use libm::{cosf, roundf, sinf};
 
-use crate::{linspace, BasisGradient, BlendMode, Color, Gradient};
+use crate::utils::linspace;
+use crate::{BasisGradient, BlendMode, Color, Gradient};
 
 const PI2_3: f32 = PI * 2.0 / 3.0;
 

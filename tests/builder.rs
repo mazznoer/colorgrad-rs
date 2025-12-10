@@ -214,6 +214,9 @@ fn css_gradient() {
         "deeppink, 0.4, 0.9, pink",
         "50%",
         "0%, 100%",
+        "æ",
+        "red â 15%, blue",
+        "red, ä, blue",
     ];
 
     for s in invalid_css {

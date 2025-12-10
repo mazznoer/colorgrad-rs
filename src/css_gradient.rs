@@ -1,5 +1,6 @@
-use crate::{BlendMode, Color};
 use alloc::vec::Vec;
+
+use crate::{BlendMode, Color};
 
 #[derive(Debug, PartialEq)]
 struct Stop {

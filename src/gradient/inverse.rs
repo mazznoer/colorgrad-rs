@@ -1,5 +1,6 @@
-use crate::{Color, Gradient};
 use alloc::boxed::Box;
+
+use crate::{Color, Gradient};
 
 #[cfg_attr(
     feature = "preset",

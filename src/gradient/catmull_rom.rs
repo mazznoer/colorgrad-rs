@@ -1,8 +1,10 @@
 use alloc::vec::Vec;
 use core::convert::TryFrom;
+
 use libm::powf;
 
-use crate::{convert_colors, BlendMode, Color, Gradient, GradientBuilder, GradientBuilderError};
+use crate::utils::convert_colors;
+use crate::{BlendMode, Color, Gradient, GradientBuilder, GradientBuilderError};
 
 // Catmull-Rom spline algorithm adapted from:
 // https://qroph.github.io/2018/07/30/smooth-paths-using-catmull-rom-splines.html

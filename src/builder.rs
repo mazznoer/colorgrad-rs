@@ -5,7 +5,9 @@ use alloc::vec::Vec;
 use core::convert::TryFrom;
 use core::{error, fmt};
 
-use crate::{linspace, BlendMode, CSSGradientParser, Color};
+use crate::css_gradient::CSSGradientParser;
+use crate::utils::linspace;
+use crate::{BlendMode, Color};
 
 #[derive(Debug, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum GradientBuilderError {

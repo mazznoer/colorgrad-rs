@@ -3,7 +3,7 @@ use crate::{BlendMode, Color};
 pub(crate) fn convert_colors(
     colors: &[Color],
     mode: BlendMode,
-) -> impl Iterator<Item = [f32; 4]> + use<'_> {
+) -> impl Iterator<Item = [f32; 4]> + '_ {
     colors.iter().map(move |c| match mode {
         BlendMode::Rgb => c.to_array(),
         BlendMode::LinearRgb => c.to_linear_rgba(),

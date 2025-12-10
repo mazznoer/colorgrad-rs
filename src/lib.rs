@@ -138,13 +138,17 @@ extern crate std;
 
 extern crate alloc;
 
-pub use csscolorparser::{Color, ParseColorError};
+pub use csscolorparser::Color;
+pub use csscolorparser::ParseColorError;
 
 mod core;
-pub use core::{BlendMode, Gradient, GradientColors};
+pub use core::BlendMode;
+pub use core::Gradient;
+pub use core::GradientColors;
 
 mod builder;
-pub use builder::{GradientBuilder, GradientBuilderError};
+pub use builder::GradientBuilder;
+pub use builder::GradientBuilderError;
 
 mod gradient;
 pub use gradient::*;
@@ -152,8 +156,5 @@ pub use gradient::*;
 #[cfg(feature = "preset")]
 pub mod preset;
 
-mod utils;
-use utils::*;
-
 mod css_gradient;
-use css_gradient::CSSGradientParser;
+mod utils;

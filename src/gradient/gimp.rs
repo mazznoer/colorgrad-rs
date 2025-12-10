@@ -10,7 +10,7 @@ use std::io::BufRead;
 use std::string::{String, ToString};
 use std::vec::Vec;
 
-use crate::interpolate_linear;
+use crate::utils::interpolate_linear;
 use crate::Color;
 use crate::Gradient;
 

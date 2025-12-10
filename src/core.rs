@@ -1,8 +1,9 @@
-use crate::{modulo, norm};
-use crate::{Color, InverseGradient, SharpGradient};
 use alloc::boxed::Box;
 use alloc::vec;
 use alloc::vec::Vec;
+
+use crate::utils::{modulo, norm};
+use crate::{Color, InverseGradient, SharpGradient};
 
 /// Color blending mode
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
@@ -260,6 +261,7 @@ for color in gradient.colors_iter(15).rev() {
 ```
 "##
 )]
+#[derive(Clone)]
 pub struct GradientColors<'a> {
     gradient: &'a dyn Gradient,
     a_idx: usize,

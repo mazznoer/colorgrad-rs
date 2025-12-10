@@ -2,7 +2,8 @@ use core::convert::TryFrom;
 
 use alloc::vec::Vec;
 
-use crate::{convert_colors, BlendMode, Color, Gradient, GradientBuilder, GradientBuilderError};
+use crate::utils::convert_colors;
+use crate::{BlendMode, Color, Gradient, GradientBuilder, GradientBuilderError};
 
 // Basis spline algorithm adapted from:
 // https://github.com/d3/d3-interpolate/blob/master/src/basis.js

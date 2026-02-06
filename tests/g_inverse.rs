@@ -34,12 +34,12 @@ fn inverse() {
     cmp_hex!(inv.reflect_at(1.1), "#191919");
 
     assert_eq!(
-        colors2hex(&grad.colors(5)),
+        colors2hex(grad.colors(5)),
         &["#000000", "#404040", "#808080", "#bfbfbf", "#ffffff"]
     );
 
     assert_eq!(
-        colors2hex(&inv.colors(5)),
+        colors2hex(inv.colors(5)),
         &["#ffffff", "#bfbfbf", "#808080", "#404040", "#000000"]
     );
 
@@ -63,12 +63,12 @@ fn inverse() {
     cmp_rgba8!(inv.at(100.0), grad.at(-100.0));
 
     assert_eq!(
-        colors2hex(&grad.colors(5)),
+        colors2hex(grad.colors(5)),
         &["#000000", "#404040", "#808080", "#bfbfbf", "#ffffff"]
     );
 
     assert_eq!(
-        colors2hex(&inv.colors(5)),
+        colors2hex(inv.colors(5)),
         &["#ffffff", "#bfbfbf", "#808080", "#404040", "#000000"]
     );
 }

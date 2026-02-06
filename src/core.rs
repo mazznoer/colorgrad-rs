@@ -1,8 +1,7 @@
 use alloc::boxed::Box;
 use alloc::vec;
-use alloc::vec::Vec;
 
-use crate::utils::{modulo, norm};
+use crate::utils::{linspace, modulo, norm};
 use crate::{Color, InverseGradient, SharpGradient};
 
 /// Color blending mode
@@ -62,18 +61,16 @@ pub trait Gradient: CloneGradient {
         (0.0, 1.0)
     }
 
-    /// Get n colors evenly spaced across gradient
-    fn colors(&self, n: usize) -> Vec<Color> {
-        let (dmin, dmax) = self.domain();
-        if n == 1 {
-            return vec![self.at(dmin)];
-        }
-        (0..n)
-            .map(|i| self.at(dmin + (i as f32 * (dmax - dmin)) / (n - 1) as f32))
-            .collect()
+    /// Returns iterator for `n` colors evenly spaced across gradient
+    fn colors(&self, n: usize) -> GradientColors<'_>
+    where
+        Self: Sized,
+    {
+        GradientColors::new(self, n)
     }
 
-    /// Returns iterator for n colors evenly spaced across gradient
+    #[deprecated(since = "0.9.0", note = "Use `colors()` instead")]
+    /// Returns iterator for `n` colors evenly spaced across gradient
     fn colors_iter(&self, n: usize) -> GradientColors<'_>
     where
         Self: Sized,
@@ -99,12 +96,15 @@ pub trait Gradient: CloneGradient {
     "##
     )]
     fn sharp(&self, segment: u16, smoothness: f32) -> SharpGradient {
+        let (dmin, dmax) = self.domain();
         let colors = if segment > 1 {
-            self.colors(segment.into())
+            linspace(dmin, dmax, segment.into())
+                .map(|t| self.at(t))
+                .collect()
         } else {
-            vec![self.at(self.domain().0), self.at(self.domain().0)]
+            vec![self.at(dmin), self.at(dmin)]
         };
-        SharpGradient::new(&colors, self.domain(), smoothness)
+        SharpGradient::new(&colors, (dmin, dmax), smoothness)
     }
 
     #[cfg_attr(
@@ -221,8 +221,8 @@ impl Gradient for Box<dyn Gradient + '_> {
         (**self).domain()
     }
 
-    fn colors(&self, n: usize) -> Vec<Color> {
-        (**self).colors(n)
+    fn colors(&self, n: usize) -> GradientColors<'_> {
+        GradientColors::new(self, n)
     }
 
     fn sharp(&self, segment: u16, smoothness: f32) -> SharpGradient {

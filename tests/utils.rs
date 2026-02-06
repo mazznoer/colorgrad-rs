@@ -1,12 +1,8 @@
-use colorgrad::Color;
+use colorgrad::GradientColors;
 
 #[allow(dead_code)]
-pub fn colors2hex(colors: &[Color]) -> Vec<String> {
-    let mut res = Vec::with_capacity(colors.len());
-    for c in colors {
-        res.push(c.to_css_hex());
-    }
-    res
+pub fn colors2hex(colors: GradientColors) -> Vec<String> {
+    colors.map(|c| c.to_css_hex()).collect()
 }
 
 #[macro_export]

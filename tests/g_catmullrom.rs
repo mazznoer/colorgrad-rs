@@ -18,7 +18,7 @@ fn basic() {
     cmp_hex!(g.at(1.00), "#0000ff");
 
     assert_eq!(
-        colors2hex(&g.colors(5)),
+        colors2hex(g.colors(5)),
         &["#ff0000", "#609f00", "#00ff00", "#009f60", "#0000ff"]
     );
 

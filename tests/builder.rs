@@ -69,11 +69,11 @@ fn builder() {
     let g = gb.build::<LinearGradient>().unwrap();
 
     assert_eq!(
-        &colors2hex(&gb.get_colors()),
+        &colors2hex(gb.get_colors()),
         &["#0000ff", "#00ffff", "#ffff0080", "#00ff00"]
     );
     assert_eq!(
-        &colors2hex(&g.colors(4)),
+        &colors2hex(g.colors(4)),
         &["#0000ff", "#00ffff", "#ffff0080", "#00ff00"]
     );
 
@@ -86,7 +86,7 @@ fn builder() {
 
     assert_eq!(&gb.get_positions(), &[0.0, 0.5, 0.5, 1.0]);
     assert_eq!(
-        &colors2hex(&gb.get_colors()),
+        &colors2hex(gb.get_colors()),
         &["#ff0000", "#0000ff", "#000000", "#ffffff"]
     );
 

@@ -249,6 +249,20 @@ fn colors_iter() {
 }
 
 #[test]
+fn inverse() {
+    let gradient = GradientBuilder::new()
+        .css("#fff, #000, #bad455, #00ff00")
+        .mode(BlendMode::Oklab)
+        .build::<colorgrad::SmoothstepGradient>()
+        .unwrap();
+
+    let inv_grad = gradient.inverse();
+    let a = gradient.colors(17).rev();
+    let b = inv_grad.colors(17);
+    assert_eq!(colors2hex(a), colors2hex(b));
+}
+
+#[test]
 fn boxed_gradients() {
     let gradient = GradientBuilder::new()
         .html_colors(&["#fff", "#000"])
@@ -262,6 +276,11 @@ fn boxed_gradients() {
     assert_eq!(gradient.domain(), (0.0, 1.0));
     assert_eq!(gradient.colors(3).len(), 3);
     assert_eq!(gradient.sharp(3, 0.0).colors(3).len(), 3);
+
+    let inv_grad = gradient.inverse();
+    let a = gradient.colors(17).rev();
+    let b = inv_grad.colors(17);
+    assert_eq!(colors2hex(a), colors2hex(b));
 }
 
 #[test]

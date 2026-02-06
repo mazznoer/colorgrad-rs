@@ -1,7 +1,7 @@
-use colorgrad::GradientColors;
+use colorgrad::Color;
 
 #[allow(dead_code)]
-pub fn colors2hex(colors: GradientColors) -> Vec<String> {
+pub fn colors2hex(colors: impl Iterator<Item = Color>) -> Vec<String> {
     colors.map(|c| c.to_css_hex()).collect()
 }
 

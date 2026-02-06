@@ -229,6 +229,13 @@ impl Gradient for Box<dyn Gradient + '_> {
         (**self).sharp(segment, smoothness)
     }
 
+    fn inverse<'a>(&self) -> InverseGradient<'_>
+    where
+        Self: 'a,
+    {
+        (**self).inverse()
+    }
+
     fn boxed<'a>(self) -> Box<dyn Gradient + 'a>
     where
         Self: 'a,

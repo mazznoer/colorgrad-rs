@@ -18,7 +18,7 @@ exclude = [
 ]
 
 [package.metadata.docs.rs]
-features = ["named-colors", "preset", "ggr", "lab", "std"]
+features = ["named-colors", "preset", "ggr", "std"]
 
 [dependencies]
 csscolorparser = { version = "0.8.0", default-features = false }
@@ -27,7 +27,6 @@ libm = "0.2.15"
 [features]
 default = ["std"]
 named-colors = ["csscolorparser/named-colors"]
-lab = []
 preset = []
 ggr = ["std"]
 std = ["csscolorparser/std"]
@@ -38,11 +37,11 @@ image = { version = "0.25.2", default-features = false, features = ["png"] }
 
 [[example]]
 name = "basic"
-required-features = ["preset"]
+required-features = ["preset", "named-colors"]
 
 [[example]]
 name = "gradients"
-required-features = ["lab", "preset", "ggr", "named-colors"]
+required-features = ["preset", "ggr", "named-colors"]
 
 [[test]]
 name = "preset"
@@ -55,7 +54,6 @@ required-features = ["named-colors"]
 [[bench]]
 name = "custom_gradient"
 harness = false
-required-features = ["lab"]
 
 [[bench]]
 name = "preset"

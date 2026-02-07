@@ -97,7 +97,6 @@ impl CSSGradientParser {
                     BlendMode::Rgb => col1.interpolate_rgb(col2, 0.5),
                     BlendMode::LinearRgb => col1.interpolate_linear_rgb(col2, 0.5),
                     BlendMode::Oklab => col1.interpolate_oklab(col2, 0.5),
-                    #[cfg(feature = "lab")]
                     BlendMode::Lab => col1.interpolate_lab(col2, 0.5),
                 };
                 stops[i].col = Some(col);

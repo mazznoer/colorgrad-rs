@@ -8,7 +8,6 @@ pub(crate) fn convert_colors(
         BlendMode::Rgb => c.to_array(),
         BlendMode::LinearRgb => c.to_linear_rgba(),
         BlendMode::Oklab => c.to_oklaba(),
-        #[cfg(feature = "lab")]
         BlendMode::Lab => c.to_laba(),
     })
 }

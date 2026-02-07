@@ -10,7 +10,6 @@ pub enum BlendMode {
     Rgb,
     LinearRgb,
     Oklab,
-    #[cfg(feature = "lab")]
     Lab,
 }
 

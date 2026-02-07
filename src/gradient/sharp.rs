@@ -1,6 +1,6 @@
 use alloc::vec::Vec;
 
-use crate::utils::{convert_colors, linspace};
+use crate::utils::{convert_colors, interpolate_smoothstep, linspace};
 use crate::{BlendMode, Color, Gradient};
 
 #[cfg_attr(
@@ -104,21 +104,11 @@ impl Gradient for SharpGradient {
         }
 
         let t = (t - pos_0) / (pos_1 - pos_0);
-        let [a, b, c, d] = smoothstep(col_0, col_1, t);
+        let [a, b, c, d] = interpolate_smoothstep(col_0, col_1, t);
         Color::new(a, b, c, d)
     }
 
     fn domain(&self) -> (f32, f32) {
         self.domain
     }
-}
-
-#[inline]
-fn smoothstep(a: &[f32; 4], b: &[f32; 4], t: f32) -> [f32; 4] {
-    [
-        (b[0] - a[0]) * (3.0 - t * 2.0) * t * t + a[0],
-        (b[1] - a[1]) * (3.0 - t * 2.0) * t * t + a[1],
-        (b[2] - a[2]) * (3.0 - t * 2.0) * t * t + a[2],
-        (b[3] - a[3]) * (3.0 - t * 2.0) * t * t + a[3],
-    ]
 }

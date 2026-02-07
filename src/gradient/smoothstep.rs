@@ -1,7 +1,7 @@
 use alloc::vec::Vec;
 use core::convert::TryFrom;
 
-use crate::utils::convert_colors;
+use crate::utils::{convert_colors, interpolate_smoothstep};
 use crate::{BlendMode, Color, Gradient, GradientBuilder, GradientBuilderError};
 
 #[derive(Debug, Clone)]
@@ -74,14 +74,4 @@ impl TryFrom<&mut GradientBuilder> for SmoothstepGradient {
         gb.prepare_build()?;
         Ok(Self::new(&gb.colors, &gb.positions, gb.mode))
     }
-}
-
-#[inline]
-fn interpolate_smoothstep(a: &[f32; 4], b: &[f32; 4], t: f32) -> [f32; 4] {
-    [
-        (b[0] - a[0]) * (3.0 - t * 2.0) * t * t + a[0],
-        (b[1] - a[1]) * (3.0 - t * 2.0) * t * t + a[1],
-        (b[2] - a[2]) * (3.0 - t * 2.0) * t * t + a[2],
-        (b[3] - a[3]) * (3.0 - t * 2.0) * t * t + a[3],
-    ]
 }

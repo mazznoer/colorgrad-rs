@@ -23,6 +23,16 @@ pub(crate) fn interpolate_linear(a: &[f32; 4], b: &[f32; 4], t: f32) -> [f32; 4]
     ]
 }
 
+#[inline]
+pub(crate) fn interpolate_smoothstep(a: &[f32; 4], b: &[f32; 4], t: f32) -> [f32; 4] {
+    [
+        (b[0] - a[0]) * (3.0 - t * 2.0) * t * t + a[0],
+        (b[1] - a[1]) * (3.0 - t * 2.0) * t * t + a[1],
+        (b[2] - a[2]) * (3.0 - t * 2.0) * t * t + a[2],
+        (b[3] - a[3]) * (3.0 - t * 2.0) * t * t + a[3],
+    ]
+}
+
 pub(crate) fn linspace(min: f32, max: f32, n: usize) -> impl Iterator<Item = f32> {
     let d = max - min;
     let l = n as f32 - 1.0;

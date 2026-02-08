@@ -36,7 +36,7 @@
 Add this to your `Cargo.toml`
 
 ```toml
-colorgrad = "0.8.0"
+colorgrad = "0.9.0"
 ```
 
 ## Custom Gradient
@@ -179,7 +179,17 @@ let g = colorgrad::GradientBuilder::new()
     .build::<colorgrad::BasisGradient>()?;
 ```
 
-![Interpolation Modes](docs/images/interpolation-modes.png)
+`LinearGradient`
+![Interpolation Linear](docs/images/interpolation_linear.png)
+
+`SmoothstepGradient`
+![Interpolation Smoothstep](docs/images/interpolation_smoothstep.png)
+
+`CatmullRomGradient`
+![Interpolation CatmullRom](docs/images/interpolation_catmull_rom.png)
+
+`BasisGradient`
+![Interpolation Basis](docs/images/interpolation_basis.png)
 
 ## Preset Gradients
 
@@ -343,7 +353,6 @@ Can be disabled using `default-features = false`.
 
 * __named-colors__: Enables parsing from [named colors](https://www.w3.org/TR/css-color-4/#named-colors).
 * __preset__: Preset gradients.
-* __lab__: Blending colors in `Lab` colorspace.
 * __ggr__: Parsing GIMP gradient format.
 
 ## Similar Projects

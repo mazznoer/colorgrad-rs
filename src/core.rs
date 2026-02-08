@@ -33,7 +33,7 @@ pub enum BlendMode {
 /// assert_eq!(g.domain(), (0.0, 1.0));
 /// assert_eq!(g.at(0.1).to_css_hex(), "#ff0000");
 ///
-/// for color in g.colors_iter(25) {
+/// for color in g.colors(25) {
 ///     println!("{:?}", color.to_rgba8());
 /// }
 /// ```
@@ -255,13 +255,13 @@ use colorgrad::Gradient;
 
 let gradient = colorgrad::preset::magma();
 
-for color in gradient.colors_iter(15) {
+for color in gradient.colors(15) {
     println!("{:?}", color.to_rgba8());
 }
 
 // reverse order
 
-for color in gradient.colors_iter(15).rev() {
+for color in gradient.colors(15).rev() {
     println!("{:?}", color.to_rgba8());
 }
 ```

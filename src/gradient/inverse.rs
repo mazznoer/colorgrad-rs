@@ -18,7 +18,7 @@ let inverted = gradient.inverse();
 
 assert_eq!(gradient.at(0.9).to_rgba8(), inverted.at(0.1).to_rgba8());
 
-for color in inverted.colors_iter(15) {
+for color in inverted.colors(15) {
     println!("{}", color.to_css_hex());
 }
 ```

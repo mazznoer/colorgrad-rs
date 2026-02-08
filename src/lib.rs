@@ -18,7 +18,7 @@ assert_eq!(g.domain(), (0.0, 1.0)); // all preset gradients are in the domain [0
 assert_eq!(g.at(0.5).to_rgba8(), [175, 240, 91, 255]);
 assert_eq!(g.at(0.5).to_css_hex(), "#aff05b");
 
-for color in g.colors_iter(20) {
+for color in g.colors(20) {
     println!("{:?}", color.to_rgba8());
 }
 ```
@@ -37,7 +37,7 @@ let g = GradientBuilder::new()
     ])
     .build::<LinearGradient>()?;
 
-for color in g.colors_iter(20) {
+for color in g.colors(20) {
     println!("{:?}", color.to_rgba8());
 }
 # Ok(())

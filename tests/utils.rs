@@ -10,13 +10,13 @@ where
 {
     colors
         .into_iter()
-        .map(|c| c.borrow().to_css_hex())
+        .map(|c| c.borrow().to_css_hex().to_string())
         .collect()
 }
 
 #[macro_export]
 macro_rules! cmp_hex {
     ($color:expr, $hex:expr) => {
-        assert_eq!($color.to_css_hex(), $hex);
+        assert_eq!($color.to_css_hex().to_string(), $hex);
     };
 }

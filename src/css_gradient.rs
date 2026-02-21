@@ -270,6 +270,7 @@ fn split_by_space(s: &str) -> impl Iterator<Item = &str> {
 mod tests {
     use super::*;
     use alloc::string::String;
+    use alloc::string::ToString;
 
     #[test]
     fn utils() {
@@ -377,7 +378,7 @@ mod tests {
     }
 
     fn colors2hex(colors: Vec<Color>) -> Vec<String> {
-        colors.iter().map(|c| c.to_css_hex()).collect()
+        colors.iter().map(|c| c.to_css_hex().to_string()).collect()
     }
 
     #[test]

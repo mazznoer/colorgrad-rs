@@ -1,5 +1,5 @@
-use colorgrad::{preset, Gradient};
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use colorgrad::{Gradient, preset};
+use criterion::{Criterion, black_box, criterion_group, criterion_main};
 
 fn bench_sinebow(c: &mut Criterion) {
     let grad = preset::sinebow();

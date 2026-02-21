@@ -1,5 +1,5 @@
 use colorgrad::{Color, GimpGradient, Gradient};
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use std::io::BufReader;
 
 const GGR1: &'static str = include_str!("../examples/ggr/My_Gradient.ggr");

@@ -142,7 +142,7 @@ fn colors() {
 #[test]
 fn colors_iter() {
     fn hex(c: Color) -> String {
-        c.to_css_hex()
+        c.to_css_hex().to_string()
     }
 
     macro_rules! cmp {

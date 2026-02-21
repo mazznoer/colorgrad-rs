@@ -1,7 +1,7 @@
 use colorgrad::{
     BasisGradient, BlendMode, CatmullRomGradient, Gradient, GradientBuilder, LinearGradient,
 };
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use criterion::{Criterion, black_box, criterion_group, criterion_main};
 
 const COLORS: [&'static str; 104] = [
     "#87e575", "#e88ef2", "#7398ef", "#65c3f2", "#3e52a0", "#b659db", "#75b7ff", "#7555ba",

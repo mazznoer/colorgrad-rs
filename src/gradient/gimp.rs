@@ -10,9 +10,9 @@ use std::io::BufRead;
 use std::string::{String, ToString};
 use std::vec::Vec;
 
-use crate::utils::interpolate_linear;
 use crate::Color;
 use crate::Gradient;
+use crate::utils::interpolate_linear;
 
 #[derive(Debug)]
 pub struct ParseGgrError {
@@ -404,11 +404,7 @@ fn blend_hsv_ccw(c1: &[f32; 4], c2: &[f32; 4], t: f32) -> Color {
     } else {
         let h = h1 + ((360.0 - (h1 - h2)) * t);
 
-        if h > 360.0 {
-            h - 360.0
-        } else {
-            h
-        }
+        if h > 360.0 { h - 360.0 } else { h }
     };
 
     Color::from_hsva(
@@ -428,11 +424,7 @@ fn blend_hsv_cw(c1: &[f32; 4], c2: &[f32; 4], t: f32) -> Color {
     } else {
         let h = h1 - ((360.0 - (h2 - h1)) * t);
 
-        if h < 0.0 {
-            h + 360.0
-        } else {
-            h
-        }
+        if h < 0.0 { h + 360.0 } else { h }
     };
 
     Color::from_hsva(

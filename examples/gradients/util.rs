@@ -1,10 +1,11 @@
 use colorgrad::{Color, Gradient};
-use image::{imageops, ImageBuffer, Rgba};
+use image::{ImageBuffer, Rgba, imageops};
 
-pub fn gradient_image<T>(gradient: &T, width: u32, height: u32) -> ImageBuffer<Rgba<u16>, Vec<u16>>
-where
-    T: Gradient + ?Sized,
-{
+pub fn gradient_image(
+    gradient: &dyn Gradient,
+    width: u32,
+    height: u32,
+) -> ImageBuffer<Rgba<u16>, Vec<u16>> {
     let (dmin, dmax) = gradient.domain();
     ImageBuffer::from_fn(width, height, |x, _| {
         let rgba = gradient
@@ -14,15 +15,12 @@ where
     })
 }
 
-fn rgb_plot<T>(
-    grad: &T,
+fn rgb_plot(
+    grad: &dyn Gradient,
     width: u32,
     height: u32,
     pos: Option<&[f32]>,
-) -> ImageBuffer<Rgba<u16>, Vec<u16>>
-where
-    T: Gradient + ?Sized,
-{
+) -> ImageBuffer<Rgba<u16>, Vec<u16>> {
     let mut imgbuf = ImageBuffer::from_pixel(
         width,
         height,
@@ -77,16 +75,13 @@ where
     imgbuf
 }
 
-pub fn grad_rgb_plot<T>(
-    grad: &T,
+pub fn grad_rgb_plot(
+    grad: &dyn Gradient,
     width: u32,
     height: u32,
     padding: u32,
     pos: Option<&[f32]>,
-) -> ImageBuffer<Rgba<u16>, Vec<u16>>
-where
-    T: Gradient + ?Sized,
-{
+) -> ImageBuffer<Rgba<u16>, Vec<u16>> {
     let w = width + padding * 2;
     let h = height * 2 + padding * 3;
     let mut imgbuf =

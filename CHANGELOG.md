@@ -2,6 +2,19 @@
 
 ## [Unreleased](https://github.com/mazznoer/colorgrad-rs/compare/v0.8.0...HEAD)
 
+### Added
+
+- `SmoothstepGradient`
+
+### Changed
+
+- `Gradient.colors()` returns iterator
+- Deprecate `Gradient.colors_iter()`
+
+### Removed
+
+- Cargo feature `lab` (`BlendMode::Lab` is now a permanent feature)
+
 ## [0.8.0](https://github.com/mazznoer/colorgrad-rs/compare/v0.7.2...v0.8.0)
 
 ## Added

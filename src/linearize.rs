@@ -1,6 +1,8 @@
 use alloc::vec;
 use alloc::vec::Vec;
 
+use libm::powf;
+
 use crate::utils::linspace;
 use crate::{BlendMode, Color, Gradient, LinearGradient};
 
@@ -9,7 +11,7 @@ const MAX_DEPTH: u32 = 7;
 pub(crate) fn linearize(g: &dyn Gradient, threshold: f32) -> LinearGradient {
     let (min, max) = g.domain();
     let mut positions = Vec::new();
-    let threshold_sq = threshold.clamp(0.005, 0.1).powi(2);
+    let threshold_sq = powf(threshold.clamp(0.005, 0.1), 2.0);
 
     let initial_stops: Vec<_> = linspace(min, max, 17).collect();
 
@@ -75,5 +77,8 @@ fn remove_unnecessary(g: &dyn Gradient, pos: &[f32], thresh_sq: f32) -> Vec<f32>
 
 // Squared distance
 fn color_diff_sq(c1: Color, c2: Color) -> f32 {
-    (c1.r - c2.r).powi(2) + (c1.g - c2.g).powi(2) + (c1.b - c2.b).powi(2) + (c1.a - c2.a).powi(2)
+    powf(c1.r - c2.r, 2.0)
+        + powf(c1.g - c2.g, 2.0)
+        + powf(c1.b - c2.b, 2.0)
+        + powf(c1.a - c2.a, 2.0)
 }

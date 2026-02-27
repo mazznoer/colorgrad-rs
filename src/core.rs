@@ -1,8 +1,9 @@
 use alloc::boxed::Box;
 use alloc::vec;
 
+use crate::linearize::linearize;
 use crate::utils::{linspace, modulo, norm};
-use crate::{Color, InverseGradient, SharpGradient};
+use crate::{Color, InverseGradient, LinearGradient, SharpGradient};
 
 /// Color blending mode
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
@@ -176,6 +177,14 @@ let gradients = vec![
         Self: 'a,
     {
         InverseGradient::new(self.clone_boxed())
+    }
+
+    /// Convert to `LinearGradient`
+    fn linearize(&self, threshold: f32) -> LinearGradient
+    where
+        Self: Sized,
+    {
+        linearize(self, threshold)
     }
 }
 

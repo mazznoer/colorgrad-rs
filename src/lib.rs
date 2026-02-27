@@ -157,4 +157,5 @@ pub use gradient::*;
 pub mod preset;
 
 mod css_gradient;
+mod linearize;
 mod utils;

@@ -263,6 +263,27 @@ fn inverse() {
 }
 
 #[test]
+fn linearize() {
+    let grad = colorgrad::GradientBuilder::new()
+        .css("#ff1493, #ffd700 67%, #2e8b57")
+        .mode(BlendMode::Oklab)
+        .build::<colorgrad::SmoothstepGradient>()
+        .unwrap();
+
+    let lgrad = grad.linearize(0.01);
+
+    let expected: &[&str] = &[
+        "#ff1493", "#ff2291", "#ff388e", "#ff4e8a", "#ff6484", "#ff797c", "#ff8e72", "#ffa065",
+        "#ffb257", "#ffc146", "#ffcc30", "#ffd217", "#ffd701", "#f2d21c", "#cec436", "#a1b348",
+        "#71a052", "#459156", "#2e8b57",
+    ];
+
+    let colors = lgrad.colors(19);
+
+    assert_eq!(colors2hex(colors), expected);
+}
+
+#[test]
 fn boxed_gradients() {
     let gradient = GradientBuilder::new()
         .html_colors(&["#fff", "#000"])

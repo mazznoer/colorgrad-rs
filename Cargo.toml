@@ -3,6 +3,7 @@ name = "colorgrad"
 version = "0.8.0"
 authors = ["Nor Khasyatillah <mazznoer@ymail.com>"]
 edition = "2024"
+rust-version = "1.85"
 description = "Color scales library for data visualization, charts, games, generative art and others."
 readme = "README.md"
 repository = "https://github.com/mazznoer/colorgrad-rs"

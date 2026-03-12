@@ -33,7 +33,7 @@ ggr = ["std"]
 std = ["csscolorparser/std"]
 
 [dev-dependencies]
-criterion = { version = "0.5.1", features = ["html_reports"] }
+#criterion = { version = "0.5.1", features = ["html_reports"] }
 image = { version = "0.25.2", default-features = false, features = ["png"] }
 
 [[example]]
@@ -52,16 +52,16 @@ required-features = ["preset"]
 name = "builder"
 required-features = ["named-colors"]
 
-[[bench]]
-name = "custom_gradient"
-harness = false
+#[[bench]]
+#name = "custom_gradient"
+#harness = false
 
-[[bench]]
-name = "preset"
-harness = false
-required-features = ["preset"]
+#[[bench]]
+#name = "preset"
+#harness = false
+#required-features = ["preset"]
 
-[[bench]]
-name = "gimp"
-harness = false
-required-features = ["ggr"]
+#[[bench]]
+#name = "gimp"
+#harness = false
+#required-features = ["ggr"]

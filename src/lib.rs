@@ -130,7 +130,7 @@ Example output:
 
 "##
 )]
-#![no_std]
+#![cfg_attr(not(feature = "std"), no_std)]
 #![forbid(unsafe_code)]
 
 #[cfg(feature = "std")]

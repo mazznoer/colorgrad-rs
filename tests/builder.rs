@@ -280,4 +280,18 @@ fn builder_error() {
         .domain(&[0.0, 0.0, 0.0])
         .build::<LinearGradient>();
     assert_eq!(g.unwrap_err(), GradientBuilderError::InvalidStops);
+
+    // Invalid stops
+    let g = GradientBuilder::new()
+        .html_colors(&["#f0f", "#f00"])
+        .domain(&[f32::NAN, 100.0])
+        .build::<LinearGradient>();
+    assert_eq!(g.unwrap_err(), GradientBuilderError::InvalidStops);
+
+    // Invalid stops
+    let g = GradientBuilder::new()
+        .html_colors(&["#f0f", "#f00"])
+        .domain(&[0.0, f32::INFINITY])
+        .build::<LinearGradient>();
+    assert_eq!(g.unwrap_err(), GradientBuilderError::InvalidStops);
 }

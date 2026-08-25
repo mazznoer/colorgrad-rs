@@ -14,11 +14,15 @@ impl Stop {
     }
 
     fn valid(&self) -> bool {
-        self.col.is_some() && self.pos.is_some()
+        if let Some(t) = self.pos {
+            self.col.is_some() && t.is_finite()
+        } else {
+            false
+        }
     }
 }
 
-pub struct CSSGradientParser {
+pub(crate) struct CSSGradientParser {
     dmin: f32,
     dmax: f32,
     mode: BlendMode,
@@ -195,11 +199,13 @@ impl CSSGradientParser {
     pub fn parse_pos(&self, s: &str) -> Option<f32> {
         s.strip_suffix('%')
             .and_then(|s| {
-                s.parse().ok().map(|t: f32| {
+                s.parse().ok()
+                .filter(|t: &f32| t.is_finite())
+                .map(|t: f32| {
                     t / 100.0 * (self.dmax - self.dmin) + self.dmin
                 })
             })
-            .or_else(|| s.parse().ok())
+            .or_else(|| s.parse().ok().filter(|t: &f32| t.is_finite()))
     }
 }
 
@@ -323,6 +329,9 @@ mod tests {
         assert_eq!(gp.parse_pos(""), None);
         assert_eq!(gp.parse_pos("50x%"), None);
         assert_eq!(gp.parse_pos("y"), None);
+        assert_eq!(gp.parse_pos("nan"), None);
+        assert_eq!(gp.parse_pos("inf"), None);
+        assert_eq!(gp.parse_pos("-inf"), None);
 
         gp.set_domain(10.0, 30.0);
 
@@ -417,5 +426,18 @@ mod tests {
         let (colors, positions) = gp.parse(s).unwrap();
         assert_eq!(colors2hex(colors), ["#ff0000", "#00ff00", "#0000ff"]);
         assert_eq!(positions, [0.0, 15.0, 20.0]);
+
+        // Invalid
+
+        let test_data = [
+            "#f00 nan, #0f0",
+            "#f00, #0f0 nan",
+            "#f00, #0f0 inf",
+            "#f00 -inf, #0f0",
+        ];
+        for s in test_data {
+            gp.reset();
+            assert!(gp.parse(s).is_none());
+        }
     }
 }

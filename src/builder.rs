@@ -234,6 +234,12 @@ impl GradientBuilder {
             return Err(GradientBuilderError::InvalidCssGradient);
         }
 
+        for t in &self.positions {
+            if !t.is_finite() {
+                return Err(GradientBuilderError::InvalidStops);
+            }
+        }
+
         let colors = if self.colors.is_empty() {
             vec![
                 Color::new(0.0, 0.0, 0.0, 1.0),

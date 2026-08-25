@@ -324,6 +324,12 @@ fn parse_segment(s: &str, foreground: &Color, background: &Color) -> Option<Gimp
         return None;
     }
 
+    for t in &d {
+        if !t.is_finite() {
+            return None;
+        }
+    }
+
     let blending_type = match d[11] as isize {
         0 => BlendingType::Linear,
         1 => BlendingType::Curved,

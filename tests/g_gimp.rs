@@ -131,6 +131,9 @@ fn invalid_format() {
         "GIMP Gradient\nName: Gradient\n1\n0 0.5 1 0 0 0 1 1 1 1 1 0 0 5 0",
         "GIMP Gradient\nName: Gradient\n1\n0 0.5 1 0 0 0 1 1 1 1 1 0 0 0 5",
         "GIMP Gradient\nName: Gradient\n1\n0 0.5 1 0 0 0 A 1 1 1 A 0 0 0 0",
+        // NaN & infinite
+        "GIMP Gradient\nName: Gradient\n1\n0 0.5 nan 0 0 0 1 1 1 1 1 0 0 0 0",
+        "GIMP Gradient\nName: Gradient\n1\n0 0.5 inf 0 0 0 1 1 1 1 1 0 0 0 0",
     ];
 
     for ggr in invalid_segments {

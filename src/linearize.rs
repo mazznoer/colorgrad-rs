@@ -11,7 +11,12 @@ const MAX_DEPTH: u32 = 7;
 pub(crate) fn linearize(g: &dyn Gradient, threshold: f32) -> LinearGradient {
     let (min, max) = g.domain();
     let mut positions = Vec::new();
-    let threshold_sq = powf(threshold.clamp(0.005, 0.1), 2.0);
+    let threshold = if !threshold.is_finite() {
+        0.01
+    } else {
+        threshold.clamp(0.005, 0.1)
+    };
+    let threshold_sq = powf(threshold, 2.0);
 
     let initial_stops: Vec<_> = linspace(min, max, 17).collect();
 

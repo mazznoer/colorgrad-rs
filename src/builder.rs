@@ -240,6 +240,10 @@ impl GradientBuilder {
             }
         }
 
+        for i in 0..self.colors.len() {
+            self.colors[i] = self.colors[i].clamp();
+        }
+
         let colors = if self.colors.is_empty() {
             vec![
                 Color::new(0.0, 0.0, 0.0, 1.0),

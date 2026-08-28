@@ -264,7 +264,25 @@ fn inverse() {
 
 #[test]
 fn linearize() {
-    let grad = colorgrad::GradientBuilder::new()
+    // Basic
+
+    let grad = GradientBuilder::new()
+        .html_colors(&["#f00", "#00f"])
+        .mode(BlendMode::Rgb)
+        .build::<LinearGradient>()
+        .unwrap();
+
+    let lgrad = grad.linearize(0.01);
+    assert_eq!(lgrad.stops().len(), 2);
+    assert_eq!(lgrad.mode(), BlendMode::Rgb);
+
+    let expected: &[&str] = &["#ff0000", "#0000ff"];
+    let colors = lgrad.colors(2);
+    assert_eq!(colors2hex(colors), expected);
+
+    // More complex gradient
+
+    let grad = GradientBuilder::new()
         .css("#ff1493, #ffd700 67%, #2e8b57")
         .mode(BlendMode::Oklab)
         .build::<colorgrad::SmoothstepGradient>()
@@ -277,10 +295,15 @@ fn linearize() {
         "#ffb257", "#ffc146", "#ffcc30", "#ffd217", "#ffd701", "#f2d21c", "#cec436", "#a1b348",
         "#71a052", "#459156", "#2e8b57",
     ];
-
     let colors = lgrad.colors(19);
-
     assert_eq!(colors2hex(colors), expected);
+
+    let g2 = LinearGradient::from_rgba_data(lgrad.stops()).unwrap();
+    let colors1 = lgrad.colors(177);
+    let colors2 = g2.colors(177);
+    for (a, b) in colors1.zip(colors2) {
+        assert_eq!(a.to_rgba8(), b.to_rgba8());
+    }
 }
 
 #[test]

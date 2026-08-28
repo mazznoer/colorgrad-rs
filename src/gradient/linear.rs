@@ -51,6 +51,50 @@ impl LinearGradient {
             last_color,
         }
     }
+
+    pub fn stops(&self) -> &[(f32, [f32; 4])] {
+        &self.stops
+    }
+
+    pub fn mode(&self) -> BlendMode {
+        self.mode
+    }
+
+    pub fn from_rgba_data(stops: impl Into<Vec<(f32, [f32; 4])>>) -> Option<Self> {
+        let stops = stops.into();
+
+        if stops.len() < 2 {
+            return None;
+        }
+
+        let mut prev = f32::NEG_INFINITY;
+
+        for (t, rgba) in &stops {
+            if !t.is_finite() {
+                return None;
+            }
+            for c in rgba {
+                if !c.is_finite() {
+                    return None;
+                }
+            }
+            if *t < prev {
+                return None;
+            }
+            prev = *t;
+        }
+
+        let (dmin, c0) = stops[0];
+        let (dmax, c1) = stops[stops.len() - 1];
+
+        Some(Self {
+            stops: stops.into(),
+            domain: (dmin, dmax),
+            mode: BlendMode::Rgb,
+            first_color: Color::from(c0),
+            last_color: Color::from(c1),
+        })
+    }
 }
 
 impl Gradient for LinearGradient {

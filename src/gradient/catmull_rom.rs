@@ -1,3 +1,4 @@
+use alloc::sync::Arc;
 use alloc::vec::Vec;
 use core::convert::TryFrom;
 
@@ -27,8 +28,8 @@ let grad = GradientBuilder::new()
 )]
 #[derive(Debug, Clone)]
 pub struct CatmullRomGradient {
-    segments: Vec<[[f32; 4]; 4]>,
-    positions: Vec<f32>,
+    segments: Arc<[[[f32; 4]; 4]]>,
+    positions: Arc<[f32]>,
     domain: (f32, f32),
     mode: BlendMode,
     first_color: Color,
@@ -111,8 +112,9 @@ impl CatmullRomGradient {
                 .zip(&s3)
                 .zip(&s4)
                 .map(|(((a, b), c), d)| [*a, *b, *c, *d])
-                .collect(),
-            positions,
+                .collect::<Vec<_>>()
+                .into(),
+            positions: positions.into(),
             domain: (dmin, dmax),
             mode,
             first_color,

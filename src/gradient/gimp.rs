@@ -8,6 +8,7 @@ use std::f32::consts::{FRAC_PI_2, LN_2, PI};
 use std::fmt;
 use std::io::BufRead;
 use std::string::{String, ToString};
+use std::sync::Arc;
 use std::vec::Vec;
 
 use crate::Color;
@@ -86,7 +87,7 @@ struct GimpSegment {
 #[derive(Debug, Clone)]
 pub struct GimpGradient {
     name: String,
-    segments: Vec<GimpSegment>,
+    segments: Arc<[GimpSegment]>,
     dmin: f32,
     dmax: f32,
 }
@@ -307,7 +308,7 @@ fn parse_ggr<R: BufRead>(
 
     Ok(GimpGradient {
         name,
-        segments,
+        segments: segments.into(),
         dmin: 0.0,
         dmax: 1.0,
     })

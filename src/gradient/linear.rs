@@ -1,3 +1,4 @@
+use alloc::sync::Arc;
 use alloc::vec::Vec;
 use core::convert::TryFrom;
 
@@ -23,7 +24,7 @@ let grad = GradientBuilder::new()
 )]
 #[derive(Debug, Clone)]
 pub struct LinearGradient {
-    stops: Vec<(f32, [f32; 4])>,
+    stops: Arc<[(f32, [f32; 4])]>,
     domain: (f32, f32),
     mode: BlendMode,
     first_color: Color,
@@ -38,7 +39,12 @@ impl LinearGradient {
         let last_color = colors[colors.len() - 1].clone();
         let colors = convert_colors(colors, mode);
         Self {
-            stops: positions.iter().zip(colors).map(|(p, c)| (*p, c)).collect(),
+            stops: positions
+                .iter()
+                .zip(colors)
+                .map(|(p, c)| (*p, c))
+                .collect::<Vec<_>>()
+                .into(),
             domain: (dmin, dmax),
             mode,
             first_color,

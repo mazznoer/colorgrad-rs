@@ -1,3 +1,4 @@
+use alloc::sync::Arc;
 use alloc::vec::Vec;
 
 use crate::utils::{convert_colors, interpolate_smoothstep, linspace};
@@ -14,7 +15,7 @@ let g = colorgrad::preset::rainbow().sharp(11, 0.0);
 )]
 #[derive(Debug, Clone)]
 pub struct SharpGradient {
-    stops: Vec<(f32, [f32; 4])>,
+    stops: Arc<[(f32, [f32; 4])]>,
     domain: (f32, f32),
     first_color: Color,
     last_color: Color,
@@ -62,7 +63,12 @@ impl SharpGradient {
         let last_color = colors_in[n - 1].clone();
 
         Self {
-            stops: positions.iter().zip(colors).map(|(p, c)| (*p, c)).collect(),
+            stops: positions
+                .iter()
+                .zip(colors)
+                .map(|(p, c)| (*p, c))
+                .collect::<Vec<_>>()
+                .into(),
             domain,
             first_color,
             last_color,

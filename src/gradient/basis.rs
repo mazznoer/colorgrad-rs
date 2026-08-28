@@ -1,6 +1,6 @@
-use core::convert::TryFrom;
-
+use alloc::sync::Arc;
 use alloc::vec::Vec;
+use core::convert::TryFrom;
 
 use crate::utils::convert_colors;
 use crate::{BlendMode, Color, Gradient, GradientBuilder, GradientBuilderError};
@@ -37,8 +37,8 @@ let grad = GradientBuilder::new()
 )]
 #[derive(Debug, Clone)]
 pub struct BasisGradient {
-    values: Vec<[f32; 4]>,
-    positions: Vec<f32>,
+    values: Arc<[[f32; 4]]>,
+    positions: Arc<[f32]>,
     domain: (f32, f32),
     mode: BlendMode,
     first_color: Color,
@@ -52,8 +52,8 @@ impl BasisGradient {
         let first_color = colors[0].clone();
         let last_color = colors[colors.len() - 1].clone();
         Self {
-            values: convert_colors(colors, mode).collect(),
-            positions,
+            values: convert_colors(colors, mode).collect::<Vec<_>>().into(),
+            positions: positions.into(),
             domain: (dmin, dmax),
             mode,
             first_color,

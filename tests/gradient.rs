@@ -112,7 +112,9 @@ fn colors() {
 
     assert_eq!(g.colors(0).len(), 0);
 
-    //assert_eq!(colors2hex(g.colors(1)), &["#ff0000",]);
+    assert_eq!(colors2hex(g.colors(1)), &["#ff0000",]);
+
+    assert_eq!(colors2hex(g.colors(1).rev()), &["#ff0000",]);
 
     assert_eq!(colors2hex(g.colors(2)), &["#ff0000", "#0000ff",]);
 

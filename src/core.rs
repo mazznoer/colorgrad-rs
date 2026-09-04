@@ -293,6 +293,17 @@ impl<'a> GradientColors<'a> {
             max: if total == 0 { 0.0 } else { (total - 1) as f32 },
         }
     }
+
+    fn color_at(&self, idx: usize) -> Color {
+        let (dmin, dmax) = self.gradient.domain();
+        // a single requested color spans no interval, so `max` is 0 and the division is 0/0
+        let t = if self.max == 0.0 {
+            dmin
+        } else {
+            dmin + (idx as f32 * (dmax - dmin)) / self.max
+        };
+        self.gradient.at(t)
+    }
 }
 
 impl Iterator for GradientColors<'_> {
@@ -302,10 +313,9 @@ impl Iterator for GradientColors<'_> {
         if self.a_idx == self.b_idx {
             return None;
         }
-        let (dmin, dmax) = self.gradient.domain();
-        let t = dmin + (self.a_idx as f32 * (dmax - dmin)) / self.max;
+        let color = self.color_at(self.a_idx);
         self.a_idx += 1;
-        Some(self.gradient.at(t))
+        Some(color)
     }
 }
 
@@ -314,10 +324,8 @@ impl DoubleEndedIterator for GradientColors<'_> {
         if self.a_idx == self.b_idx {
             return None;
         }
-        let (dmin, dmax) = self.gradient.domain();
         self.b_idx -= 1;
-        let t = dmin + (self.b_idx as f32 * (dmax - dmin)) / self.max;
-        Some(self.gradient.at(t))
+        Some(self.color_at(self.b_idx))
     }
 }
 

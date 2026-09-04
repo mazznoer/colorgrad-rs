@@ -111,7 +111,7 @@ impl GradientBuilder {
     /// Set gradient color
     pub fn colors<'a>(&'a mut self, colors: &[Color]) -> &'a mut Self {
         for c in colors {
-            self.colors.push(c.clone());
+            self.colors.push(*c);
         }
         self.clean = false;
         self
@@ -250,7 +250,7 @@ impl GradientBuilder {
                 Color::new(1.0, 1.0, 1.0, 1.0),
             ]
         } else if self.colors.len() == 1 {
-            vec![self.colors[0].clone(), self.colors[0].clone()]
+            vec![self.colors[0], self.colors[0]]
         } else {
             self.colors.to_vec()
         };
@@ -289,7 +289,7 @@ impl GradientBuilder {
                 // skip
             } else {
                 self.positions.push(*pos);
-                self.colors.push(col.clone());
+                self.colors.push(*col);
             }
             prev = *pos;
         }

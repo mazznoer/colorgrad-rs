@@ -108,14 +108,11 @@ impl CSSGradientParser {
         }
 
         if stops[0].pos.unwrap() > self.dmin {
-            stops.insert(0, Stop::new(stops[0].col.clone(), Some(self.dmin)));
+            stops.insert(0, Stop::new(stops[0].col, Some(self.dmin)));
         }
 
         if stops[stops.len() - 1].pos.unwrap() < self.dmax {
-            stops.push(Stop::new(
-                stops[stops.len() - 1].col.clone(),
-                Some(self.dmax),
-            ));
+            stops.push(Stop::new(stops[stops.len() - 1].col, Some(self.dmax)));
         }
 
         for i in 0..stops.len() {
@@ -141,7 +138,7 @@ impl CSSGradientParser {
         }
 
         let positions: Vec<_> = self.stops.iter().map(|s| s.pos.unwrap()).collect();
-        let colors: Vec<_> = self.stops.iter().map(|s| s.col.clone().unwrap()).collect();
+        let colors: Vec<_> = self.stops.iter().map(|s| s.col.unwrap()).collect();
         Some((colors, positions))
     }
 
@@ -185,7 +182,7 @@ impl CSSGradientParser {
                 ) else {
                     return false;
                 };
-                self.stops.push(Stop::new(Some(color.clone()), Some(position1)));
+                self.stops.push(Stop::new(Some(color), Some(position1)));
                 self.stops.push(Stop::new(Some(color), Some(position2)));
             }
             _ => {

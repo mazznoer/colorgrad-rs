@@ -35,8 +35,8 @@ impl LinearGradient {
     pub(crate) fn new(colors: &[Color], positions: &[f32], mode: BlendMode) -> Self {
         let dmin = positions[0];
         let dmax = positions[positions.len() - 1];
-        let first_color = colors[0].clone();
-        let last_color = colors[colors.len() - 1].clone();
+        let first_color = colors[0];
+        let last_color = colors[colors.len() - 1];
         let colors = convert_colors(colors, mode);
         Self {
             stops: positions
@@ -100,11 +100,11 @@ impl LinearGradient {
 impl Gradient for LinearGradient {
     fn at(&self, t: f32) -> Color {
         if t <= self.domain.0 {
-            return self.first_color.clone();
+            return self.first_color;
         }
 
         if t >= self.domain.1 {
-            return self.last_color.clone();
+            return self.last_color;
         }
 
         if t.is_nan() {

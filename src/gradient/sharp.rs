@@ -27,8 +27,8 @@ impl SharpGradient {
         let mut colors = Vec::with_capacity(n * 2);
 
         for c in colors_in {
-            colors.push(c.clone());
-            colors.push(c.clone());
+            colors.push(*c);
+            colors.push(*c);
         }
 
         let t = if !t.is_finite() {
@@ -59,8 +59,8 @@ impl SharpGradient {
         }
 
         let colors = convert_colors(&colors, BlendMode::Rgb);
-        let first_color = colors_in[0].clone();
-        let last_color = colors_in[n - 1].clone();
+        let first_color = colors_in[0];
+        let last_color = colors_in[n - 1];
 
         Self {
             stops: positions
@@ -79,11 +79,11 @@ impl SharpGradient {
 impl Gradient for SharpGradient {
     fn at(&self, t: f32) -> Color {
         if t <= self.domain.0 {
-            return self.first_color.clone();
+            return self.first_color;
         }
 
         if t >= self.domain.1 {
-            return self.last_color.clone();
+            return self.last_color;
         }
 
         if t.is_nan() {

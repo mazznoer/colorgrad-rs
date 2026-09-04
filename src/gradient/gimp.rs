@@ -353,12 +353,12 @@ fn parse_segment(s: &str, foreground: &Color, background: &Color) -> Option<Gimp
 
     let lcolor = match lcolor_code {
         0 => Color::new(d[3], d[4], d[5], d[6]),
-        1 => foreground.clone(),
+        1 => foreground,
         2 => {
             let [r, g, b, _] = foreground.to_array();
             Color::new(r, g, b, 0.0)
         }
-        3 => background.clone(),
+        3 => background,
         4 => {
             let [r, g, b, _] = background.to_array();
             Color::new(r, g, b, 0.0)
@@ -368,12 +368,12 @@ fn parse_segment(s: &str, foreground: &Color, background: &Color) -> Option<Gimp
 
     let rcolor = match rcolor_code {
         0 => Color::new(d[7], d[8], d[9], d[10]),
-        1 => foreground.clone(),
+        1 => foreground,
         2 => {
             let [r, g, b, _] = foreground.to_array();
             Color::new(r, g, b, 0.0)
         }
-        3 => background.clone(),
+        3 => background,
         4 => {
             let [r, g, b, _] = background.to_array();
             Color::new(r, g, b, 0.0)

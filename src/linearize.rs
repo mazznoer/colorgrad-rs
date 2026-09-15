@@ -46,7 +46,7 @@ pub(crate) fn linearize<'a>(
 }
 
 fn subdivide<'a>(
-    grad: &Box<dyn Fn(f32) -> Color + 'a>,
+    grad: &(dyn Fn(f32) -> Color + 'a),
     t0: f32,
     t1: f32,
     threshold: f32,
@@ -67,7 +67,7 @@ fn subdivide<'a>(
 }
 
 fn remove_unnecessary<'a>(
-    grad: &Box<dyn Fn(f32) -> Color + 'a>,
+    grad: &(dyn Fn(f32) -> Color + 'a),
     pos: &[f32],
     threshold: f32,
 ) -> Vec<f32> {

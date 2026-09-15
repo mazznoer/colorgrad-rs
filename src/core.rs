@@ -180,11 +180,8 @@ let gradients = vec![
     }
 
     /// Convert to `LinearGradient`
-    fn linearize(&self, threshold: f32) -> LinearGradient
-    where
-        Self: Sized,
-    {
-        linearize(self, threshold)
+    fn linearize(&self, threshold: f32) -> LinearGradient {
+        linearize(Box::new(|t| self.at(t)), self.domain(), threshold)
     }
 }
 

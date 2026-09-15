@@ -62,20 +62,14 @@ pub trait Gradient: CloneGradient {
     }
 
     /// Returns iterator for `n` colors evenly spaced across gradient
-    fn colors(&self, n: usize) -> GradientColors<'_>
-    where
-        Self: Sized,
-    {
-        GradientColors::new(self, n)
+    fn colors(&self, n: usize) -> GradientColors<'_> {
+        GradientColors::new(Box::new(|t| self.at(t)), self.domain(), n)
     }
 
     #[deprecated(since = "0.9.0", note = "Use `colors()` instead")]
     /// Returns iterator for `n` colors evenly spaced across gradient
-    fn colors_iter(&self, n: usize) -> GradientColors<'_>
-    where
-        Self: Sized,
-    {
-        GradientColors::new(self, n)
+    fn colors_iter(&self, n: usize) -> GradientColors<'_> {
+        self.colors(n)
     }
 
     #[cfg_attr(
@@ -227,7 +221,7 @@ impl Gradient for Box<dyn Gradient + '_> {
     }
 
     fn colors(&self, n: usize) -> GradientColors<'_> {
-        GradientColors::new(self, n)
+        (**self).colors(n)
     }
 
     fn sharp(&self, segment: u16, smoothness: f32) -> SharpGradient {
@@ -273,33 +267,34 @@ for color in gradient.colors(15).rev() {
 ```
 "##
 )]
-#[derive(Clone)]
 pub struct GradientColors<'a> {
-    gradient: &'a dyn Gradient,
+    gradient: Box<dyn Fn(f32) -> Color + 'a>,
+    dmin: f32,
+    dmax: f32,
     a_idx: usize,
     b_idx: usize,
     max: f32,
 }
 
 impl<'a> GradientColors<'a> {
-    pub fn new(gradient: &'a dyn Gradient, total: usize) -> Self {
+    pub fn new(gradient: Box<dyn Fn(f32) -> Color + 'a>, domain: (f32, f32), total: usize) -> Self {
         Self {
             gradient,
+            dmin: domain.0,
+            dmax: domain.1,
             a_idx: 0,
             b_idx: total,
-            max: if total == 0 { 0.0 } else { (total - 1) as f32 },
+            max: if total < 2 { 0.0 } else { (total - 1) as f32 },
         }
     }
 
     fn color_at(&self, idx: usize) -> Color {
-        let (dmin, dmax) = self.gradient.domain();
-        // a single requested color spans no interval, so `max` is 0 and the division is 0/0
-        let t = if self.max == 0.0 {
-            dmin
+        let t = if self.max < 1.0 {
+            self.dmin
         } else {
-            dmin + (idx as f32 * (dmax - dmin)) / self.max
+            self.dmin + (idx as f32 * (self.dmax - self.dmin)) / self.max
         };
-        self.gradient.at(t)
+        (self.gradient)(t)
     }
 }
 

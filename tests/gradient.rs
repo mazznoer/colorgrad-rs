@@ -274,7 +274,7 @@ fn linearize() {
         .build::<LinearGradient>()
         .unwrap();
 
-    let lgrad = grad.linearize(0.01);
+    let lgrad = grad.linearize(0.007);
     assert_eq!(lgrad.stops().len(), 2);
     assert_eq!(lgrad.mode(), BlendMode::Rgb);
 
@@ -290,12 +290,12 @@ fn linearize() {
         .build::<colorgrad::SmoothstepGradient>()
         .unwrap();
 
-    let lgrad = grad.linearize(0.01);
+    let lgrad = grad.linearize(0.007);
 
     let expected: &[&str] = &[
-        "#ff1493", "#ff2291", "#ff388e", "#ff4e8a", "#ff6484", "#ff797c", "#ff8e72", "#ffa065",
-        "#ffb257", "#ffc146", "#ffcc30", "#ffd217", "#ffd701", "#f2d21c", "#cec436", "#a1b348",
-        "#71a052", "#459156", "#2e8b57",
+        "#ff1493", "#ff288d", "#ff3c86", "#ff5080", "#ff657a", "#ff7973", "#ff8d6d", "#ffa167",
+        "#ffb055", "#ffbe42", "#ffcc30", "#ffd316", "#ffd700", "#efd11b", "#cdc436", "#a1b349",
+        "#71a151", "#479256", "#2e8b57",
     ];
     let colors = lgrad.colors(19);
     assert_eq!(colors2hex(colors), expected);

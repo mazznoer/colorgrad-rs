@@ -224,6 +224,10 @@ impl Gradient for Box<dyn Gradient + '_> {
         (**self).colors(n)
     }
 
+    fn colors_iter(&self, n: usize) -> GradientColors<'_> {
+        (**self).colors(n)
+    }
+
     fn sharp(&self, segment: u16, smoothness: f32) -> SharpGradient {
         (**self).sharp(segment, smoothness)
     }
@@ -233,6 +237,10 @@ impl Gradient for Box<dyn Gradient + '_> {
         Self: 'a,
     {
         (**self).inverse()
+    }
+
+    fn linearize(&self, threshold: f32) -> LinearGradient {
+        (**self).linearize(threshold)
     }
 
     fn boxed<'a>(self) -> Box<dyn Gradient + 'a>

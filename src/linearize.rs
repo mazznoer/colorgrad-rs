@@ -4,45 +4,40 @@ use alloc::vec::Vec;
 
 use libm::sqrtf;
 
-use crate::utils::linspace;
-use crate::{BlendMode, Color, LinearGradient};
+use crate::{Color, LinearGradient};
 
-const MAX_DEPTH: u32 = 19;
+const MAX_DEPTH: u32 = 7;
 
 pub(crate) fn linearize<'a>(
     grad: Box<dyn Fn(f32) -> Color + 'a>,
     domain: (f32, f32),
     threshold: f32,
 ) -> LinearGradient {
-    let mut positions = Vec::new();
     let threshold = if !threshold.is_finite() {
         0.007
     } else {
-        threshold.clamp(0.003, 0.035)
+        threshold.clamp(0.001, 0.035)
     };
 
-    let initial_stops: Vec<_> = linspace(domain.0, domain.1, 37).collect();
+    let (min, max) = domain;
+    let seeds = 36;
+    let mut positions = Vec::new();
 
     // Adaptive Sampling
-    for i in 0..initial_stops.len() - 1 {
-        let t0 = initial_stops[i];
-        let t1 = initial_stops[i + 1];
+    for i in 0..seeds {
+        let t0 = min + (max - min) * (i as f32 / seeds as f32);
+        let t1 = min + (max - min) * ((i + 1) as f32 / seeds as f32);
         positions.push(t0);
         subdivide(&grad, t0, t1, threshold, 0, &mut positions);
     }
-    positions.push(domain.1);
-
-    // Sorting & Precision Cleanup
-    positions.sort_by(|a, b| a.partial_cmp(b).unwrap());
-    positions.dedup_by(|a, b| (*a - *b).abs() < f32::EPSILON);
+    positions.push(max);
 
     // Prune Unnecessary Points
     let positions = remove_unnecessary(&grad, &positions, threshold);
 
-    // Map to Colors
-    let colors: Vec<Color> = positions.iter().map(|&t| grad(t).clamp()).collect();
+    let stops: Vec<_> = positions.iter().map(|&t| (t, grad(t).to_array())).collect();
 
-    LinearGradient::new(&colors, &positions, BlendMode::Rgb)
+    LinearGradient::from_rgba_data(stops).unwrap()
 }
 
 fn subdivide<'a>(
@@ -79,9 +74,14 @@ fn remove_unnecessary<'a>(
 
     for i in 1..pos.len() - 1 {
         let t_prev = pos[last_idx];
-        let t_next = pos[i + 1];
         let t_curr = pos[i];
 
+        // skip duplicate position
+        if (t_prev - t_curr).abs() < f32::EPSILON {
+            continue;
+        }
+
+        let t_next = pos[i + 1];
         let lerp_factor = (t_curr - t_prev) / (t_next - t_prev);
         let predicted = grad(t_prev)
             .interpolate_rgb(&grad(t_next), lerp_factor)

@@ -25,6 +25,8 @@ let grad = colorgrad::GradientBuilder::new()
 ## Converting from another gradient
 
 ```
+use colorgrad::Gradient;
+
 let og = colorgrad::preset::rainbow();
 
 let lg = og.linearize(0.005);
@@ -42,7 +44,7 @@ let stops = vec![
     (1.000, [0.86667, 0.75294, 0.09412, 1.00000]),
 ];
 
-let lg = colorgrad::LinearGradient::from_rgba_data(stops)?;
+let lg = colorgrad::LinearGradient::from_rgba_data(stops).unwrap();
 # Ok(())
 # }
 ```

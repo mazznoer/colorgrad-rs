@@ -104,43 +104,43 @@ pub trait Gradient: CloneGradient {
     #[cfg_attr(
         feature = "preset",
         doc = r##"
-Convert gradient to boxed trait object
+    Convert gradient to boxed trait object
 
-This is a convenience function, which is useful when you want to store gradients with
-different types in a collection, or when you want to return a gradient from a function but
-the type is not known at compile time.
+    This is a convenience function, which is useful when you want to store gradients with
+    different types in a collection, or when you want to return a gradient from a function but
+    the type is not known at compile time.
 
-## Examples
+    ## Examples
 
-```
-# fn main() -> Result<(), Box<dyn std::error::Error>> {
-# let is_rainbow = true;
-# use colorgrad::{BlendMode, LinearGradient, GradientBuilder};
-use colorgrad::Gradient;
+    ```
+    # fn main() -> Result<(), Box<dyn std::error::Error>> {
+    # let is_rainbow = true;
+    # use colorgrad::{BlendMode, LinearGradient, GradientBuilder};
+    use colorgrad::Gradient;
 
-let g = if is_rainbow {
-    colorgrad::preset::rainbow().boxed()
-} else {
-    colorgrad::preset::sinebow().boxed()
-};
+    let g = if is_rainbow {
+        colorgrad::preset::rainbow().boxed()
+    } else {
+        colorgrad::preset::sinebow().boxed()
+    };
 
-// Vector of different gradient types
+    // Vector of different gradient types
 
-let g2: LinearGradient = GradientBuilder::new()
-    .css("#a52a2a, 35%, #ffd700")
-    .mode(BlendMode::Oklab)
-    .build()?;
+    let g2: LinearGradient = GradientBuilder::new()
+        .css("#a52a2a, 35%, #ffd700")
+        .mode(BlendMode::Oklab)
+        .build()?;
 
-let gradients = vec![
-    g2.sharp(7, 0.0).boxed(),
-    g2.boxed(),
-    colorgrad::preset::magma().boxed(),
-    colorgrad::preset::turbo().boxed(),
-];
-# Ok(())
-# }
-```
-"##
+    let gradients = vec![
+        g2.sharp(7, 0.0).boxed(),
+        g2.boxed(),
+        colorgrad::preset::magma().boxed(),
+        colorgrad::preset::turbo().boxed(),
+    ];
+    # Ok(())
+    # }
+    ```
+    "##
     )]
     fn boxed<'a>(self) -> Box<dyn Gradient + 'a>
     where
@@ -157,14 +157,16 @@ let gradients = vec![
     /// # Example
     ///
     /// ```
+    /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
     /// use colorgrad::Gradient;
     ///
     /// let grad = colorgrad::GradientBuilder::new()
     ///     .html_colors(&["#fff", "#000"])
-    ///     .build::<colorgrad::LinearGradient>()
-    ///     .unwrap();
+    ///     .build::<colorgrad::LinearGradient>()?;
     ///
     /// let inverse = grad.inverse();
+    /// # Ok(())
+    /// # }
     /// ```
     fn inverse<'a>(&self) -> InverseGradient<'_>
     where
@@ -173,7 +175,33 @@ let gradients = vec![
         InverseGradient::new(self.clone_boxed())
     }
 
-    /// Convert to `LinearGradient`
+    /// Convert to `LinearGradient` in `RGB` color space using adaptive sampling algorithm.
+    ///
+    /// Arguments:
+    ///
+    /// * `threshold`: [0.001 .. 0.035]. Smaller value will results in smoother color transition (more color stops).
+    ///
+    /// ```
+    /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// use colorgrad::Gradient;
+    ///
+    /// let grad = colorgrad::GradientBuilder::new()
+    ///     .css("#00f, #f00, #fff, #ff0")
+    ///     .mode(colorgrad::BlendMode::Lab)
+    ///     .build::<colorgrad::BasisGradient>()?;
+    ///
+    /// let lgrad = grad.linearize(0.005);
+    ///
+    /// println!("total stops: {}", lgrad.stops().len());
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// Original:
+    /// ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/linearize-before.png)
+    ///
+    /// Result:
+    /// ![img](https://raw.githubusercontent.com/mazznoer/colorgrad-rs/master/docs/images/linearize-after.png)
     fn linearize(&self, threshold: f32) -> LinearGradient {
         linearize(Box::new(|t| self.at(t)), self.domain(), threshold)
     }

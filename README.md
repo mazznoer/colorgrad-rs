@@ -271,6 +271,25 @@ Output:
 #6e40aa
 ```
 
+### Convert to `LinearGradient` in `RGB` color space
+
+```rust
+let g = colorgrad::GradientBuilder::new()
+    .css("blue, red, white, yellow")
+    .mode(colorgrad::BlendMode::Lab)
+    .build::<colorgrad::BasisGradient>()?;
+
+let lg = g.linearize(0.005);
+
+println!("total stops: {}", lg.stops().len());
+```
+
+Original:
+![img](docs/images/linearize-before.png)
+
+Result:
+![img](docs/images/linearize-after.png)
+
 ### Hard-Edged Gradient
 
 Convert gradient to hard-edged gradient with 11 segments and 0 smoothness.

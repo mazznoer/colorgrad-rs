@@ -6,17 +6,43 @@ use crate::utils::{convert_colors, interpolate_linear};
 use crate::{BlendMode, Color, Gradient, GradientBuilder, GradientBuilderError};
 
 #[cfg_attr(
-    feature = "named-colors",
+    all(feature = "named-colors", feature = "preset"),
     doc = r##"
+## Using `GradientBuilder`
+
 ```
 # fn main() -> Result<(), Box<dyn std::error::Error>> {
-# use colorgrad::{BlendMode, GradientBuilder, LinearGradient};
 use colorgrad::Gradient;
 
-let grad = GradientBuilder::new()
+let grad = colorgrad::GradientBuilder::new()
     .html_colors(&["deeppink", "gold", "seagreen"])
-    .mode(BlendMode::Oklab)
-    .build::<LinearGradient>()?;
+    .mode(colorgrad::BlendMode::Oklab)
+    .build::<colorgrad::LinearGradient>()?;
+# Ok(())
+# }
+```
+
+## Converting from another gradient
+
+```
+let og = colorgrad::preset::rainbow();
+
+let lg = og.linearize(0.005);
+```
+
+## From raw color stops
+
+```
+# fn main() -> Result<(), Box<dyn std::error::Error>> {
+let stops = vec![
+    (0.000, [0.87843, 0.47451, 0.64706, 1.00000]),
+    (0.250, [0.76078, 0.97647, 0.98824, 1.00000]),
+    (0.500, [0.07843, 0.56078, 0.66667, 1.00000]),
+    (0.750, [0.49804, 0.07451, 0.86667, 1.00000]),
+    (1.000, [0.86667, 0.75294, 0.09412, 1.00000]),
+];
+
+let lg = colorgrad::LinearGradient::from_rgba_data(stops)?;
 # Ok(())
 # }
 ```

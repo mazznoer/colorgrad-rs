@@ -345,6 +345,11 @@ impl Iterator for GradientColors<'_> {
         self.a_idx += 1;
         Some(color)
     }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        let n = self.b_idx - self.a_idx;
+        (n, Some(n))
+    }
 }
 
 impl DoubleEndedIterator for GradientColors<'_> {

@@ -219,6 +219,17 @@ fn colors_iter() {
     let colors: Vec<_> = g.colors(73).collect();
     assert_eq!(colors.len(), 73);
 
+    // adapters that take their length from size_hint
+    let mut it = g.colors(6);
+    assert_eq!(it.size_hint(), (6, Some(6)));
+    it.next();
+    it.next_back();
+    assert_eq!(it.size_hint(), (4, Some(4)));
+    assert_eq!(g.colors(5).skip(1).len(), 4);
+    assert_eq!(g.colors(5).take(3).len(), 3);
+    assert_eq!(g.colors(5).step_by(2).len(), 3);
+    assert_eq!(g.colors(5).zip(0..9).len(), 5);
+
     // reverse
     let mut it = g.colors(4).rev();
     cmp!(it.next(), "#ffffff");

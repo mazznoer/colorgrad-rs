@@ -1,10 +1,17 @@
 # Changelog
 
-## [Unreleased](https://github.com/mazznoer/colorgrad-rs/compare/v0.8.0...HEAD)
+## [Unreleased](https://github.com/mazznoer/colorgrad-rs/compare/v0.9.0...HEAD)
+
+## [0.9.0](https://github.com/mazznoer/colorgrad-rs/compare/v0.8.0...v0.9.0)
 
 ### Added
 
 - `SmoothstepGradient`
+- `Gradient.linearize()`
+- `LinearGradient`:
+    * `from_rgba_data()`
+    * `stops()`
+    * `mode()`
 
 ### Changed
 

@@ -1,6 +1,6 @@
 [package]
 name = "colorgrad"
-version = "0.8.0"
+version = "0.9.0"
 authors = ["Nor Khasyatillah <mazznoer@ymail.com>"]
 edition = "2024"
 rust-version = "1.85"
@@ -22,8 +22,7 @@ exclude = [
 features = ["named-colors", "preset", "ggr", "std"]
 
 [dependencies]
-#csscolorparser = { version = "0.8.0", default-features = false }
-csscolorparser = { git = "http://github.com/mazznoer/csscolorparser-rs", default-features = false }
+csscolorparser = { version = "0.9.0", default-features = false }
 libm = "0.2.15"
 
 [features]

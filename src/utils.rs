@@ -13,7 +13,7 @@ pub(crate) fn convert_colors(
 }
 
 #[inline]
-pub(crate) fn interpolate_linear(a: &[f32; 4], b: &[f32; 4], t: f32) -> [f32; 4] {
+pub(crate) fn interpolate_linear(a: [f32; 4], b: [f32; 4], t: f32) -> [f32; 4] {
     [
         a[0] + t * (b[0] - a[0]),
         a[1] + t * (b[1] - a[1]),

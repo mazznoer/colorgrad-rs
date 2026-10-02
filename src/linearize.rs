@@ -49,6 +49,7 @@ pub(crate) fn linearize<'a>(
     LinearGradient::from_rgba_data(stops).unwrap()
 }
 
+#[allow(clippy::too_many_arguments)]
 fn subdivide<'a>(
     grad: &(dyn Fn(f32) -> Color + 'a),
     t0: f32,

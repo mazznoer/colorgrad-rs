@@ -204,7 +204,7 @@ impl Gradient for GimpGradient {
         };
 
         match seg.coloring_type {
-            ColoringType::Rgb => Color::from(interpolate_linear(&seg.lcolor, &seg.rcolor, f)),
+            ColoringType::Rgb => Color::from(interpolate_linear(seg.lcolor, seg.rcolor, f)),
             ColoringType::HsvCcw => blend_hsv_ccw(&seg.lcolor, &seg.rcolor, f),
             ColoringType::HsvCw => blend_hsv_cw(&seg.lcolor, &seg.rcolor, f),
         }

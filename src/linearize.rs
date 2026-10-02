@@ -1,5 +1,4 @@
 use alloc::boxed::Box;
-use alloc::vec;
 use alloc::vec::Vec;
 
 use libm::sqrtf;
@@ -7,6 +6,7 @@ use libm::sqrtf;
 use crate::{Color, LinearGradient};
 
 const MAX_DEPTH: u32 = 7;
+const SEEDS: usize = 36;
 
 pub(crate) fn linearize<'a>(
     grad: Box<dyn Fn(f32) -> Color + 'a>,
@@ -20,17 +20,26 @@ pub(crate) fn linearize<'a>(
     };
 
     let (min, max) = domain;
-    let seeds = 36;
-    let mut positions = Vec::new();
+    let mut positions = Vec::with_capacity(500);
+    positions.push(min);
+
+    let mut t0 = min;
+    let mut c0 = grad(t0).clamp();
 
     // Adaptive Sampling
-    for i in 0..seeds {
-        let t0 = min + (max - min) * (i as f32 / seeds as f32);
-        let t1 = min + (max - min) * ((i + 1) as f32 / seeds as f32);
-        positions.push(t0);
-        subdivide(&grad, t0, t1, threshold, 0, &mut positions);
+    for i in 1..=SEEDS {
+        let t1 = min + (max - min) * (i as f32 / SEEDS as f32);
+        let c1 = grad(t1).clamp();
+
+        // Subdivide interval [t0, t1]
+        subdivide(&grad, t0, t1, c0, c1, threshold, 0, &mut positions);
+
+        // Push right seed boundary
+        positions.push(t1);
+
+        t0 = t1;
+        c0 = c1;
     }
-    positions.push(max);
 
     // Prune Unnecessary Points
     let positions = remove_unnecessary(&grad, &positions, threshold);
@@ -44,6 +53,8 @@ fn subdivide<'a>(
     grad: &(dyn Fn(f32) -> Color + 'a),
     t0: f32,
     t1: f32,
+    c0: Color,
+    c1: Color,
     threshold: f32,
     depth: u32,
     stops: &mut Vec<f32>,
@@ -51,13 +62,20 @@ fn subdivide<'a>(
     if depth >= MAX_DEPTH {
         return;
     }
-    let mid = (t0 + t1) / 2.0;
-    let c_mid_linear = grad(t0).interpolate_rgb(&grad(t1), 0.5).clamp();
 
-    if color_diff(grad(mid).clamp(), c_mid_linear) > threshold {
-        subdivide(grad, t0, mid, threshold, depth + 1, stops);
+    let mid = (t0 + t1) / 2.0;
+    let c_mid_actual = grad(mid).clamp();
+    let c_mid_linear = c0.interpolate_rgb(&c1, 0.5).clamp();
+
+    if color_diff(c_mid_actual, c_mid_linear) > threshold {
+        // Left branch (t0 -> mid)
+        subdivide(grad, t0, mid, c0, c_mid_actual, threshold, depth + 1, stops);
+
+        // In-order midpoint push
         stops.push(mid);
-        subdivide(grad, mid, t1, threshold, depth + 1, stops);
+
+        // Right branch (mid -> t1)
+        subdivide(grad, mid, t1, c_mid_actual, c1, threshold, depth + 1, stops);
     }
 }
 
@@ -69,7 +87,9 @@ fn remove_unnecessary<'a>(
     if pos.len() <= 2 {
         return pos.to_vec();
     }
-    let mut out = vec![pos[0]];
+
+    let mut out = Vec::with_capacity(pos.len());
+    out.push(pos[0]);
     let mut last_idx = 0;
 
     for i in 1..pos.len() - 1 {
@@ -83,15 +103,18 @@ fn remove_unnecessary<'a>(
 
         let t_next = pos[i + 1];
         let lerp_factor = (t_curr - t_prev) / (t_next - t_prev);
-        let predicted = grad(t_prev)
-            .interpolate_rgb(&grad(t_next), lerp_factor)
-            .clamp();
 
-        if color_diff(grad(t_curr).clamp(), predicted) > threshold {
+        let c_prev = grad(t_prev);
+        let c_next = grad(t_next);
+        let c_curr_actual = grad(t_curr).clamp();
+        let c_curr_linear = c_prev.interpolate_rgb(&c_next, lerp_factor).clamp();
+
+        if color_diff(c_curr_actual, c_curr_linear) > threshold {
             out.push(t_curr);
             last_idx = i;
         }
     }
+
     out.push(*pos.last().unwrap());
     out
 }

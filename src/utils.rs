@@ -23,7 +23,7 @@ pub(crate) fn interpolate_linear(a: [f32; 4], b: [f32; 4], t: f32) -> [f32; 4] {
 }
 
 #[inline]
-pub(crate) fn interpolate_smoothstep(a: &[f32; 4], b: &[f32; 4], t: f32) -> [f32; 4] {
+pub(crate) fn interpolate_smoothstep(a: [f32; 4], b: [f32; 4], t: f32) -> [f32; 4] {
     [
         (b[0] - a[0]) * (3.0 - t * 2.0) * t * t + a[0],
         (b[1] - a[1]) * (3.0 - t * 2.0) * t * t + a[1],

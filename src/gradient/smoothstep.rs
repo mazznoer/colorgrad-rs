@@ -1,5 +1,4 @@
 use alloc::sync::Arc;
-use alloc::vec::Vec;
 use core::convert::TryFrom;
 
 use crate::utils::{convert_colors, interpolate_smoothstep};
@@ -16,18 +15,23 @@ pub struct SmoothstepGradient {
 
 impl SmoothstepGradient {
     pub(crate) fn new(colors: &[Color], positions: &[f32], mode: BlendMode) -> Self {
+        assert!(
+            !colors.is_empty() && colors.len() == positions.len(),
+            "colors and positions must be non-empty and of the same length"
+        );
+        assert!(colors.len() >= 2, "minimal 2 colors");
+
         let dmin = positions[0];
         let dmax = positions[positions.len() - 1];
         let first_color = colors[0];
         let last_color = colors[colors.len() - 1];
-        let colors = convert_colors(colors, mode);
+
         Self {
             stops: positions
                 .iter()
-                .zip(colors)
-                .map(|(p, c)| (*p, c))
-                .collect::<Vec<_>>()
-                .into(),
+                .copied()
+                .zip(convert_colors(colors, mode))
+                .collect::<Arc<[_]>>(),
             domain: (dmin, dmax),
             mode,
             first_color,
@@ -38,6 +42,10 @@ impl SmoothstepGradient {
 
 impl Gradient for SmoothstepGradient {
     fn at(&self, t: f32) -> Color {
+        if t.is_nan() {
+            return Color::new(0.0, 0.0, 0.0, 1.0);
+        }
+
         if t <= self.domain.0 {
             return self.first_color;
         }
@@ -46,18 +54,16 @@ impl Gradient for SmoothstepGradient {
             return self.last_color;
         }
 
-        if t.is_nan() {
-            return Color::new(0.0, 0.0, 0.0, 1.0);
-        }
+        let low = self.stops.partition_point(|stop| stop.0 < t);
 
-        let idx = self.stops.partition_point(|&d| d.0 < t);
+        let (pos_0, col_0) = self.stops[low - 1];
+        let (pos_1, col_1) = self.stops[low];
 
-        let [i0, i1] = if idx == 0 { [0, 1] } else { [idx - 1, idx] };
+        // Guard against division by zero if two stops share the exact same position.
+        let diff = pos_1 - pos_0;
+        let t = if diff > 0.0 { (t - pos_0) / diff } else { 1.0 };
 
-        let (pos_0, col_0) = self.stops[i0];
-        let (pos_1, col_1) = self.stops[i1];
-        let t = (t - pos_0) / (pos_1 - pos_0);
-        let [a, b, c, d] = interpolate_smoothstep(&col_0, &col_1, t);
+        let [a, b, c, d] = interpolate_smoothstep(col_0, col_1, t);
 
         match self.mode {
             BlendMode::Rgb => Color::new(a, b, c, d),

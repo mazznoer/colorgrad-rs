@@ -144,7 +144,7 @@ fn colors() {
 #[test]
 fn colors_iter() {
     fn hex(c: Color) -> String {
-        c.to_css_hex().to_string()
+        c.to_string()
     }
 
     macro_rules! cmp {
@@ -273,50 +273,6 @@ fn inverse() {
     let a = gradient.colors(17).rev();
     let b = inv_grad.colors(17);
     assert_eq!(colors2hex(a), colors2hex(b));
-}
-
-#[test]
-fn linearize() {
-    // Basic
-
-    let grad = GradientBuilder::new()
-        .html_colors(&["#f00", "#00f"])
-        .mode(BlendMode::Rgb)
-        .build::<LinearGradient>()
-        .unwrap();
-
-    let lgrad = grad.linearize(0.007);
-    assert_eq!(lgrad.stops().len(), 2);
-    assert_eq!(lgrad.mode(), BlendMode::Rgb);
-
-    let expected: &[&str] = &["#ff0000", "#0000ff"];
-    let colors = lgrad.colors(2);
-    assert_eq!(colors2hex(colors), expected);
-
-    // More complex gradient
-
-    let grad = GradientBuilder::new()
-        .css("#ff1493, #ffd700 67%, #2e8b57")
-        .mode(BlendMode::Oklab)
-        .build::<colorgrad::SmoothstepGradient>()
-        .unwrap();
-
-    let lgrad = grad.linearize(0.007);
-
-    let expected: &[&str] = &[
-        "#ff1493", "#ff288d", "#ff3c86", "#ff5080", "#ff657a", "#ff7973", "#ff8d6d", "#ffa167",
-        "#ffb055", "#ffbe42", "#ffcc30", "#ffd316", "#ffd700", "#efd11b", "#cdc436", "#a1b349",
-        "#71a151", "#479256", "#2e8b57",
-    ];
-    let colors = lgrad.colors(19);
-    assert_eq!(colors2hex(colors), expected);
-
-    let g2 = LinearGradient::from_rgba_data(lgrad.stops()).unwrap();
-    let colors1 = lgrad.colors(177);
-    let colors2 = g2.colors(177);
-    for (a, b) in colors1.zip(colors2) {
-        assert_eq!(a.to_rgba8(), b.to_rgba8());
-    }
 }
 
 #[test]

@@ -52,6 +52,10 @@ required-features = ["preset"]
 name = "builder"
 required-features = ["named-colors"]
 
+[[test]]
+name = "g_gimp"
+required-features = ["ggr"]
+
 #[[bench]]
 #name = "custom_gradient"
 #harness = false

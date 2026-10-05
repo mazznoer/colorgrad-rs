@@ -5,7 +5,7 @@ use libm::sqrtf;
 
 use crate::{Color, LinearGradient};
 
-const MAX_DEPTH: u32 = 7;
+const MAX_DEPTH: u32 = 8;
 const SEEDS: usize = 36;
 
 pub(crate) fn linearize<'a>(
@@ -20,11 +20,9 @@ pub(crate) fn linearize<'a>(
     };
 
     let (min, max) = domain;
-    let mut positions = Vec::with_capacity(500);
-    positions.push(min);
-
     let mut t0 = min;
     let mut c0 = grad(t0).clamp();
+    let mut sf = StreamFilter::new(threshold, t0, c0, 500);
 
     // Adaptive Sampling
     for i in 1..=SEEDS {
@@ -32,18 +30,16 @@ pub(crate) fn linearize<'a>(
         let c1 = grad(t1).clamp();
 
         // Subdivide interval [t0, t1]
-        subdivide(&grad, t0, t1, c0, c1, threshold, 0, &mut positions);
+        subdivide(&grad, t0, t1, c0, c1, threshold, 0, &mut sf);
 
         // Push right seed boundary
-        positions.push(t1);
+        sf.push(t1, c1);
 
         t0 = t1;
         c0 = c1;
     }
 
-    // Prune Unnecessary Points
-    let positions = remove_unnecessary(&grad, &positions, threshold);
-
+    let positions = sf.finish();
     let stops: Vec<_> = positions.iter().map(|&t| (t, grad(t).to_array())).collect();
 
     LinearGradient::from_rgba_data(stops).unwrap()
@@ -58,66 +54,88 @@ fn subdivide<'a>(
     c1: Color,
     threshold: f32,
     depth: u32,
-    stops: &mut Vec<f32>,
+    sf: &mut StreamFilter,
 ) {
-    if depth >= MAX_DEPTH {
+    if depth > MAX_DEPTH {
         return;
     }
 
     let mid = (t0 + t1) / 2.0;
     let c_mid_actual = grad(mid).clamp();
-    let c_mid_linear = c0.interpolate_rgb(&c1, 0.5).clamp();
+    let c_mid_linear = c0.interpolate_rgb(&c1, 0.5);
 
     if color_diff(c_mid_actual, c_mid_linear) > threshold {
         // Left branch (t0 -> mid)
-        subdivide(grad, t0, mid, c0, c_mid_actual, threshold, depth + 1, stops);
+        subdivide(grad, t0, mid, c0, c_mid_actual, threshold, depth + 1, sf);
 
         // In-order midpoint push
-        stops.push(mid);
+        sf.push(mid, c_mid_actual);
 
         // Right branch (mid -> t1)
-        subdivide(grad, mid, t1, c_mid_actual, c1, threshold, depth + 1, stops);
+        subdivide(grad, mid, t1, c_mid_actual, c1, threshold, depth + 1, sf);
     }
 }
 
-fn remove_unnecessary<'a>(
-    grad: &(dyn Fn(f32) -> Color + 'a),
-    pos: &[f32],
+/// Streaming pruner that maintains a 3-point sliding window with cached colors
+/// to perform on-the-fly collinear pruning and deduplication.
+struct StreamFilter {
     threshold: f32,
-) -> Vec<f32> {
-    if pos.len() <= 2 {
-        return pos.to_vec();
-    }
+    committed: Vec<f32>,
+    color_a: Color,
+    candidate: Option<(f32, Color)>,
+}
 
-    let mut out = Vec::with_capacity(pos.len());
-    out.push(pos[0]);
-    let mut last_idx = 0;
-
-    for i in 1..pos.len() - 1 {
-        let t_prev = pos[last_idx];
-        let t_curr = pos[i];
-
-        // skip duplicate position
-        if (t_prev - t_curr).abs() < f32::EPSILON {
-            continue;
-        }
-
-        let t_next = pos[i + 1];
-        let lerp_factor = (t_curr - t_prev) / (t_next - t_prev);
-
-        let c_prev = grad(t_prev);
-        let c_next = grad(t_next);
-        let c_curr_actual = grad(t_curr).clamp();
-        let c_curr_linear = c_prev.interpolate_rgb(&c_next, lerp_factor).clamp();
-
-        if color_diff(c_curr_actual, c_curr_linear) > threshold {
-            out.push(t_curr);
-            last_idx = i;
+impl StreamFilter {
+    fn new(threshold: f32, min: f32, initial_color: Color, capacity: usize) -> Self {
+        let mut committed = Vec::with_capacity(capacity);
+        committed.push(min);
+        Self {
+            threshold,
+            committed,
+            color_a: initial_color,
+            candidate: None,
         }
     }
 
-    out.push(*pos.last().unwrap());
-    out
+    fn push(&mut self, c: f32, color_c: Color) {
+        let a = *self.committed.last().unwrap();
+
+        // Skip duplicates close to last committed point
+        if (c - a).abs() < f32::EPSILON {
+            return;
+        }
+
+        if let Some((b, color_b)) = self.candidate {
+            // Deduplicate candidate against incoming point
+            if (c - b).abs() < f32::EPSILON {
+                self.candidate = Some((c, color_c));
+                return;
+            }
+
+            // Evaluate if candidate B is collinear between A and C using cached colors
+            let lerp_factor = (b - a) / (c - a);
+            let c_curr_linear = self.color_a.interpolate_rgb(&color_c, lerp_factor);
+
+            if color_diff(color_b, c_curr_linear) > self.threshold {
+                // B is essential -> commit B and update last committed color A
+                self.committed.push(b);
+                self.color_a = color_b;
+            }
+            // If B is collinear, it drops automatically when C replaces it
+        }
+
+        self.candidate = Some((c, color_c));
+    }
+
+    fn finish(mut self) -> Vec<f32> {
+        if let Some((c, _)) = self.candidate {
+            let a = *self.committed.last().unwrap();
+            if (c - a).abs() >= f32::EPSILON {
+                self.committed.push(c);
+            }
+        }
+        self.committed
+    }
 }
 
 // Euclidean distance between two colors in RGBA space, normalized to [0.0, 1.0].

@@ -1,6 +1,5 @@
 use alloc::sync::Arc;
 use alloc::vec::Vec;
-use core::convert::TryFrom;
 
 use crate::utils::convert_colors;
 use crate::{BlendMode, Color, Gradient, GradientBuilder, GradientBuilderError};
@@ -47,14 +46,20 @@ pub struct BasisGradient {
 
 impl BasisGradient {
     pub(crate) fn new(colors: &[Color], positions: Vec<f32>, mode: BlendMode) -> Self {
-        let dmin = positions[0];
-        let dmax = positions[positions.len() - 1];
+        let n = colors.len();
+        assert!(
+            n >= 2 && n == positions.len(),
+            "Gradient requires at least 2 stops, and colors length must match positions length"
+        );
+
+        let domain = (positions[0], positions[n - 1]);
         let first_color = colors[0];
-        let last_color = colors[colors.len() - 1];
+        let last_color = colors[n - 1];
+
         Self {
-            values: convert_colors(colors, mode).collect::<Vec<_>>().into(),
+            values: convert_colors(colors, mode).collect(),
             positions: positions.into(),
-            domain: (dmin, dmax),
+            domain,
             mode,
             first_color,
             last_color,
@@ -64,6 +69,10 @@ impl BasisGradient {
 
 impl Gradient for BasisGradient {
     fn at(&self, t: f32) -> Color {
+        if t.is_nan() {
+            return Color::new(0.0, 0.0, 0.0, 1.0);
+        }
+
         if t <= self.domain.0 {
             return self.first_color;
         }
@@ -72,36 +81,27 @@ impl Gradient for BasisGradient {
             return self.last_color;
         }
 
-        if t.is_nan() {
-            return Color::new(0.0, 0.0, 0.0, 1.0);
-        }
+        let low = self.positions.partition_point(|&p| p < t);
 
-        let mut low = 0;
-        let mut high = self.positions.len();
-        let n = high - 1;
+        // Safely clamp bounds in case of floating-point inaccuracies
+        let low = low.clamp(1, self.positions.len() - 1);
 
-        while low < high {
-            let mid = (low + high) / 2;
-            if self.positions[mid] < t {
-                low = mid + 1;
-            } else {
-                high = mid;
-            }
-        }
-
-        if low == 0 {
-            low = 1;
-        }
-
-        let pos0 = self.positions[low - 1];
-        let pos1 = self.positions[low];
-        let val0 = self.values[low - 1];
-        let val1 = self.values[low];
         let i = low - 1;
-        let t = (t - pos0) / (pos1 - pos0);
-        let mut zz = [0.0; 4];
+        let n = self.positions.len() - 1;
 
-        for (j, (v1, v2)) in val0.iter().zip(val1.iter()).enumerate() {
+        let pos0 = self.positions[i];
+        let pos1 = self.positions[low];
+        let val0 = self.values[i];
+        let val1 = self.values[low];
+
+        // Prevent division-by-zero
+        let diff = pos1 - pos0;
+        let t = if diff > 0.0 { (t - pos0) / diff } else { 1.0 };
+
+        let [a, b, c, d] = core::array::from_fn(|j| {
+            let v1 = val0[j];
+            let v2 = val1[j];
+
             let v0 = if i > 0 {
                 self.values[i - 1][j]
             } else {
@@ -114,16 +114,14 @@ impl Gradient for BasisGradient {
                 2.0 * v2 - v1
             };
 
-            zz[j] = basis(t, v0, *v1, *v2, v3);
-        }
-
-        let [c0, c1, c2, c3] = zz;
+            basis(t, v0, v1, v2, v3)
+        });
 
         match self.mode {
-            BlendMode::Rgb => Color::new(c0, c1, c2, c3),
-            BlendMode::LinearRgb => Color::from_linear_rgba(c0, c1, c2, c3),
-            BlendMode::Oklab => Color::from_oklaba(c0, c1, c2, c3),
-            BlendMode::Lab => Color::from_laba(c0, c1, c2, c3),
+            BlendMode::Rgb => Color::new(a, b, c, d),
+            BlendMode::LinearRgb => Color::from_linear_rgba(a, b, c, d),
+            BlendMode::Oklab => Color::from_oklaba(a, b, c, d),
+            BlendMode::Lab => Color::from_laba(a, b, c, d),
         }
     }
 

@@ -1,5 +1,65 @@
 use crate::{BlendMode, Color};
 
+#[cfg(not(feature = "std"))]
+#[allow(dead_code)]
+pub trait FloatExt {
+    fn sqrt(self) -> f32;
+    fn sin(self) -> f32;
+    fn cos(self) -> f32;
+    fn round(self) -> f32;
+}
+
+#[cfg(not(feature = "std"))]
+impl FloatExt for f32 {
+    #[inline]
+    fn sqrt(self) -> f32 {
+        #[cfg(feature = "std")]
+        {
+            self.sqrt()
+        }
+        #[cfg(not(feature = "std"))]
+        {
+            libm::sqrtf(self)
+        }
+    }
+
+    #[inline]
+    fn sin(self) -> f32 {
+        #[cfg(feature = "std")]
+        {
+            self.sin()
+        }
+        #[cfg(not(feature = "std"))]
+        {
+            libm::sinf(self)
+        }
+    }
+
+    #[inline]
+    fn cos(self) -> f32 {
+        #[cfg(feature = "std")]
+        {
+            self.cos()
+        }
+        #[cfg(not(feature = "std"))]
+        {
+            libm::cosf(self)
+        }
+    }
+
+    #[inline]
+    fn round(self) -> f32 {
+        #[cfg(feature = "std")]
+        {
+            self.round()
+        }
+        #[cfg(not(feature = "std"))]
+        {
+            libm::roundf(self)
+        }
+    }
+}
+
 pub(crate) fn convert_colors(
     colors: &[Color],
     mode: BlendMode,

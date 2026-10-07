@@ -1,9 +1,10 @@
 use alloc::boxed::Box;
 use alloc::vec::Vec;
 
-use libm::sqrtf;
-
 use crate::{Color, LinearGradient};
+
+#[cfg(not(feature = "std"))]
+use crate::utils::FloatExt;
 
 const MAX_DEPTH: u32 = 8;
 const SEEDS: usize = 36;
@@ -144,7 +145,7 @@ fn color_diff(a: Color, b: Color) -> f32 {
     let dg = a.g - b.g;
     let db = a.b - b.b;
     let da = a.a - b.a;
-    sqrtf(dr * dr + dg * dg + db * db + da * da) / 2.0
+    (dr * dr + dg * dg + db * db + da * da).sqrt() / 2.0
 }
 
 #[cfg(test)]

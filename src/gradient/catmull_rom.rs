@@ -1,19 +1,20 @@
 use alloc::sync::Arc;
 use alloc::vec::Vec;
 
-use libm::sqrtf;
-
 use crate::utils::convert_colors;
 use crate::{BlendMode, Color, Gradient, GradientBuilder, GradientBuilderError};
+
+#[cfg(not(feature = "std"))]
+use crate::utils::FloatExt;
 
 // Catmull-Rom spline algorithm adapted from:
 // https://qroph.github.io/2018/07/30/smooth-paths-using-catmull-rom-splines.html
 
 #[inline]
 fn catmull_segment_coeffs(v0: f32, v1: f32, v2: f32, v3: f32) -> [f32; 4] {
-    let t1 = sqrtf((v0 - v1).abs());
-    let dt21 = sqrtf((v1 - v2).abs());
-    let dt32 = sqrtf((v2 - v3).abs());
+    let t1 = (v0 - v1).abs().sqrt();
+    let dt21 = (v1 - v2).abs().sqrt();
+    let dt32 = (v2 - v3).abs().sqrt();
 
     let t2 = t1 + dt21;
     let dt31 = dt21 + dt32;
